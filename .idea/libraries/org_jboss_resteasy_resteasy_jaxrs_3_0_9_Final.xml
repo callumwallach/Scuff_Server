@@ -1,0 +1,25 @@
+<component name="libraryTable">
+  <library name="org.jboss.resteasy:resteasy-jaxrs:3.0.9.Final" type="repository">
+    <properties maven-id="org.jboss.resteasy:resteasy-jaxrs:3.0.9.Final" />
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/lib/resteasy-jaxrs-3.0.9.Final.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/jaxrs-api-3.0.9.Final.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/tjws-3.0.9.Final.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/servlet-api-2.5.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/jboss-servlet-api_3.1_spec-1.0.0.Final.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/junit-4.3.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/log4j-1.2.14.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/slf4j-api-1.7.5.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/jboss-annotations-api_1.1_spec-1.0.1.Final.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/activation-1.1.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/httpclient-4.2.6.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/httpcore-4.2.5.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/commons-logging-1.1.1.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/commons-codec-1.6.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/commons-io-2.1.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/jcip-annotations-1.0.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

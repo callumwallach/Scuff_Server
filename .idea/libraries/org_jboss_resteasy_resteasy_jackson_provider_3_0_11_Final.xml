@@ -1,0 +1,26 @@
+<component name="libraryTable">
+  <library name="org.jboss.resteasy:resteasy-jackson-provider:3.0.11.Final" type="repository">
+    <properties maven-id="org.jboss.resteasy:resteasy-jackson-provider:3.0.11.Final" />
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/lib/resteasy-jackson-provider-3.0.11.Final.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/resteasy-jaxrs-3.0.11.Final.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/jaxrs-api-3.0.11.Final.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/jboss-annotations-api_1.1_spec-1.0.1.Final.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/activation-1.1.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/httpclient-4.2.6.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/httpcore-4.2.5.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/commons-logging-1.1.1.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/commons-codec-1.6.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/commons-io-2.1.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/jcip-annotations-1.0.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/resteasy-client-3.0.11.Final.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/jackson-core-asl-1.9.12.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/jackson-mapper-asl-1.9.12.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/jackson-jaxrs-1.9.12.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/jackson-xc-1.9.12.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/jboss-servlet-api_3.1_spec-1.0.0.Final.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>
