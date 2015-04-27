@@ -4,6 +4,7 @@ import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
+import java.sql.Timestamp;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -17,13 +18,48 @@ public class Journey implements Serializable {
     //private static final long serialVersionUID = 2L;
 
     public enum TrackingState {
-        ACTIVE, PAUSED, COMPLETED
+        RECORDING, PAUSED, COMPLETED
     }
+/*
+
+    @XmlEnum
+    public enum SortingType {
+        @XmlEnumValue("recording")
+        RECORDING,
+        @XmlEnumValue("paused")
+        PAUSED;
+
+        private static Map<String, SortingType> sortingTypeByValue = new HashMap<>();
+        private static Map<SortingType, String> valueBySortingType = new HashMap<>();
+        static {
+            SortingType[] enumConstants = SortingType.class.getEnumConstants();
+            for (SortingType sortingType : enumConstants) {
+                try {
+                    String value = SortingType.class.getField(sortingType.name()).getAnnotation(XmlEnumValue.class).value();
+                    sortingTypeByValue.put(value, sortingType);
+                    valueBySortingType.put(sortingType, value);
+                } catch (NoSuchFieldException e) {
+                    throw new IllegalStateException(e);
+                }
+            }
+        }
+
+        @JsonCreator
+        public static SortingType create(String value) {
+            return sortingTypeByValue.get(value);
+        }
+
+        @JsonValue
+        public String getValue() {
+            return valueBySortingType.get(this);
+        }
+    }
+*/
 
     @Id
     private String id;
     @NotNull
-    private String appId;
+    private long appId;
     @NotNull
     private String schoolId;
     @NotNull
@@ -33,10 +69,12 @@ public class Journey implements Serializable {
     @NotNull
     private String source;
     @NotNull
+    private Timestamp created;
+    //@NotNull
     @Enumerated(EnumType.STRING)
     private TrackingState state;
 
-    @OneToMany(fetch = FetchType.EAGER)
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinColumn(name="journeyId", referencedColumnName="id")
     private Set<Waypoint> waypoints;
 
@@ -52,11 +90,11 @@ public class Journey implements Serializable {
         this.id = id;
     }
 
-    public String getAppId() {
+    public long getAppId() {
         return appId;
     }
 
-    public void setAppId(String appId) {
+    public void setAppId(long appId) {
         this.appId = appId;
     }
 
@@ -90,6 +128,14 @@ public class Journey implements Serializable {
 
     public void setSource(String source) {
         this.source = source;
+    }
+
+    public Timestamp getCreated() {
+        return created;
+    }
+
+    public void setCreated(Timestamp created) {
+        this.created = created;
     }
 
     public TrackingState getState() {

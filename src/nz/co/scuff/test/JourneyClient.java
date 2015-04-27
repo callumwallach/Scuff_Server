@@ -40,7 +40,7 @@ public class JourneyClient {
         response.close();  // You should close connections!*/
 
         Waypoint waypoint = new Waypoint();
-        waypoint.setId(1);
+        waypoint.setId("temp");
         waypoint.setLatitude(100);
         waypoint.setLongitude(200);
         waypoint.setSpeed(5);
@@ -53,12 +53,12 @@ public class JourneyClient {
 
         Journey journey = new Journey();
         journey.setId("journey1");
-        journey.setAppId("app1");
+        journey.setAppId(1);
         journey.setSchoolId("school1");
         journey.setDriverId("driver1");
         journey.setRouteId("route1");
         journey.setSource("Android");
-        journey.setState(Journey.TrackingState.ACTIVE);
+        journey.setState(Journey.TrackingState.RECORDING);
 
         target = client.target("http://localhost:8080/scuff/journeys/start");
         response = target.request().post(Entity.entity(journey, "application/json"));

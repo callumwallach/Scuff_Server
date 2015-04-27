@@ -22,7 +22,7 @@ public class Waypoint implements Serializable {
     private final Logger l = LoggerFactory.getLogger(Waypoint.class.getName());
 
     @Id
-    private long id;
+    private String id;
     @NotNull
     private double latitude;
     @NotNull
@@ -40,16 +40,18 @@ public class Waypoint implements Serializable {
     @NotNull
     private double altitude;
     @NotNull
+    private int state;
+    @NotNull
     private Timestamp timestamp;
 
     public Waypoint() {
     }
 
-    public long getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(long id) {
+    public void setId(String id) {
         this.id = id;
     }
 
@@ -117,6 +119,14 @@ public class Waypoint implements Serializable {
         this.altitude = altitude;
     }
 
+    public int getState() {
+        return state;
+    }
+
+    public void setState(int state) {
+        this.state = state;
+    }
+
     public Timestamp getTimestamp() {
         return timestamp;
     }
@@ -132,14 +142,12 @@ public class Waypoint implements Serializable {
 
         Waypoint waypoint = (Waypoint) o;
 
-        if (id != waypoint.id) return false;
+        return id.equals(waypoint.id);
 
-        return true;
     }
 
     @Override
     public int hashCode() {
-        return (int) (id ^ (id >>> 32));
+        return id.hashCode();
     }
-
 }

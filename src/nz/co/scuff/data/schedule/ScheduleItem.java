@@ -5,6 +5,8 @@ import org.joda.time.DateTime;
 import nz.co.scuff.data.family.Driver;
 import nz.co.scuff.data.school.Route;
 
+import java.sql.Timestamp;
+
 /**
  * Created by Callum on 17/03/2015.
  */
@@ -12,9 +14,9 @@ public class ScheduleItem {
 
     private Driver driver;
     private Route route;
-    private DateTime date;
+    private Timestamp date;
 
-    public ScheduleItem(Driver driver, Route route, DateTime date) {
+    public ScheduleItem(Driver driver, Route route, Timestamp date) {
         this.driver = driver;
         this.route = route;
         this.date = date;
@@ -58,11 +60,11 @@ public class ScheduleItem {
         this.route = route;
     }
 
-    public DateTime getDate() {
+    public Timestamp getDate() {
         return date;
     }
 
-    public void setDate(DateTime date) {
+    public void setDate(Timestamp date) {
         this.date = date;
     }
 
