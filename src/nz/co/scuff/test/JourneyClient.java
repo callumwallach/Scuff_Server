@@ -40,19 +40,19 @@ public class JourneyClient {
         response.close();  // You should close connections!*/
 
         Waypoint waypoint = new Waypoint();
-        waypoint.setId("temp");
+        waypoint.setWaypointId("temp");
         waypoint.setLatitude(100);
         waypoint.setLongitude(200);
         waypoint.setSpeed(5);
         waypoint.setBearing(234);
-        waypoint.setTotalDistance(0);
+        waypoint.setDistance(0);
         waypoint.setProvider("GPS");
         waypoint.setAccuracy(3.9f);
         waypoint.setAltitude(20.00);
-        waypoint.setTimestamp(new Timestamp(DateTimeUtils.currentTimeMillis()));
+        waypoint.setCreated(new Timestamp(DateTimeUtils.currentTimeMillis()));
 
         Journey journey = new Journey();
-        journey.setId("journey1");
+        journey.setJourneyId("journey1");
         journey.setAppId(1);
         journey.setSchoolId("school1");
         journey.setDriverId("driver1");

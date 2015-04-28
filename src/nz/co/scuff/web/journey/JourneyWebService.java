@@ -1,6 +1,6 @@
 package nz.co.scuff.web.journey;
 
-import nz.co.scuff.data.journey.FlatJourney;
+//import nz.co.scuff.data.journey.FlatJourney;
 
 /**
  * Created by Callum on 26/04/2015.

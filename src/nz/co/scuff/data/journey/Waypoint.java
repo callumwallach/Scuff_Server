@@ -14,7 +14,7 @@ import java.sql.Timestamp;
  */
 @XmlRootElement
 @Entity
-public class Waypoint implements Serializable {
+public class Waypoint implements Serializable, Comparable {
 
     //private static final long serialVersionUID = 1L;
 
@@ -22,37 +22,51 @@ public class Waypoint implements Serializable {
     private final Logger l = LoggerFactory.getLogger(Waypoint.class.getName());
 
     @Id
-    private String id;
+    @Column(name="WaypointId")
+    private String waypointId;
     @NotNull
+    @Column(name="Latitude")
     private double latitude;
     @NotNull
+    @Column(name="Longitude")
     private double longitude;
     @NotNull
+    @Column(name="Speed")
     private float speed;
     @NotNull
+    @Column(name="Bearing")
     private float bearing;
     @NotNull
-    private float totalDistance;
+    @Column(name="Distance")
+    private float distance;
     @NotNull
+    @Column(name="Duration")
+    private long duration;
+    @NotNull
+    @Column(name="Provider")
     private String provider;
     @NotNull
+    @Column(name="Accuracy")
     private float accuracy;
     @NotNull
+    @Column(name="Altitude")
     private double altitude;
     @NotNull
+    @Column(name="State")
     private int state;
     @NotNull
-    private Timestamp timestamp;
+    @Column(name="Created")
+    private Timestamp created;
 
     public Waypoint() {
     }
 
-    public String getId() {
-        return id;
+    public String getWaypointId() {
+        return waypointId;
     }
 
-    public void setId(String id) {
-        this.id = id;
+    public void setWaypointId(String id) {
+        this.waypointId = id;
     }
 
     public double getLatitude() {
@@ -87,12 +101,20 @@ public class Waypoint implements Serializable {
         this.bearing = bearing;
     }
 
-    public float getTotalDistance() {
-        return totalDistance;
+    public float getDistance() {
+        return distance;
     }
 
-    public void setTotalDistance(float totalDistance) {
-        this.totalDistance = totalDistance;
+    public void setDistance(float distance) {
+        this.distance = distance;
+    }
+
+    public long getDuration() {
+        return duration;
+    }
+
+    public void setDuration(long duration) {
+        this.duration = duration;
     }
 
     public String getProvider() {
@@ -127,12 +149,18 @@ public class Waypoint implements Serializable {
         this.state = state;
     }
 
-    public Timestamp getTimestamp() {
-        return timestamp;
+    public Timestamp getCreated() {
+        return created;
     }
 
-    public void setTimestamp(Timestamp timestamp) {
-        this.timestamp = timestamp;
+    public void setCreated(Timestamp created) {
+        this.created = created;
+    }
+
+    @Override
+    public int compareTo(Object another) {
+        Waypoint other = (Waypoint)another;
+        return this.created.compareTo(other.created);
     }
 
     @Override
@@ -142,12 +170,12 @@ public class Waypoint implements Serializable {
 
         Waypoint waypoint = (Waypoint) o;
 
-        return id.equals(waypoint.id);
+        return waypointId.equals(waypoint.waypointId);
 
     }
 
     @Override
     public int hashCode() {
-        return id.hashCode();
+        return waypointId.hashCode();
     }
 }

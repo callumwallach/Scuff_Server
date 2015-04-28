@@ -1,19 +1,22 @@
 package nz.co.scuff.data.journey;
 
+import org.hibernate.annotations.Sort;
+import org.hibernate.annotations.SortType;
+
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
 import java.sql.Timestamp;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 /**
  * Created by Callum on 20/04/2015.
  */
 @XmlRootElement
 @Entity
-public class Journey implements Serializable {
+public class Journey implements Serializable, Comparable {
 
     //private static final long serialVersionUID = 2L;
 
@@ -57,37 +60,56 @@ public class Journey implements Serializable {
 */
 
     @Id
-    private String id;
+    @Column(name="JourneyId")
+    private String journeyId;
     @NotNull
+    @Column(name="AppId")
     private long appId;
     @NotNull
+    @Column(name="SchoolId")
     private String schoolId;
     @NotNull
+    @Column(name="DriverId")
     private String driverId;
     @NotNull
+    @Column(name="RouteId")
     private String routeId;
     @NotNull
+    @Column(name="Source")
     private String source;
     @NotNull
+    @Column(name="TotalDistance")
+    private float totalDistance;
+    @NotNull
+    @Column(name="TotalDuration")
+    private long totalDuration;
+    @NotNull
+    @Column(name="Created")
     private Timestamp created;
-    //@NotNull
+    // null until completed
+    @Column(name="Completed")
+    private Timestamp completed;
+    @NotNull
+    @Column(name="State")
     @Enumerated(EnumType.STRING)
     private TrackingState state;
 
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    @JoinColumn(name="journeyId", referencedColumnName="id")
-    private Set<Waypoint> waypoints;
+    @JoinColumn(name="JourneyId", referencedColumnName="JourneyId")
+    @OrderBy("created DESC")
+    @Sort(type = SortType.NATURAL)
+    private SortedSet<Waypoint> waypoints;
 
     public Journey() {
-        waypoints = new HashSet<>();
+        waypoints = new TreeSet<>();
     }
 
-    public String getId() {
-        return id;
+    public String getJourneyId() {
+        return journeyId;
     }
 
-    public void setId(String id) {
-        this.id = id;
+    public void setJourneyId(String id) {
+        this.journeyId = id;
     }
 
     public long getAppId() {
@@ -130,12 +152,36 @@ public class Journey implements Serializable {
         this.source = source;
     }
 
+    public float getTotalDistance() {
+        return totalDistance;
+    }
+
+    public void setTotalDistance(float totalDistance) {
+        this.totalDistance = totalDistance;
+    }
+
+    public long getTotalDuration() {
+        return totalDuration;
+    }
+
+    public void setTotalDuration(long totalDuration) {
+        this.totalDuration = totalDuration;
+    }
+
     public Timestamp getCreated() {
         return created;
     }
 
     public void setCreated(Timestamp created) {
         this.created = created;
+    }
+
+    public Timestamp getCompleted() {
+        return completed;
+    }
+
+    public void setCompleted(Timestamp completed) {
+        this.completed = completed;
     }
 
     public TrackingState getState() {
@@ -150,12 +196,18 @@ public class Journey implements Serializable {
         waypoints.add(waypoint);
     }
 
-    public Set<Waypoint> getWaypoints() {
+    public SortedSet<Waypoint> getWaypoints() {
         return waypoints;
     }
 
-    public void setWaypoints(Set<Waypoint> waypoints) {
+    public void setWaypoints(SortedSet<Waypoint> waypoints) {
         this.waypoints = waypoints;
+    }
+
+    @Override
+    public int compareTo(Object another) {
+        Journey other = (Journey)another;
+        return this.created.compareTo(other.created);
     }
 
     @Override
@@ -165,13 +217,13 @@ public class Journey implements Serializable {
 
         Journey journey = (Journey) o;
 
-        if (!id.equals(journey.id)) return false;
+        if (!journeyId.equals(journey.journeyId)) return false;
 
         return true;
     }
 
     @Override
     public int hashCode() {
-        return id.hashCode();
+        return journeyId.hashCode();
     }
 }

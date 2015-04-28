@@ -1,6 +1,6 @@
 package nz.co.scuff.web.journey;
 
-import nz.co.scuff.data.journey.FlatJourney;
+//import nz.co.scuff.data.journey.FlatJourney;
 import nz.co.scuff.data.journey.Journey;
 import nz.co.scuff.data.journey.Waypoint;
 import nz.co.scuff.server.journey.JourneyServiceBean;
@@ -56,7 +56,9 @@ public class JourneyResourceService {
     @Consumes("application/json")
     public void pauseJourney(Journey journey) {
         l.debug("pauseJourney resource journey="+journey);
-        Journey foundJourney = journeyService.find(journey.getId());
+        Journey foundJourney = journeyService.find(journey.getJourneyId());
+        foundJourney.setTotalDistance(journey.getTotalDistance());
+        foundJourney.setTotalDuration(journey.getTotalDuration());
         foundJourney.setState(journey.getState());
         for (Waypoint wp : journey.getWaypoints()) {
             l.debug("adding waypoint");
@@ -71,7 +73,9 @@ public class JourneyResourceService {
     @Consumes("application/json")
     public void continueJourney(Journey journey) {
         l.debug("continueJourney resource journey="+journey);
-        Journey foundJourney = journeyService.find(journey.getId());
+        Journey foundJourney = journeyService.find(journey.getJourneyId());
+        foundJourney.setTotalDistance(journey.getTotalDistance());
+        foundJourney.setTotalDuration(journey.getTotalDuration());
         foundJourney.setState(journey.getState());
         for (Waypoint wp : journey.getWaypoints()) {
             l.debug("adding waypoint");
@@ -86,7 +90,9 @@ public class JourneyResourceService {
     @Consumes("application/json")
     public void stopJourney(Journey journey) {
         l.debug("stopJourney resource journey="+journey);
-        Journey foundJourney = journeyService.find(journey.getId());
+        Journey foundJourney = journeyService.find(journey.getJourneyId());
+        foundJourney.setTotalDistance(journey.getTotalDistance());
+        foundJourney.setTotalDuration(journey.getTotalDuration());
         foundJourney.setState(journey.getState());
         for (Waypoint wp : journey.getWaypoints()) {
             l.debug("adding waypoint");
@@ -100,9 +106,10 @@ public class JourneyResourceService {
     @POST
     @Consumes("application/json")
     public void recordJourney(Journey journey) {
-        l.debug("pauseJourney resource journey="+journey);
-        Journey foundJourney = journeyService.find(journey.getId());
-        //foundJourney.setState(journey.getState());
+        l.debug("pauseJourney resource journey=" + journey);
+        Journey foundJourney = journeyService.find(journey.getJourneyId());
+        foundJourney.setTotalDistance(journey.getTotalDistance());
+        foundJourney.setTotalDuration(journey.getTotalDuration());
         for (Waypoint wp : journey.getWaypoints()) {
             l.debug("adding waypoint");
             foundJourney.addWaypoint(wp);
