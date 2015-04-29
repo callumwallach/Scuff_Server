@@ -29,29 +29,32 @@ public class JourneyResourceService {
     @Path("/start")
     @POST
     @Consumes("application/json")
-    public void startJourney(Journey journey) {
-        l.debug("startJourney resource journey=" + journey);
+    public void start(Journey journey) {
+        l.debug("start resource journey=" + journey);
         l.debug("create journey");
         // cascading create
         journeyService.create(journey);
         l.debug("create journey complete");
-/*        l.debug("finding");
-        Journey createdJourney = journeyService.find(journey.getId());
-        l.debug("found");
-        if (journey.getWaypoints().size() > 0) {
-            for (Waypoint wp : journey.getWaypoints()) {
-                l.debug("create waypoint");
-                waypointService.create(wp);
-                l.debug("create waypoint complete");
-                createdJourney.addWaypoint(wp);
-            }
-            l.debug("update journey");
-            journeyService.edit(createdJourney);
-            l.debug("update journey complete");
-        }*/
     }
 
-    @Path("/pause")
+    @Path("/update")
+    @POST
+    @Consumes("application/json")
+    public void update(Journey journey) {
+        l.debug("update resource journey="+journey);
+        Journey foundJourney = journeyService.find(journey.getJourneyId());
+        foundJourney.setTotalDistance(journey.getTotalDistance());
+        foundJourney.setTotalDuration(journey.getTotalDuration());
+        foundJourney.setState(journey.getState());
+        for (Waypoint wp : journey.getWaypoints()) {
+            l.debug("adding waypoint");
+            foundJourney.addWaypoint(wp);
+        }
+        l.debug("editing journey");
+        journeyService.edit(foundJourney);
+    }
+
+/*    @Path("/pause")
     @POST
     @Consumes("application/json")
     public void pauseJourney(Journey journey) {
@@ -116,6 +119,6 @@ public class JourneyResourceService {
         }
         l.debug("editing journey");
         journeyService.edit(foundJourney);
-    }
+    }*/
 
 }

@@ -1,5 +1,6 @@
 package nz.co.scuff.data.journey;
 
+import nz.co.scuff.data.util.TrackingState;
 import org.hibernate.annotations.Sort;
 import org.hibernate.annotations.SortType;
 
@@ -20,9 +21,6 @@ public class Journey implements Serializable, Comparable {
 
     //private static final long serialVersionUID = 2L;
 
-    public enum TrackingState {
-        RECORDING, PAUSED, COMPLETED
-    }
 /*
 
     @XmlEnum
@@ -64,7 +62,7 @@ public class Journey implements Serializable, Comparable {
     private String journeyId;
     @NotNull
     @Column(name="AppId")
-    private long appId;
+    private String appId;
     @NotNull
     @Column(name="SchoolId")
     private String schoolId;
@@ -112,11 +110,11 @@ public class Journey implements Serializable, Comparable {
         this.journeyId = id;
     }
 
-    public long getAppId() {
+    public String getAppId() {
         return appId;
     }
 
-    public void setAppId(long appId) {
+    public void setAppId(String appId) {
         this.appId = appId;
     }
 

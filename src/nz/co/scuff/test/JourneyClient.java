@@ -2,6 +2,7 @@ package nz.co.scuff.test;
 
 import nz.co.scuff.data.journey.Journey;
 import nz.co.scuff.data.journey.Waypoint;
+import nz.co.scuff.data.util.TrackingState;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
@@ -53,12 +54,12 @@ public class JourneyClient {
 
         Journey journey = new Journey();
         journey.setJourneyId("journey1");
-        journey.setAppId(1);
+        journey.setAppId("1");
         journey.setSchoolId("school1");
         journey.setDriverId("driver1");
         journey.setRouteId("route1");
         journey.setSource("Android");
-        journey.setState(Journey.TrackingState.RECORDING);
+        journey.setState(TrackingState.RECORDING);
 
         target = client.target("http://localhost:8080/scuff/journeys/start");
         response = target.request().post(Entity.entity(journey, "application/json"));

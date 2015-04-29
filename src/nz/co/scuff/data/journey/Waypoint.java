@@ -1,5 +1,6 @@
 package nz.co.scuff.data.journey;
 
+import nz.co.scuff.data.util.TrackingState;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -53,7 +54,8 @@ public class Waypoint implements Serializable, Comparable {
     private double altitude;
     @NotNull
     @Column(name="State")
-    private int state;
+    @Enumerated(EnumType.STRING)
+    private TrackingState state;
     @NotNull
     @Column(name="Created")
     private Timestamp created;
@@ -141,11 +143,11 @@ public class Waypoint implements Serializable, Comparable {
         this.altitude = altitude;
     }
 
-    public int getState() {
+    public TrackingState getState() {
         return state;
     }
 
-    public void setState(int state) {
+    public void setState(TrackingState state) {
         this.state = state;
     }
 

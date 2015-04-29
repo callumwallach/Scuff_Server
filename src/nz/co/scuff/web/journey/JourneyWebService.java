@@ -12,12 +12,12 @@ public interface JourneyWebService {
 /*    @Path("/start")
     @POST
     @Consumes("application/json")
-    public void startJourney(Journey journey);*/
+    public void start(Journey journey);*/
 
 /*    @Path("/start")
     @POST
     @Consumes("application/json")
-    public void startJourney(FlatJourney journey);*/
+    public void start(FlatJourney journey);*/
 
     /*@Path("/pause")
     @POST

@@ -28,8 +28,8 @@ public class JourneyWebServiceBean implements JourneyWebService {
 /*    @Path("/start/map")
     @POST
     @Consumes("application/json")
-    public void startJourney(HashMap map) {
-        l.debug("startJourney");
+    public void start(HashMap map) {
+        l.debug("start");
         Journey newJourney = new Journey();
         newJourney.setId((String)map.get("journeyId"));
         newJourney.setAppId((Long) map.get("appid"));
@@ -44,20 +44,20 @@ public class JourneyWebServiceBean implements JourneyWebService {
 /*    @Path("/start")
     @POST
     @Consumes("application/json")*/
-/*    public void startJourney(FlatJourney journey) *//*throws Exception*//* {
-        l.debug("startJourney journey="+journey);
+/*    public void start(FlatJourney journey) *//*throws Exception*//* {
+        l.debug("start journey="+journey);
         //journeyService.create(journey);
 
     }*/
 
-/*    public void startJourney(FlatJourney journey) *//*throws Exception*//* {
-        l.debug("startJourney journey="+journey);
+/*    public void start(FlatJourney journey) *//*throws Exception*//* {
+        l.debug("start journey="+journey);
         //journeyService.create(journey);
 
     }*/
 
-/*    public void startJourney(Journey journey) *//*throws Exception*//* {
-        l.debug("startJourney");
+/*    public void start(Journey journey) *//*throws Exception*//* {
+        l.debug("start");
 
         journeyService.create(journey);
         // not needed with cascading persist?
