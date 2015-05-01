@@ -34,8 +34,7 @@ public class JourneyServiceBean extends AbstractFacade<Journey> {
         super(Journey.class);
     }
 
-    // TODO update to route + school + date
-    public Journey findActiveByRouteAndSchool(String routeId, String schoolId) {
+    public List<Journey> findActiveByRouteAndSchool(String routeId, String schoolId) {
         if (l.isDebugEnabled()) l.debug("find journey by routeId=" + routeId + "] schoolId=" + schoolId + "]");
 
         final CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
@@ -56,9 +55,9 @@ public class JourneyServiceBean extends AbstractFacade<Journey> {
         // Pass the criteria list to the where method of criteria query
         criteriaQuery.where(criteriaBuilder.and(criteriaList.toArray(new Predicate[criteriaList.size()])));
         // Here entity manager will create actual SQL query out of criteria query
-        Journey found = null;
+        List<Journey> found = null;
         try {
-            found = (Journey) em.createQuery(criteriaQuery).getSingleResult();
+            found = em.createQuery(criteriaQuery).getResultList();
         } catch (NoResultException e) {
             // thats ok, return null;
         }

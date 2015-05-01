@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 
 import javax.ejb.EJB;
 import javax.ws.rs.*;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -69,10 +70,9 @@ public class JourneyResourceService {
         return journeyService.find(journeyId);
     }
 
-    // TODO update to route + school + date
     @GET
     @Produces("application/json")
-    public Journey getJourney(@QueryParam("routeId") String routeId, @QueryParam("schoolId") String schoolId) {
+    public List<Journey> getJourney(@QueryParam("routeId") String routeId, @QueryParam("schoolId") String schoolId) {
         l.debug("get journey routeId="+routeId+" schoolId="+schoolId);
         return journeyService.findActiveByRouteAndSchool(routeId, schoolId);
     }

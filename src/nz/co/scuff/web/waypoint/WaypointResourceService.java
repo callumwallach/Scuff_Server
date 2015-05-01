@@ -9,6 +9,8 @@ import org.slf4j.LoggerFactory;
 
 import javax.ejb.EJB;
 import javax.ws.rs.*;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by Callum on 27/04/2015.
@@ -23,17 +25,19 @@ public class WaypointResourceService {
     @EJB
     private WaypointServiceBean waypointService;
 
-    // TODO update to route + school + date
+    // Assumes only one ACTIVE bus per route per school
     @GET
     @Produces("application/json")
-    public Waypoint getCurrentWaypoint(@QueryParam("routeId") String routeId, @QueryParam("schoolId") String schoolId) {
+    public List<Waypoint> getCurrentWaypoint(@QueryParam("routeId") String routeId, @QueryParam("schoolId") String schoolId) {
         if (l.isDebugEnabled()) l.debug("getCurrentWaypoint routeId="+routeId+" schoolId="+schoolId);
+
         // TODO optimise by passenger getting journey and then looking up journey direct
-        Journey journey = journeyService.findActiveByRouteAndSchool(routeId, schoolId);
-        if (journey == null) {
-            return null;
+        List<Journey> journeys = journeyService.findActiveByRouteAndSchool(routeId, schoolId);
+        List<Waypoint> waypoints = new ArrayList<>();
+        for (Journey journey : journeys) {
+            waypoints.add(journey.getMostRecentWaypoint());
         }
-        return journey.getMostRecentWaypoint();
+        return waypoints;
     }
 
 }
