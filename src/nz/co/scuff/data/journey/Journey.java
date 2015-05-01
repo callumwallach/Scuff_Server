@@ -92,6 +92,8 @@ public class Journey implements Serializable, Comparable {
     @Enumerated(EnumType.STRING)
     private TrackingState state;
 
+    // TODO fix sort order to ensure most recent is first
+
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinColumn(name="JourneyId", referencedColumnName="JourneyId")
     @OrderBy("created DESC")
@@ -200,6 +202,12 @@ public class Journey implements Serializable, Comparable {
 
     public void setWaypoints(SortedSet<Waypoint> waypoints) {
         this.waypoints = waypoints;
+    }
+
+    // TODO sync with sorted set to ensure first is the most recent
+    public Waypoint getMostRecentWaypoint() {
+        //return waypoints.first();
+        return waypoints.last();
     }
 
     @Override
