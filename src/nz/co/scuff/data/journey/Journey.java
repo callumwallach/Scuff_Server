@@ -19,44 +19,6 @@ import java.util.TreeSet;
 @Entity
 public class Journey implements Serializable, Comparable {
 
-    //private static final long serialVersionUID = 2L;
-
-/*
-
-    @XmlEnum
-    public enum SortingType {
-        @XmlEnumValue("recording")
-        RECORDING,
-        @XmlEnumValue("paused")
-        PAUSED;
-
-        private static Map<String, SortingType> sortingTypeByValue = new HashMap<>();
-        private static Map<SortingType, String> valueBySortingType = new HashMap<>();
-        static {
-            SortingType[] enumConstants = SortingType.class.getEnumConstants();
-            for (SortingType sortingType : enumConstants) {
-                try {
-                    String value = SortingType.class.getField(sortingType.name()).getAnnotation(XmlEnumValue.class).value();
-                    sortingTypeByValue.put(value, sortingType);
-                    valueBySortingType.put(sortingType, value);
-                } catch (NoSuchFieldException e) {
-                    throw new IllegalStateException(e);
-                }
-            }
-        }
-
-        @JsonCreator
-        public static SortingType create(String value) {
-            return sortingTypeByValue.get(value);
-        }
-
-        @JsonValue
-        public String getValue() {
-            return valueBySortingType.get(this);
-        }
-    }
-*/
-
     @Id
     @Column(name="JourneyId")
     private String journeyId;
