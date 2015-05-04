@@ -1,32 +1,83 @@
 package nz.co.scuff.data.family;
 
+import javax.persistence.*;
+import javax.validation.constraints.NotNull;
+import javax.xml.bind.annotation.XmlRootElement;
+import java.io.Serializable;
+
 /**
  * Created by Callum on 17/03/2015.
  */
-public abstract class Person {
+@XmlRootElement
+@Entity
+public abstract class Person implements Comparable, Serializable {
 
     public enum Gender {
         MALE, FEMALE
     }
 
-    private String name;
-    private String pix;
-    private Gender gender;
+    @Id
+    @GeneratedValue(strategy= GenerationType.IDENTITY)
+    @Column(name="Id")
+    protected long id;
+    @NotNull
+    @Column(name="FirstName")
+    protected String firstName;
+    @Column(name="MiddleName")
+    protected String middleName;
+    @NotNull
+    @Column(name="LastName")
+    protected String lastName;
+    @NotNull
+    @Column(name="Gender")
+    @Enumerated(EnumType.STRING)
+    protected Gender gender;
+    @Column(name="Picture")
+    protected String picture;
 
     public Person() {}
 
-    public Person(String name, Gender gender, String pix) {
-        this.name = name;
+    public Person(String firstName, String lastName, Gender gender) {
+        this(firstName, lastName, gender, null);
+    }
+
+    public Person(String firstName, String lastName, Gender gender, String picture) {
+        this.firstName = firstName;
+        this.lastName = lastName;
         this.gender = gender;
-        this.pix = pix;
+        this.picture = picture;
     }
 
-    public String getName() {
-        return name;
+    public long getId() {
+        return id;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setId(long id) {
+        this.id = id;
+    }
+
+    public String getFirstName() {
+        return firstName;
+    }
+
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+
+    public String getMiddleName() {
+        return middleName;
+    }
+
+    public void setMiddleName(String middleName) {
+        this.middleName = middleName;
+    }
+
+    public String getLastName() {
+        return lastName;
+    }
+
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
     }
 
     public Gender getGender() {
@@ -37,17 +88,48 @@ public abstract class Person {
         this.gender = gender;
     }
 
-    public String getPix() {
-        return pix;
+    public String getPicture() {
+        return picture;
     }
 
-    public void setPix(String pix) {
-        this.pix = pix;
+    public void setPicture(String picture) {
+        this.picture = picture;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Person person = (Person) o;
+
+        return id == person.id;
+
+    }
+
+    @Override
+    public int hashCode() {
+        return (int) (id ^ (id >>> 32));
+    }
+
+    @Override
+    public int compareTo(Object another) {
+        Person other = (Person)another;
+        int lastNameCompared = this.lastName.compareTo(other.lastName);
+        if (lastNameCompared != 0) return lastNameCompared;
+        return this.firstName.compareTo(other.firstName);
     }
 
     @Override
     public String toString() {
-        return name;
+        final StringBuffer sb = new StringBuffer("Person{");
+        sb.append("firstName='").append(firstName).append('\'');
+        sb.append(", middleName='").append(middleName).append('\'');
+        sb.append(", lastName='").append(lastName).append('\'');
+        sb.append(", gender=").append(gender);
+        sb.append(", picture='").append(picture).append('\'');
+        sb.append('}');
+        return sb.toString();
     }
 
 }

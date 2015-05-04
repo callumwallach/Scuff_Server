@@ -1,7 +1,7 @@
 package nz.co.scuff.web.resource;
 
 import nz.co.scuff.data.journey.Journey;
-import nz.co.scuff.data.journey.Snapshot;
+import nz.co.scuff.data.journey.JourneySnapshot;
 import nz.co.scuff.data.journey.Waypoint;
 import nz.co.scuff.server.journey.JourneyServiceBean;
 import nz.co.scuff.server.journey.WaypointServiceBean;
@@ -20,9 +20,9 @@ import java.util.List;
  * Created by Callum on 27/04/2015.
  */
 @Path("/journeys")
-public class ScuffResourceService {
+public class JourneyResourceService {
 
-    public static final Logger l = LoggerFactory.getLogger(ScuffResourceService.class.getCanonicalName());
+    public static final Logger l = LoggerFactory.getLogger(JourneyResourceService.class.getCanonicalName());
 
     @EJB
     private JourneyServiceBean journeyService;
@@ -73,11 +73,11 @@ public class ScuffResourceService {
     @Path("/snapshots/{id}")
     @GET
     @Produces("application/json")
-    public Snapshot getSnapshot(@PathParam("id") String journeyId) {
+    public JourneySnapshot getSnapshot(@PathParam("id") String journeyId) {
         if (l.isDebugEnabled()) l.debug("getSnapshot journeyId="+journeyId);
 
         Journey journey = journeyService.findActiveByPK(journeyId);
-        Snapshot snapshot = null;
+        JourneySnapshot snapshot = null;
         if (journey != null) {
             snapshot = toSnapshot(journey, journey.getMostRecentWaypoint());
         }
@@ -88,28 +88,28 @@ public class ScuffResourceService {
     @Path("/snapshots")
     @GET
     @Produces("application/json")
-    public List<Snapshot> getSnapshotsByRouteAndSchool(@QueryParam("routeId") String routeId, @QueryParam("schoolId") String schoolId) {
+    public List<JourneySnapshot> getSnapshotsByRouteAndSchool(@QueryParam("routeId") String routeId, @QueryParam("schoolId") String schoolId) {
         if (l.isDebugEnabled()) l.debug("getSnapshotsByRouteAndSchool routeId="+routeId+" schoolId="+schoolId);
 
         // TODO add auto completion to journeys based on expected length of journey. combats unfinished journeys due to power failure etc
         List<Journey> journeys = journeyService.findActiveByRouteAndSchool(routeId, schoolId);
-        List<Snapshot> snapshots = new ArrayList<>();
+        List<JourneySnapshot> snapshots = new ArrayList<>();
         for (Journey journey : journeys) {
-            Snapshot snapshot = toSnapshot(journey, journey.getMostRecentWaypoint());
+            JourneySnapshot snapshot = toSnapshot(journey, journey.getMostRecentWaypoint());
             snapshots.add(snapshot);
         }
         if (l.isDebugEnabled()) {
-            for (Snapshot js : snapshots) {
+            for (JourneySnapshot js : snapshots) {
                 l.debug("found snapshot="+js);
             }
         }
         return snapshots;
     }
 
-    private Snapshot toSnapshot(Journey journey, Waypoint waypoint) {
+    private JourneySnapshot toSnapshot(Journey journey, Waypoint waypoint) {
         if (l.isDebugEnabled()) l.debug("toSnapshot journey="+journey+" waypoint="+waypoint);
 
-        Snapshot snapshot = new Snapshot();
+        JourneySnapshot snapshot = new JourneySnapshot();
         snapshot.setJourneyId(journey.getJourneyId());
         snapshot.setSchoolId(journey.getSchoolId());
         snapshot.setDriverId(journey.getDriverId());
@@ -129,34 +129,5 @@ public class ScuffResourceService {
         return snapshot;
 
     }
-
-    //////////////////////////////////////////////////////////////////////////////
-/*
-    @Path("/waypoint")
-    @GET
-    @Produces("application/json")
-    public List<Waypoint> getCurrentWaypoint(@QueryParam("routeId") String routeId, @QueryParam("schoolId") String schoolId) {
-        if (l.isDebugEnabled()) l.debug("getCurrentWaypoint routeId="+routeId+" schoolId="+schoolId);
-
-        // TODO optimise by passenger getting journey and then looking up journey direct
-        List<Journey> journeys = journeyService.findActiveByRouteAndSchool(routeId, schoolId);
-        List<Waypoint> waypoints = new ArrayList<>();
-        for (Journey journey : journeys) {
-            waypoints.add(journey.getMostRecentWaypoint());
-        }
-        return waypoints;
-    }
-    */
-/*    @Path("/waypoint")
-    @GET
-    @Produces("application/json")
-    public Waypoint getCurrentWaypoint(@QueryParam("routeId") String routeId, @QueryParam("schoolId") String schoolId) {
-        l.debug("getCurrentWaypoint journeyId="+journeyId);
-        Journey journey = journeyService.find(journeyId);
-        if (journey == null) {
-            return null;
-        }
-        return journey.getMostRecentWaypoint();
-    }*/
 
 }

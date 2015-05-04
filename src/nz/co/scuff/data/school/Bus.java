@@ -2,8 +2,8 @@ package nz.co.scuff.data.school;
 
 import java.util.HashSet;
 
-import nz.co.scuff.data.family.Passenger;
-import nz.co.scuff.data.family.Driver;
+import nz.co.scuff.data.family.Child;
+import nz.co.scuff.data.family.Parent;
 
 /**
  * Created by Callum on 17/03/2015.
@@ -11,35 +11,35 @@ import nz.co.scuff.data.family.Driver;
 public class Bus {
 
     private String name;
-    private Driver driver;
-    private HashSet<Passenger> passengers;
+    private Parent parent;
+    private HashSet<Child> children;
 
     public Bus(String name) {
         this.name = name;
     }
 
-    public Driver getDriver() {
-        return driver;
+    public Parent getParent() {
+        return parent;
     }
 
-    public void setDriver(Driver driver) {
-        this.driver = driver;
+    public void setParent(Parent parent) {
+        this.parent = parent;
     }
 
-    public boolean addPassenger(Passenger passenger) {
-        return this.passengers.add(passenger);
+    public boolean addPassenger(Child child) {
+        return this.children.add(child);
     }
 
-    public boolean removePassenger(Passenger passenger) {
-        return this.passengers.remove(passenger);
+    public boolean removePassenger(Child child) {
+        return this.children.remove(child);
     }
 
-    public HashSet<Passenger> getPassengers() {
-        return passengers;
+    public HashSet<Child> getChildren() {
+        return children;
     }
 
-    public void setPassengers(HashSet<Passenger> passengers) {
-        this.passengers = passengers;
+    public void setChildren(HashSet<Child> children) {
+        this.children = children;
     }
 
     public String getName() {

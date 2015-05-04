@@ -1,77 +1,82 @@
 package nz.co.scuff.data.school;
 
-import java.util.HashSet;
+import java.io.Serializable;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
-import nz.co.scuff.data.family.Passenger;
-import nz.co.scuff.data.family.Driver;
-import nz.co.scuff.data.schedule.Schedule;
+import nz.co.scuff.data.family.Child;
+import nz.co.scuff.data.family.Parent;
+import org.hibernate.annotations.Sort;
+import org.hibernate.annotations.SortType;
+
+import javax.persistence.*;
+import javax.validation.constraints.NotNull;
+import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  * Created by Callum on 17/03/2015.
  */
-public class School {
+@XmlRootElement
+@Entity
+public class School implements Comparable, Serializable {
 
+    @Id
+    @GeneratedValue(strategy= GenerationType.IDENTITY)
+    @Column(name="SchoolId")
+    private long schoolId;
+    @NotNull
+    @Column(name="Name")
     private String name;
+    @Column(name="Latitude")
     private double latitude;
+    @Column(name="Longitude")
     private double longitude;
-    private double elevation;
+    @Column(name="Altitude")
+    private double altitude;
 
-    private HashSet<Route> routes;
-    private Schedule schedule;
+    // one to many
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+            name="school_routes",
+            joinColumns={@JoinColumn(name="SchoolId", referencedColumnName="schoolId")},
+            inverseJoinColumns={@JoinColumn(name="RouteId", referencedColumnName="routeId")})
+    @Sort(type = SortType.NATURAL)
+    private SortedSet<Route> routes;
 
-    private HashSet<Passenger> passengers;
-    private HashSet<Driver> drivers;
+    // many to many
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+            name="schools_children",
+            joinColumns={@JoinColumn(name="SchoolId", referencedColumnName="schoolId")},
+            inverseJoinColumns={@JoinColumn(name="ChildId", referencedColumnName="id")})
+    @Sort(type = SortType.NATURAL)
+    private SortedSet<Child> children;
 
-    public School(String name, double latitude, double longitude, double elevation) {
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+            name="schools_parents",
+            joinColumns={@JoinColumn(name="SchoolId", referencedColumnName="schoolId")},
+            inverseJoinColumns={@JoinColumn(name="ParentId", referencedColumnName="id")})
+    @Sort(type = SortType.NATURAL)
+    private SortedSet<Parent> parents;
+
+    public School() {
+        super();
+    }
+
+    public School(String name, double latitude, double longitude, double altitude) {
         this.name = name;
         this.latitude = latitude;
         this.longitude = longitude;
-        this.elevation = elevation;
-
-        this.routes = new HashSet<>();
-        this.schedule = new Schedule();
-        this.passengers = new HashSet<>();
-        this.drivers = new HashSet<>();
+        this.altitude = altitude;
     }
 
-    public Schedule getSchedule() {
-        return schedule;
+    public long getSchoolId() {
+        return schoolId;
     }
 
-    public void setSchedule(Schedule schedule) {
-        this.schedule = schedule;
-    }
-
-    public boolean addChild(Passenger passenger) {
-        return this.passengers.add(passenger);
-    }
-
-    public boolean removeChild(Passenger passenger) {
-        return this.passengers.remove(passenger);
-    }
-
-    public HashSet<Passenger> getPassengers() {
-        return passengers;
-    }
-
-    public void setPassengers(HashSet<Passenger> passengers) {
-        this.passengers = passengers;
-    }
-
-    public boolean addDriver(Driver driver) {
-        return this.drivers.add(driver);
-    }
-
-    public boolean removeDriver(Driver driver) {
-        return this.drivers.remove(driver);
-    }
-
-    public HashSet<Driver> getDrivers() {
-        return drivers;
-    }
-
-    public void setDrivers(HashSet<Driver> drivers) {
-        this.drivers = drivers;
+    public void setSchoolId(long schoolId) {
+        this.schoolId = schoolId;
     }
 
     public String getName() {
@@ -98,49 +103,91 @@ public class School {
         this.longitude = longitude;
     }
 
-    public double getElevation() {
-        return elevation;
+    public double getAltitude() {
+        return altitude;
     }
 
-    public void setElevation(double elevation) {
-        this.elevation = elevation;
+    public void setAltitude(double altitude) {
+        this.altitude = altitude;
     }
 
-    public boolean addRoute(Route route) {
-        return this.routes.add(route);
-    }
-
-    public boolean removeRoute(Route route) {
-        return this.routes.remove(route);
-    }
-
-    public HashSet<Route> getRoutes() {
+    public SortedSet<Route> getRoutes() {
+        if (routes == null) {
+            routes = new TreeSet<>();
+        }
         return routes;
     }
 
-    public void setRoutes(HashSet<Route> routes) {
+    public void setRoutes(SortedSet<Route> routes) {
         this.routes = routes;
+    }
+
+    public SortedSet<Child> getChildren() {
+        if (children == null) {
+            children = new TreeSet<>();
+        }
+        return children;
+    }
+
+    public void setChildren(SortedSet<Child> children) {
+        this.children = children;
+    }
+
+    public SortedSet<Parent> getParents() {
+        if (parents == null) {
+            parents = new TreeSet<>();
+        }
+        return parents;
+    }
+
+    public void setParents(SortedSet<Parent> parents) {
+        this.parents = parents;
+    }
+
+    public SchoolSnapshot toSnapshot() {
+        SchoolSnapshot snapshot = new SchoolSnapshot();
+        snapshot.setSchoolId(schoolId);
+        snapshot.setName(name);
+        snapshot.setLatitude(latitude);
+        snapshot.setLongitude(longitude);
+        snapshot.setAltitude(altitude);
+        return snapshot;
     }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
 
         School school = (School) o;
 
-        return name.equals(school.name);
+        return schoolId == school.schoolId;
 
     }
 
     @Override
     public int hashCode() {
-        return name.hashCode();
+        int result = super.hashCode();
+        result = 31 * result + (int) (schoolId ^ (schoolId >>> 32));
+        return result;
     }
 
     @Override
     public String toString() {
-        return name;
+        final StringBuffer sb = new StringBuffer("School{");
+        sb.append("schoolId=").append(schoolId);
+        sb.append(", name='").append(name).append('\'');
+        sb.append(", latitude=").append(latitude);
+        sb.append(", longitude=").append(longitude);
+        sb.append(", altitude=").append(altitude);
+        sb.append('}');
+        return sb.toString();
     }
 
+    @Override
+    public int compareTo(Object another) {
+        School other = (School)another;
+        return this.name.compareTo(other.name);
+    }
 }

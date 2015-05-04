@@ -10,7 +10,7 @@ import java.sql.Timestamp;
  * Created by Callum on 20/04/2015.
  */
 @XmlRootElement
-public class Snapshot implements Comparable, Serializable {
+public class JourneySnapshot implements Comparable, Serializable {
 
     private String journeyId;
     private String schoolId;
@@ -28,7 +28,7 @@ public class Snapshot implements Comparable, Serializable {
     private TrackingState state;
     private Timestamp timestamp;
 
-    public Snapshot() {}
+    public JourneySnapshot() {}
 
     public String getJourneyId() {
         return journeyId;
@@ -144,7 +144,7 @@ public class Snapshot implements Comparable, Serializable {
 
     @Override
     public int compareTo(Object another) {
-        Snapshot other = (Snapshot)another;
+        JourneySnapshot other = (JourneySnapshot)another;
         return this.timestamp.compareTo(other.timestamp);
     }
 
@@ -153,7 +153,7 @@ public class Snapshot implements Comparable, Serializable {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        Snapshot that = (Snapshot) o;
+        JourneySnapshot that = (JourneySnapshot) o;
 
         if (journeyId != null ? !journeyId.equals(that.journeyId) : that.journeyId != null) return false;
         return !(timestamp != null ? !timestamp.equals(that.timestamp) : that.timestamp != null);
