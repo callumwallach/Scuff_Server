@@ -1,8 +1,11 @@
 package nz.co.scuff.data.family;
 
+import java.util.HashSet;
+import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
+import nz.co.scuff.data.family.snapshot.ChildSnapshot;
 import nz.co.scuff.data.school.School;
 import org.hibernate.annotations.Sort;
 import org.hibernate.annotations.SortType;
@@ -60,7 +63,7 @@ public class Child extends Person {
 
     public ChildSnapshot toSnapshot() {
         ChildSnapshot snapshot = new ChildSnapshot();
-        snapshot.setId(id);
+        snapshot.setPersonId(personId);
         snapshot.setFirstName(firstName);
         snapshot.setMiddleName(middleName);
         snapshot.setLastName(lastName);

@@ -18,8 +18,8 @@ public abstract class Person implements Comparable, Serializable {
 
     @Id
     @GeneratedValue(strategy= GenerationType.IDENTITY)
-    @Column(name="Id")
-    protected long id;
+    @Column(name="PersonId")
+    protected long personId;
     @NotNull
     @Column(name="FirstName")
     protected String firstName;
@@ -48,12 +48,12 @@ public abstract class Person implements Comparable, Serializable {
         this.picture = picture;
     }
 
-    public long getId() {
-        return id;
+    public long getPersonId() {
+        return personId;
     }
 
-    public void setId(long id) {
-        this.id = id;
+    public void setPersonId(long id) {
+        this.personId = id;
     }
 
     public String getFirstName() {
@@ -103,13 +103,13 @@ public abstract class Person implements Comparable, Serializable {
 
         Person person = (Person) o;
 
-        return id == person.id;
+        return personId == person.personId;
 
     }
 
     @Override
     public int hashCode() {
-        return (int) (id ^ (id >>> 32));
+        return (int) (personId ^ (personId >>> 32));
     }
 
     @Override

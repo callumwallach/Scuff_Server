@@ -62,8 +62,8 @@ CREATE TABLE `parents_children` (
   PRIMARY KEY (`ParentId`,`ChildId`),
   KEY `FK_e591ajiwlelo30li1xgxatv0o` (`ChildId`),
   KEY `FK_rl365hd6w6nyjw0rx3vcvk9u` (`ParentId`),
-  CONSTRAINT `FK_rl365hd6w6nyjw0rx3vcvk9u` FOREIGN KEY (`ParentId`) REFERENCES `person` (`Id`),
-  CONSTRAINT `FK_e591ajiwlelo30li1xgxatv0o` FOREIGN KEY (`ChildId`) REFERENCES `person` (`Id`)
+  CONSTRAINT `FK_rl365hd6w6nyjw0rx3vcvk9u` FOREIGN KEY (`ParentId`) REFERENCES `person` (`PersonId`),
+  CONSTRAINT `FK_e591ajiwlelo30li1xgxatv0o` FOREIGN KEY (`ChildId`) REFERENCES `person` (`PersonId`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -90,7 +90,7 @@ CREATE TABLE `parents_routes` (
   PRIMARY KEY (`ParentId`,`RouteId`),
   KEY `FK_2oamtqpk5hiabc75ri695ytqh` (`RouteId`),
   KEY `FK_r6bratlkbot6iqh0e0ivq35dg` (`ParentId`),
-  CONSTRAINT `FK_r6bratlkbot6iqh0e0ivq35dg` FOREIGN KEY (`ParentId`) REFERENCES `person` (`Id`),
+  CONSTRAINT `FK_r6bratlkbot6iqh0e0ivq35dg` FOREIGN KEY (`ParentId`) REFERENCES `person` (`PersonId`),
   CONSTRAINT `FK_2oamtqpk5hiabc75ri695ytqh` FOREIGN KEY (`RouteId`) REFERENCES `route` (`RouteId`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -114,7 +114,7 @@ DROP TABLE IF EXISTS `person`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `person` (
   `DTYPE` varchar(31) NOT NULL,
-  `Id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `PersonId` bigint(20) NOT NULL AUTO_INCREMENT,
   `FirstName` varchar(255) NOT NULL,
   `Gender` varchar(255) NOT NULL,
   `LastName` varchar(255) NOT NULL,
@@ -122,7 +122,7 @@ CREATE TABLE `person` (
   `Picture` varchar(255) DEFAULT NULL,
   `Email` varchar(255) DEFAULT NULL,
   `Phone` varchar(255) DEFAULT NULL,
-  PRIMARY KEY (`Id`)
+  PRIMARY KEY (`PersonId`)
 ) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -230,7 +230,7 @@ CREATE TABLE `schools_children` (
   KEY `FK_jkjgta5xedvg072kc9ab9nfgu` (`ChildId`),
   KEY `FK_44lgpx02j9b2qtw786jelniid` (`SchoolId`),
   CONSTRAINT `FK_44lgpx02j9b2qtw786jelniid` FOREIGN KEY (`SchoolId`) REFERENCES `school` (`SchoolId`),
-  CONSTRAINT `FK_jkjgta5xedvg072kc9ab9nfgu` FOREIGN KEY (`ChildId`) REFERENCES `person` (`Id`)
+  CONSTRAINT `FK_jkjgta5xedvg072kc9ab9nfgu` FOREIGN KEY (`ChildId`) REFERENCES `person` (`PersonId`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -258,7 +258,7 @@ CREATE TABLE `schools_parents` (
   KEY `FK_audak8u9t43xocr651yt4hwfx` (`ParentId`),
   KEY `FK_t1a3qscunk1i0qywiebg0s5p0` (`SchoolId`),
   CONSTRAINT `FK_t1a3qscunk1i0qywiebg0s5p0` FOREIGN KEY (`SchoolId`) REFERENCES `school` (`SchoolId`),
-  CONSTRAINT `FK_audak8u9t43xocr651yt4hwfx` FOREIGN KEY (`ParentId`) REFERENCES `person` (`Id`)
+  CONSTRAINT `FK_audak8u9t43xocr651yt4hwfx` FOREIGN KEY (`ParentId`) REFERENCES `person` (`PersonId`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -317,4 +317,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2015-05-04 23:05:13
+-- Dump completed on 2015-05-05 14:18:17

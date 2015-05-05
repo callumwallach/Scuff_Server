@@ -3,6 +3,7 @@ package nz.co.scuff.data.family;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
+import nz.co.scuff.data.family.snapshot.ParentSnapshot;
 import nz.co.scuff.data.school.Route;
 import nz.co.scuff.data.school.School;
 import org.hibernate.annotations.Sort;
@@ -34,15 +35,15 @@ public class Parent extends Person {
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name="parents_children",
-            joinColumns={@JoinColumn(name="ParentId", referencedColumnName="id")},
-            inverseJoinColumns={@JoinColumn(name="ChildId", referencedColumnName="id")})
+            joinColumns={@JoinColumn(name="ParentId", referencedColumnName="personId")},
+            inverseJoinColumns={@JoinColumn(name="ChildId", referencedColumnName="personId")})
     @Sort(type = SortType.NATURAL)
     private SortedSet<Child> children;
 
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name="parents_routes",
-            joinColumns={@JoinColumn(name="ParentId", referencedColumnName="id")},
+            joinColumns={@JoinColumn(name="ParentId", referencedColumnName="personId")},
             inverseJoinColumns={@JoinColumn(name="RouteId", referencedColumnName="routeId")})
     @Sort(type = SortType.NATURAL)
     private SortedSet<Route> routes;
@@ -108,7 +109,7 @@ public class Parent extends Person {
 
     public ParentSnapshot toSnapshot() {
         ParentSnapshot snapshot = new ParentSnapshot();
-        snapshot.setId(id);
+        snapshot.setPersonId(personId);
         snapshot.setFirstName(firstName);
         snapshot.setMiddleName(middleName);
         snapshot.setLastName(lastName);

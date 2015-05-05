@@ -1,5 +1,7 @@
 package nz.co.scuff.data.school;
 
+import nz.co.scuff.data.school.snapshot.RouteSnapshot;
+
 import javax.persistence.*;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
@@ -54,6 +56,14 @@ public class Route implements Comparable, Serializable {
 
     public void setRouteMap(String routeMap) {
         this.routeMap = routeMap;
+    }
+
+    public RouteSnapshot toSnapshot() {
+        RouteSnapshot snapshot = new RouteSnapshot();
+        snapshot.setRouteId(routeId);
+        snapshot.setName(name);
+        snapshot.setRouteMap(routeMap);
+        return snapshot;
     }
 
     @Override

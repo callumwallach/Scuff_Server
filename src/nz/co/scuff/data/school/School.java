@@ -6,6 +6,7 @@ import java.util.TreeSet;
 
 import nz.co.scuff.data.family.Child;
 import nz.co.scuff.data.family.Parent;
+import nz.co.scuff.data.school.snapshot.SchoolSnapshot;
 import org.hibernate.annotations.Sort;
 import org.hibernate.annotations.SortType;
 
@@ -48,7 +49,7 @@ public class School implements Comparable, Serializable {
     @JoinTable(
             name="schools_children",
             joinColumns={@JoinColumn(name="SchoolId", referencedColumnName="schoolId")},
-            inverseJoinColumns={@JoinColumn(name="ChildId", referencedColumnName="id")})
+            inverseJoinColumns={@JoinColumn(name="ChildId", referencedColumnName="personId")})
     @Sort(type = SortType.NATURAL)
     private SortedSet<Child> children;
 
@@ -56,7 +57,7 @@ public class School implements Comparable, Serializable {
     @JoinTable(
             name="schools_parents",
             joinColumns={@JoinColumn(name="SchoolId", referencedColumnName="schoolId")},
-            inverseJoinColumns={@JoinColumn(name="ParentId", referencedColumnName="id")})
+            inverseJoinColumns={@JoinColumn(name="ParentId", referencedColumnName="personId")})
     @Sort(type = SortType.NATURAL)
     private SortedSet<Parent> parents;
 
