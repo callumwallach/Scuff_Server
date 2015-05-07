@@ -2,6 +2,7 @@ package nz.co.scuff.server.school;
 
 import nz.co.scuff.data.school.School;
 import nz.co.scuff.server.util.AbstractFacade;
+import org.hibernate.Hibernate;
 
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
@@ -15,6 +16,8 @@ import javax.persistence.PersistenceContext;
 @Stateless(name = "SchoolServiceEJB")
 public class SchoolServiceBean extends AbstractFacade<School> {
 
+    public static final int JOURNEYS = 1;
+
     @PersistenceContext
     private EntityManager em;
 
@@ -25,4 +28,22 @@ public class SchoolServiceBean extends AbstractFacade<School> {
     public SchoolServiceBean() {
         super(School.class);
     }
+
+    public School load(long schoolId, int[] properties) {
+
+        School skeleton = find(schoolId);
+        for (int property : properties) {
+            switch (property) {
+                case JOURNEYS:
+                    if (!Hibernate.isInitialized(skeleton.getJourneys()))
+                        Hibernate.initialize(skeleton.getJourneys());
+                    break;
+                default:
+                    break;
+            }
+        }
+        return skeleton;
+
+    }
+
 }

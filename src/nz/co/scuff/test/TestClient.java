@@ -1,11 +1,11 @@
 package nz.co.scuff.test;
 
-import nz.co.scuff.data.family.snapshot.ParentSnapshot;
-import nz.co.scuff.data.family.snapshot.ProfileSnapshot;
+import nz.co.scuff.data.family.snapshot.DriverSnapshot;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
 
+import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.Response;
 import java.util.logging.Logger;
 
@@ -22,10 +22,10 @@ public class TestClient {
         ResteasyWebTarget target;
         Response response;
 
-/*        target = client.target("http://localhost:8080/scuff/test/populate");
+        target = client.target("http://localhost:8080/scuff/test/populate");
         response = target.request().post(Entity.entity("POST", "application/json"));
         logger.info("POST populate status[" + response.getStatus() + "]");
-        response.close();*/
+        response.close();
 
 /*        target = client.target("http://localhost:8080/scuff/test/callum@gmail.com");
         response = target.request().get();
@@ -33,9 +33,9 @@ public class TestClient {
         logger.info("GET user=" + profileSnapshot + "]");
         response.close();*/
 
-        target = client.target("http://localhost:8080/scuff/users?email=callum@gmail.com");
+        target = client.target("http://localhost:8080/scuff/drivers?email=callum@gmail.com");
         response = target.request().get();
-        ParentSnapshot parent = response.readEntity(ParentSnapshot.class);
+        DriverSnapshot parent = response.readEntity(DriverSnapshot.class);
         logger.info("GET user=" + parent + "]");
         response.close();
 

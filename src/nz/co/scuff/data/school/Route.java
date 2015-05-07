@@ -3,13 +3,11 @@ package nz.co.scuff.data.school;
 import nz.co.scuff.data.school.snapshot.RouteSnapshot;
 
 import javax.persistence.*;
-import javax.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
 
 /**
  * Created by Callum on 17/03/2015.
  */
-@XmlRootElement
 @Entity
 public class Route implements Comparable, Serializable {
 
@@ -22,16 +20,22 @@ public class Route implements Comparable, Serializable {
     @Column(name="RouteMap")
     private String routeMap;
 
+    @ManyToOne(fetch=FetchType.LAZY)
+    @JoinColumn(name="school")
+    private School school;
+
     public Route() {}
 
-    public Route(String name) {
-        this.name = name;
-        this.routeMap = "Currently not available";
-    }
-
-    public Route(String name, String routeMap) {
+    public Route(String name, String routeMap, School school) {
         this.name = name;
         this.routeMap = routeMap;
+        this.school = school;
+    }
+
+    public Route(RouteSnapshot snapshot) {
+        this.routeId = snapshot.getRouteId();
+        this.name = snapshot.getName();
+        this.routeMap = snapshot.getRouteMap();
     }
 
     public long getRouteId() {
@@ -56,6 +60,14 @@ public class Route implements Comparable, Serializable {
 
     public void setRouteMap(String routeMap) {
         this.routeMap = routeMap;
+    }
+
+    public School getSchool() {
+        return school;
+    }
+
+    public void setSchool(School school) {
+        this.school = school;
     }
 
     public RouteSnapshot toSnapshot() {
@@ -89,17 +101,17 @@ public class Route implements Comparable, Serializable {
 
     @Override
     public String toString() {
-        final StringBuffer sb = new StringBuffer("Route{");
-        sb.append("routeId=").append(routeId);
-        sb.append(", name='").append(name).append('\'');
-        sb.append(", routeMap='").append(routeMap).append('\'');
-        sb.append('}');
-        return sb.toString();
+        return "Route{" +
+                "routeId=" + routeId +
+                ", name='" + name + '\'' +
+                ", routeMap='" + routeMap + '\'' +
+                '}';
     }
 
     @Override
     public int compareTo(Object another) {
         Route other = (Route)another;
-        return this.name.compareTo(other.name);
+        return other.name == null ? 1 : this.name.compareTo(other.name);
+
     }
 }

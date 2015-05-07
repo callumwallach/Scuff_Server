@@ -1,12 +1,16 @@
 package nz.co.scuff.data.journey;
 
+import nz.co.scuff.data.family.Driver;
+import nz.co.scuff.data.family.Passenger;
+import nz.co.scuff.data.journey.snapshot.JourneySnapshot;
+import nz.co.scuff.data.school.Route;
+import nz.co.scuff.data.school.School;
 import nz.co.scuff.data.util.TrackingState;
 import org.hibernate.annotations.Sort;
 import org.hibernate.annotations.SortType;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
-import javax.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
 import java.sql.Timestamp;
 import java.util.SortedSet;
@@ -15,7 +19,6 @@ import java.util.TreeSet;
 /**
  * Created by Callum on 20/04/2015.
  */
-@XmlRootElement
 @Entity
 public class Journey implements Serializable, Comparable {
 
@@ -25,15 +28,6 @@ public class Journey implements Serializable, Comparable {
     @NotNull
     @Column(name="AppId")
     private String appId;
-    @NotNull
-    @Column(name="SchoolId")
-    private String schoolId;
-    @NotNull
-    @Column(name="DriverId")
-    private String driverId;
-    @NotNull
-    @Column(name="RouteId")
-    private String routeId;
     @NotNull
     @Column(name="Source")
     private String source;
@@ -54,6 +48,19 @@ public class Journey implements Serializable, Comparable {
     @Enumerated(EnumType.STRING)
     private TrackingState state;
 
+    @NotNull
+    @ManyToOne(fetch=FetchType.EAGER)
+    @JoinColumn(name="school")
+    private School school;
+    @NotNull
+    @ManyToOne(fetch=FetchType.EAGER)
+    @JoinColumn(name="driver")
+    private Driver driver;
+    @NotNull
+    @ManyToOne(fetch=FetchType.EAGER)
+    @JoinColumn(name="route")
+    private Route route;
+
     // TODO fix sort order to ensure most recent is first
 
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
@@ -62,7 +69,33 @@ public class Journey implements Serializable, Comparable {
     @Sort(type = SortType.NATURAL)
     private SortedSet<Waypoint> waypoints;
 
-    public Journey() {
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+            name="journey_passengers",
+            joinColumns={@JoinColumn(name="JourneyId", referencedColumnName="journeyId")},
+            inverseJoinColumns={@JoinColumn(name="PassengerId", referencedColumnName="personId")})
+    @Sort(type = SortType.NATURAL)
+    private SortedSet<Passenger> passengers;
+
+    // TODO sync with sorted set to ensure first is the most recent
+    public Waypoint getMostRecentWaypoint() {
+        //return waypoints.first();
+        return waypoints.last();
+    }
+
+    public Journey() {}
+
+    public Journey(JourneySnapshot snapshot) {
+        this.journeyId = snapshot.getJourneyId();
+        this.appId = snapshot.getAppId();
+        this.source = snapshot.getSource();
+        // school, route and driver set manually
+        this.totalDistance = snapshot.getTotalDistance();
+        this.totalDuration = snapshot.getTotalDuration();
+        this.created = snapshot.getCreated();
+        this.completed = snapshot.getCompleted();
+        this.state = snapshot.getState();
+
         waypoints = new TreeSet<>();
     }
 
@@ -70,8 +103,8 @@ public class Journey implements Serializable, Comparable {
         return journeyId;
     }
 
-    public void setJourneyId(String id) {
-        this.journeyId = id;
+    public void setJourneyId(String journeyId) {
+        this.journeyId = journeyId;
     }
 
     public String getAppId() {
@@ -80,30 +113,6 @@ public class Journey implements Serializable, Comparable {
 
     public void setAppId(String appId) {
         this.appId = appId;
-    }
-
-    public String getSchoolId() {
-        return schoolId;
-    }
-
-    public void setSchoolId(String schoolId) {
-        this.schoolId = schoolId;
-    }
-
-    public String getDriverId() {
-        return driverId;
-    }
-
-    public void setDriverId(String driverId) {
-        this.driverId = driverId;
-    }
-
-    public String getRouteId() {
-        return routeId;
-    }
-
-    public void setRouteId(String routeId) {
-        this.routeId = routeId;
     }
 
     public String getSource() {
@@ -154,11 +163,34 @@ public class Journey implements Serializable, Comparable {
         this.state = state;
     }
 
-    public void addWaypoint(Waypoint waypoint) {
-        waypoints.add(waypoint);
+    public School getSchool() {
+        return school;
+    }
+
+    public void setSchool(School school) {
+        this.school = school;
+    }
+
+    public Driver getDriver() {
+        return driver;
+    }
+
+    public void setDriver(Driver driver) {
+        this.driver = driver;
+    }
+
+    public Route getRoute() {
+        return route;
+    }
+
+    public void setRoute(Route route) {
+        this.route = route;
     }
 
     public SortedSet<Waypoint> getWaypoints() {
+        if (waypoints == null) {
+            waypoints = new TreeSet<>();
+        }
         return waypoints;
     }
 
@@ -166,16 +198,34 @@ public class Journey implements Serializable, Comparable {
         this.waypoints = waypoints;
     }
 
-    // TODO sync with sorted set to ensure first is the most recent
-    public Waypoint getMostRecentWaypoint() {
-        //return waypoints.first();
-        return waypoints.last();
+    public SortedSet<Passenger> getPassengers() {
+        if (passengers == null) {
+            passengers = new TreeSet<>();
+        }
+        return passengers;
+    }
+
+    public void setPassengers(SortedSet<Passenger> passengers) {
+        this.passengers = passengers;
+    }
+
+    public JourneySnapshot toSnapshot() {
+        JourneySnapshot snapshot = new JourneySnapshot();
+        snapshot.setJourneyId(journeyId);
+        snapshot.setAppId(appId);
+        snapshot.setSource(source);
+        snapshot.setTotalDistance(totalDistance);
+        snapshot.setTotalDuration(totalDuration);
+        snapshot.setCreated(created);
+        snapshot.setCompleted(completed);
+        snapshot.setState(state);
+        return snapshot;
     }
 
     @Override
     public int compareTo(Object another) {
         Journey other = (Journey)another;
-        return this.created.compareTo(other.created);
+        return other.created == null ? 1 : this.created.compareTo(other.created);
     }
 
     @Override
@@ -193,5 +243,22 @@ public class Journey implements Serializable, Comparable {
     @Override
     public int hashCode() {
         return journeyId.hashCode();
+    }
+
+    @Override
+    public String toString() {
+        return "Journey{" +
+                "journeyId='" + journeyId + '\'' +
+                ", appId='" + appId + '\'' +
+                ", source='" + source + '\'' +
+                ", totalDistance=" + totalDistance +
+                ", totalDuration=" + totalDuration +
+                ", created=" + created +
+                ", completed=" + completed +
+                ", state=" + state +
+                ", school=" + school.getName() +
+                ", driver=" + driver.getFirstName() +
+                ", route=" + route.getName() +
+                '}';
     }
 }

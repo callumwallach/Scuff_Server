@@ -1,12 +1,12 @@
 package nz.co.scuff.test;
 
-import nz.co.scuff.data.family.Child;
-import nz.co.scuff.data.family.Parent;
+import nz.co.scuff.data.family.Passenger;
+import nz.co.scuff.data.family.Driver;
 import nz.co.scuff.data.family.Person;
 import nz.co.scuff.data.school.Route;
 import nz.co.scuff.data.school.School;
-import nz.co.scuff.server.family.ChildServiceBean;
-import nz.co.scuff.server.family.UserServiceBean;
+import nz.co.scuff.server.family.PassengerServiceBean;
+import nz.co.scuff.server.family.DriverServiceBean;
 import nz.co.scuff.server.school.RouteServiceBean;
 import nz.co.scuff.server.school.SchoolServiceBean;
 import org.slf4j.Logger;
@@ -26,7 +26,7 @@ import javax.transaction.UserTransaction;
 public class TestServiceBean {
 
     public static final Logger l = LoggerFactory.getLogger(TestResourceService.class.getCanonicalName());
-    public static boolean D = true;
+    public static final boolean D = true;
 
     @Resource
     private EJBContext ctx;
@@ -36,9 +36,9 @@ public class TestServiceBean {
     @EJB
     private RouteServiceBean routeService;
     @EJB
-    private UserServiceBean userService;
+    private PassengerServiceBean passengerService;
     @EJB
-    private ChildServiceBean childService;
+    private DriverServiceBean driverService;
 
     public TestServiceBean() {
     }
@@ -54,84 +54,125 @@ public class TestServiceBean {
             schoolService.create(school);
 
             if (D) l.debug("creating routes");
-            Route route1 = new Route("Long Drive", "longdrive.png");
-            Route route2 = new Route("St Heliers Bay", "stheliersbayroad.png");
-            Route route3 = new Route("Riddell Nth", "riddellroadnorth.png");
-            Route route4 = new Route("Riddell Sth", "riddellroadsouth.png");
+            Route route1 = new Route("Long Drive", "longdrive.png", school);
+            Route route2 = new Route("St Heliers Bay", "stheliersbayroad.png", school);
+            Route route3 = new Route("Riddell Nth", "riddellroadnorth.png", school);
+            Route route4 = new Route("Riddell Sth", "riddellroadsouth.png", school);
             routeService.create(route1);
             routeService.create(route2);
             routeService.create(route3);
             routeService.create(route4);
 
             if (D) l.debug("creating children");
-            Child child1 = new Child("Cayden", "Lin-Vaile", Person.Gender.MALE);
-            Child child2 = new Child("Connor", "Lin", Person.Gender.MALE);
-            Child child3 = new Child("Mia", "Lin", Person.Gender.FEMALE);
-            childService.create(child1);
-            childService.create(child2);
-            childService.create(child3);
+            Passenger passenger1 = new Passenger("Cayden", "Lin-Vaile", Person.Gender.MALE);
+            Passenger passenger2 = new Passenger("Connor", "Lin", Person.Gender.MALE);
+            Passenger passenger3 = new Passenger("Mia", "Lin", Person.Gender.FEMALE);
+            passengerService.create(passenger1);
+            passengerService.create(passenger2);
+            passengerService.create(passenger3);
 
             if (D) l.debug("creating parents");
-            Parent parent1 = new Parent("Christine", "Lin", Person.Gender.FEMALE);
-            parent1.setEmail("christine@gmail.com");
-            parent1.setPhone("021666377");
-            Parent parent2 = new Parent("Callum", "Wallach", Person.Gender.MALE);
-            parent2.setEmail("callum@gmail.com");
-            parent2.setPhone("021658093");
-            userService.create(parent1);
-            userService.create(parent2);
+            Driver driver1 = new Driver("Christine", "Lin", Person.Gender.FEMALE);
+            driver1.setEmail("christine@gmail.com");
+            driver1.setPhone("021666377");
+            Driver driver2 = new Driver("Callum", "Wallach", Person.Gender.MALE);
+            driver2.setEmail("callum@gmail.com");
+            driver2.setPhone("021658093");
+            driverService.create(driver1);
+            driverService.create(driver2);
 
-            if (D) l.debug("adding children to parents");
-            parent1.getChildren().add(child1);
-            parent1.getChildren().add(child2);
-            parent1.getChildren().add(child3);
-            parent2.getChildren().add(child1);
-            parent2.getChildren().add(child2);
-            parent2.getChildren().add(child3);
+            // load them all
+            route1 = routeService.find(route1.getRouteId());
+            route2 = routeService.find(route2.getRouteId());
+            route3 = routeService.find(route3.getRouteId());
+            route4 = routeService.find(route4.getRouteId());
 
+            passenger1 = passengerService.find(passenger1.getPersonId());
+            passenger2 = passengerService.find(passenger2.getPersonId());
+            passenger3 = passengerService.find(passenger3.getPersonId());
+
+            driver1 = driverService.find(driver1.getPersonId());
+            driver2 = driverService.find(driver2.getPersonId());
+
+            school = schoolService.find(school.getSchoolId());
+
+            // CHILDREN
+            // passenger -> schools, parents, journeys, routes
             if (D) l.debug("adding parents to children");
-            child1.getParents().add(parent1);
-            child1.getParents().add(parent2);
-            child2.getParents().add(parent1);
-            child2.getParents().add(parent2);
-            child3.getParents().add(parent1);
-            child3.getParents().add(parent2);
-
-            if (D) l.debug("adding schools to parents");
-            parent1.getSchools().add(school);
-            parent2.getSchools().add(school);
-            school.getParents().add(parent1);
-            school.getParents().add(parent2);
+            passenger1.getParents().add(driver1);
+            passenger1.getParents().add(driver2);
+            passenger2.getParents().add(driver1);
+            passenger2.getParents().add(driver2);
+            passenger3.getParents().add(driver1);
+            passenger3.getParents().add(driver2);
 
             if (D) l.debug("adding schools to children");
-            child1.getSchools().add(school);
-            child2.getSchools().add(school);
-            child3.getSchools().add(school);
-            school.getChildren().add(child1);
-            school.getChildren().add(child2);
-            school.getChildren().add(child3);
+            passenger1.getSchools().add(school);
+            passenger2.getSchools().add(school);
+            passenger3.getSchools().add(school);
 
-            if (D) l.debug("adding routes to parents");
-            parent1.getRoutes().add(route1);
-            parent2.getRoutes().add(route1);
-            parent2.getRoutes().add(route2);
+            if (D) l.debug("adding routes to children");
+            passenger1.getRegisteredRoutes().add(route1);
+            passenger2.getRegisteredRoutes().add(route1);
+            passenger2.getRegisteredRoutes().add(route2);
+            passenger3.getRegisteredRoutes().add(route1);
 
+            // TODO child journeys
+
+            // PARENTS
+            // driver -> schools, children, journeys, routes
+            if (D) l.debug("adding children to drivers");
+            driver1.getChildren().add(passenger1);
+            driver1.getChildren().add(passenger2);
+            driver1.getChildren().add(passenger3);
+            driver2.getChildren().add(passenger1);
+            driver2.getChildren().add(passenger2);
+            driver2.getChildren().add(passenger3);
+
+            if (D) l.debug("adding routes to drivers");
+            driver1.getRoutesDriven().add(route1);
+            driver1.getRoutesDriven().add(route2);
+            driver2.getRoutesDriven().add(route1);
+
+            if (D) l.debug("adding schools to drivers");
+            driver1.getSchoolsDrivingFor().add(school);
+            driver2.getSchoolsDrivingFor().add(school);
+
+            // TODO parent journeys
+
+            // SCHOOLS
+            // school -> children, drivers, journeys, routes
             if (D) l.debug("adding routes to schools");
             school.getRoutes().add(route1);
             school.getRoutes().add(route2);
             school.getRoutes().add(route3);
             school.getRoutes().add(route4);
 
-            if (D) l.debug("saving changes");
-            childService.edit(child1);
-            childService.edit(child2);
-            childService.edit(child3);
+            if (D) l.debug("adding drivers to schools");
+            school.getDrivers().add(driver1);
+            school.getDrivers().add(driver2);
 
-            userService.edit(parent1);
-            userService.edit(parent2);
+            if (D) l.debug("adding children to schools");
+            school.getChildren().add(passenger1);
+            school.getChildren().add(passenger2);
+            school.getChildren().add(passenger3);
+
+            // TODO school journeys
+
+            // TODO journeys
+            // journey -> driver, route, waypoints, passengers
+
+            if (D) l.debug("saving changes");
+            passengerService.edit(passenger1);
+            passengerService.edit(passenger2);
+            passengerService.edit(passenger3);
+
+            driverService.edit(driver1);
+            driverService.edit(driver2);
 
             schoolService.edit(school);
             utx.commit();
+
         } catch (Exception e) {
             l.error("failed populating test data", e);
             try {

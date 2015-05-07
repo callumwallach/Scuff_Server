@@ -11,6 +11,7 @@ public class RouteSnapshot implements Comparable {
     private long routeId;
     private String name;
     private String routeMap;
+    private SchoolSnapshot school;
 
     public RouteSnapshot() {}
 
@@ -36,6 +37,14 @@ public class RouteSnapshot implements Comparable {
 
     public void setRouteMap(String routeMap) {
         this.routeMap = routeMap;
+    }
+
+    public SchoolSnapshot getSchool() {
+        return school;
+    }
+
+    public void setSchool(SchoolSnapshot school) {
+        this.school = school;
     }
 
     @Override

@@ -2,13 +2,11 @@ package nz.co.scuff.data.family;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
-import javax.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
 
 /**
  * Created by Callum on 17/03/2015.
  */
-@XmlRootElement
 @Entity
 public abstract class Person implements Comparable, Serializable {
 

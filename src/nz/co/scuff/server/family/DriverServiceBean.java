@@ -1,7 +1,6 @@
 package nz.co.scuff.server.family;
 
-import nz.co.scuff.data.family.Parent;
-import nz.co.scuff.data.journey.Journey;
+import nz.co.scuff.data.family.Driver;
 import nz.co.scuff.server.util.AbstractFacade;
 
 import javax.ejb.LocalBean;
@@ -20,8 +19,8 @@ import java.util.List;
  * Created by Callum on 20/04/2015.
  */
 @LocalBean
-@Stateless(name = "UserServiceEJB")
-public class UserServiceBean extends AbstractFacade<Parent> {
+@Stateless(name = "DriverServiceEJB")
+public class DriverServiceBean extends AbstractFacade<Driver> {
 
     @PersistenceContext
     private EntityManager em;
@@ -30,18 +29,18 @@ public class UserServiceBean extends AbstractFacade<Parent> {
         return em;
     }
 
-    public UserServiceBean() {
-        super(Parent.class);
+    public DriverServiceBean() {
+        super(Driver.class);
     }
 
-    public Parent findByEmail(String email) {
-        if (l.isDebugEnabled()) l.debug("find user by email="+email);
+    public Driver findByEmail(String email) {
+        if (l.isDebugEnabled()) l.debug("find driver by email="+email);
 
         final CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
         // Create criteria query and pass the value object which needs to be populated as result
-        final CriteriaQuery criteriaQuery = criteriaBuilder.createQuery(Parent.class);
+        final CriteriaQuery criteriaQuery = criteriaBuilder.createQuery(Driver.class);
         // Tell to criteria query which tables/entities you want to fetch
-        final Root taRoot = criteriaQuery.from(Parent.class);
+        final Root taRoot = criteriaQuery.from(Driver.class);
         // Time to define where clause in terms of Predicates
         // This list will contain all Predicates (where clauses)
         List<Predicate> criteriaList = new ArrayList<>();
@@ -51,9 +50,9 @@ public class UserServiceBean extends AbstractFacade<Parent> {
         // Pass the criteria list to the where method of criteria query
         criteriaQuery.where(criteriaBuilder.and(criteriaList.toArray(new Predicate[criteriaList.size()])));
         // Here entity manager will create actual SQL query out of criteria query
-        Parent found = null;
+        Driver found = null;
         try {
-            found = (Parent) em.createQuery(criteriaQuery).getSingleResult();
+            found = (Driver) em.createQuery(criteriaQuery).getSingleResult();
         } catch (NoResultException e) {
             // just return null
         }

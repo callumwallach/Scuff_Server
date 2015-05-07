@@ -1,13 +1,8 @@
 package nz.co.scuff.test;
 
-import nz.co.scuff.data.family.Child;
-import nz.co.scuff.data.family.Parent;
-import nz.co.scuff.data.family.snapshot.ChildSnapshot;
-import nz.co.scuff.data.family.snapshot.ParentSnapshot;
-import nz.co.scuff.data.school.Route;
-import nz.co.scuff.data.school.School;
-import nz.co.scuff.data.school.snapshot.SchoolSnapshot;
-import nz.co.scuff.server.family.UserServiceBean;
+import nz.co.scuff.data.family.Driver;
+import nz.co.scuff.data.family.snapshot.DriverSnapshot;
+import nz.co.scuff.server.family.DriverServiceBean;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -26,7 +21,7 @@ public class TestResourceService {
     @EJB
     private TestServiceBean testService;
     @EJB
-    private UserServiceBean userService;
+    private DriverServiceBean userService;
 
     @Path("/populate")
     @POST
@@ -49,8 +44,8 @@ public class TestResourceService {
         for (Child child : parent.getChildren()) {
             profileSnapshot.getChildren().add(child.toSnapshot());
         }
-        for (School school : parent.getSchools()) {
-            profileSnapshot.getSchools().add(school.toSnapshot());
+        for (School school : parent.getSchoolsDrivenFor()) {
+            profileSnapshot.getSchoolsDrivenFor().add(school.toSnapshot());
         }
         for (Route route : parent.getRoutes()) {
             profileSnapshot.getRoutes().add(route);
@@ -61,36 +56,36 @@ public class TestResourceService {
 
     @GET
     @Produces("application/json")
-    public ParentSnapshot getParentSnapshotByEmail(@QueryParam("email") String email) {
+    public DriverSnapshot getParentSnapshotByEmail(@QueryParam("email") String email) {
         if (D) l.debug("get user by email");
 
-        Parent found = userService.findByEmail(email);
+        Driver found = userService.findByEmail(email);
         if (found == null) {
             return null;
         }
         // prune for user
-        ParentSnapshot parentSnapshot = found.toSnapshot();
-        for (Child c : found.getChildren()) {
+        DriverSnapshot driverSnapshot = found.toSnapshot();
+        /*for (Child c : found.getChildren()) {
             ChildSnapshot cs = c.toSnapshot();
-            for (School s : c.getSchools()) {
-                cs.getSchools().add(s.toSnapshot());
+            for (School s : c.getSchoolsDrivenFor()) {
+                cs.getSchoolsDrivenFor().add(s.toSnapshot());
             }
             for (Parent p : c.getParents()) {
                 cs.getParents().add(p.toSnapshot());
             }
             parentSnapshot.getChildren().add(cs);
         }
-        for (School s : found.getSchools()) {
+        for (School s : found.getSchoolsDrivenFor()) {
             SchoolSnapshot ss  = s.toSnapshot();
             for (Route r : s.getRoutes()) {
                 ss.getRoutes().add(r.toSnapshot());
             }
-            parentSnapshot.getSchools().add(ss);
+            parentSnapshot.getSchoolsDrivenFor().add(ss);
         }
         for (Route r : found.getRoutes()) {
             parentSnapshot.getRoutes().add(r.toSnapshot());
         }
-        return parentSnapshot;
+        */return driverSnapshot;
     }
 
 /*    @Path("/1")
@@ -102,18 +97,18 @@ public class TestResourceService {
         Parent parent = userService.findByEmail(email);
 
         // prune
-        for (School s : parent.getSchools()) {
+        for (School s : parent.getSchoolsDrivenFor()) {
             s.setChildren(new TreeSet<>());
             s.setParents(new TreeSet<>());
         }
         for (Child c : parent.getChildren()) {
-            for (School s : c.getSchools()) {
+            for (School s : c.getSchoolsDrivenFor()) {
                 s.setChildren(new TreeSet<>());
                 s.setParents(new TreeSet<>());
             }
             for (Parent p : c.getParents()) {
                 p.setChildren(new TreeSet<>());
-                p.setSchools(new TreeSet<>());
+                p.setSchoolsDrivenFor(new TreeSet<>());
                 p.setRoutes(new TreeSet<>());
             }
         }
@@ -131,7 +126,7 @@ public class TestResourceService {
         Parent parent = userService.findByEmail(email);
 
         // prune
-        for (School s : parent.getSchools()) {
+        for (School s : parent.getSchoolsDrivenFor()) {
             for (Child c : s.getChildren()) {
                 if (D) l.debug("children="+c);
             }
@@ -140,13 +135,13 @@ public class TestResourceService {
             }
         }
         for (Child c : parent.getChildren()) {
-            for (School s : c.getSchools()) {
+            for (School s : c.getSchoolsDrivenFor()) {
                 s.setChildren(new TreeSet<>());
                 s.setParents(new TreeSet<>());
             }
             for (Parent p : c.getParents()) {
                 p.setChildren(new TreeSet<>());
-                p.setSchools(new TreeSet<>());
+                p.setSchoolsDrivenFor(new TreeSet<>());
                 p.setRoutes(new TreeSet<>());
             }
         }

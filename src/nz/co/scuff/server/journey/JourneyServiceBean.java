@@ -63,7 +63,7 @@ public class JourneyServiceBean extends AbstractFacade<Journey> {
         return found;
     }
 
-    public List<Journey> findActiveByRouteAndSchool(String routeId, String schoolId) {
+    public List<Journey> findActiveByRouteAndSchool(long routeId, long schoolId) {
         if (l.isDebugEnabled()) l.debug("find journey by routeId=" + routeId + " schoolId=" + schoolId);
 
         final CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
@@ -74,9 +74,9 @@ public class JourneyServiceBean extends AbstractFacade<Journey> {
         // Time to define where clause in terms of Predicates
         // This list will contain all Predicates (where clauses)
         List<Predicate> criteriaList = new ArrayList<Predicate>();
-        Predicate predicate1 = criteriaBuilder.equal(taRoot.get("routeId"), routeId);
+        Predicate predicate1 = criteriaBuilder.equal(taRoot.get("route").get("routeId"), routeId);
         criteriaList.add(predicate1);
-        Predicate predicate2 = criteriaBuilder.equal(taRoot.get("schoolId"), schoolId);
+        Predicate predicate2 = criteriaBuilder.equal(taRoot.get("school").get("schoolId"), schoolId);
         criteriaList.add(predicate2);
         Predicate predicate3 = criteriaBuilder.notEqual(taRoot.get("state"), TrackingState.COMPLETED);
         criteriaList.add(predicate3);

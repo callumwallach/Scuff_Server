@@ -36,15 +36,6 @@ CREATE TABLE `driver_journeys` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `driver_journeys`
---
-
-LOCK TABLES `driver_journeys` WRITE;
-/*!40000 ALTER TABLE `driver_journeys` DISABLE KEYS */;
-/*!40000 ALTER TABLE `driver_journeys` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
 -- Table structure for table `driver_routes`
 --
 
@@ -61,16 +52,6 @@ CREATE TABLE `driver_routes` (
   CONSTRAINT `FK_j132uv65265k4kigrvl429kf8` FOREIGN KEY (`RouteId`) REFERENCES `route` (`RouteId`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `driver_routes`
---
-
-LOCK TABLES `driver_routes` WRITE;
-/*!40000 ALTER TABLE `driver_routes` DISABLE KEYS */;
-INSERT INTO `driver_routes` VALUES (4,1),(5,1),(4,2);
-/*!40000 ALTER TABLE `driver_routes` ENABLE KEYS */;
-UNLOCK TABLES;
 
 --
 -- Table structure for table `journey`
@@ -102,15 +83,6 @@ CREATE TABLE `journey` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `journey`
---
-
-LOCK TABLES `journey` WRITE;
-/*!40000 ALTER TABLE `journey` DISABLE KEYS */;
-/*!40000 ALTER TABLE `journey` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
 -- Table structure for table `journey_passengers`
 --
 
@@ -127,15 +99,6 @@ CREATE TABLE `journey_passengers` (
   CONSTRAINT `FK_k6mvca3r9tpw1i5srkqvj3ptb` FOREIGN KEY (`PassengerId`) REFERENCES `person` (`PersonId`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `journey_passengers`
---
-
-LOCK TABLES `journey_passengers` WRITE;
-/*!40000 ALTER TABLE `journey_passengers` DISABLE KEYS */;
-/*!40000 ALTER TABLE `journey_passengers` ENABLE KEYS */;
-UNLOCK TABLES;
 
 --
 -- Table structure for table `parents_children`
@@ -156,16 +119,6 @@ CREATE TABLE `parents_children` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `parents_children`
---
-
-LOCK TABLES `parents_children` WRITE;
-/*!40000 ALTER TABLE `parents_children` DISABLE KEYS */;
-INSERT INTO `parents_children` VALUES (4,1),(5,1),(4,2),(5,2),(4,3),(5,3);
-/*!40000 ALTER TABLE `parents_children` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
 -- Table structure for table `passenger_routes`
 --
 
@@ -182,16 +135,6 @@ CREATE TABLE `passenger_routes` (
   CONSTRAINT `FK_nbs3wchb8i1vsvmxsu51et4la` FOREIGN KEY (`RouteId`) REFERENCES `route` (`RouteId`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `passenger_routes`
---
-
-LOCK TABLES `passenger_routes` WRITE;
-/*!40000 ALTER TABLE `passenger_routes` DISABLE KEYS */;
-INSERT INTO `passenger_routes` VALUES (1,1),(2,1),(3,1),(2,2);
-/*!40000 ALTER TABLE `passenger_routes` ENABLE KEYS */;
-UNLOCK TABLES;
 
 --
 -- Table structure for table `person`
@@ -211,18 +154,8 @@ CREATE TABLE `person` (
   `Email` varchar(255) DEFAULT NULL,
   `Phone` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`PersonId`)
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `person`
---
-
-LOCK TABLES `person` WRITE;
-/*!40000 ALTER TABLE `person` DISABLE KEYS */;
-INSERT INTO `person` VALUES ('Passenger',1,'Cayden','MALE','Lin-Vaile',NULL,NULL,NULL,NULL),('Passenger',2,'Connor','MALE','Lin',NULL,NULL,NULL,NULL),('Passenger',3,'Mia','FEMALE','Lin',NULL,NULL,NULL,NULL),('Driver',4,'Christine','FEMALE','Lin',NULL,NULL,'christine@gmail.com','021666377'),('Driver',5,'Callum','MALE','Wallach',NULL,NULL,'callum@gmail.com','021658093');
-/*!40000 ALTER TABLE `person` ENABLE KEYS */;
-UNLOCK TABLES;
 
 --
 -- Table structure for table `route`
@@ -239,18 +172,8 @@ CREATE TABLE `route` (
   PRIMARY KEY (`RouteId`),
   KEY `FK_2wbt52tdcporxn42v86xgg8o` (`school`),
   CONSTRAINT `FK_2wbt52tdcporxn42v86xgg8o` FOREIGN KEY (`school`) REFERENCES `school` (`SchoolId`)
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `route`
---
-
-LOCK TABLES `route` WRITE;
-/*!40000 ALTER TABLE `route` DISABLE KEYS */;
-INSERT INTO `route` VALUES (1,'Long Drive','longdrive.png',1),(2,'St Heliers Bay','stheliersbayroad.png',1),(3,'Riddell Nth','riddellroadnorth.png',1),(4,'Riddell Sth','riddellroadsouth.png',1);
-/*!40000 ALTER TABLE `route` ENABLE KEYS */;
-UNLOCK TABLES;
 
 --
 -- Table structure for table `school`
@@ -266,18 +189,8 @@ CREATE TABLE `school` (
   `Longitude` double DEFAULT NULL,
   `Name` varchar(255) NOT NULL,
   PRIMARY KEY (`SchoolId`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `school`
---
-
-LOCK TABLES `school` WRITE;
-/*!40000 ALTER TABLE `school` DISABLE KEYS */;
-INSERT INTO `school` VALUES (1,42.16,-36.858255,174.860823,'St Heliers School');
-/*!40000 ALTER TABLE `school` ENABLE KEYS */;
-UNLOCK TABLES;
 
 --
 -- Table structure for table `school_children`
@@ -298,16 +211,6 @@ CREATE TABLE `school_children` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `school_children`
---
-
-LOCK TABLES `school_children` WRITE;
-/*!40000 ALTER TABLE `school_children` DISABLE KEYS */;
-INSERT INTO `school_children` VALUES (1,1),(1,2),(1,3);
-/*!40000 ALTER TABLE `school_children` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
 -- Table structure for table `school_drivers`
 --
 
@@ -324,16 +227,6 @@ CREATE TABLE `school_drivers` (
   CONSTRAINT `FK_1vaq4et3se0o2incdljrmrrtv` FOREIGN KEY (`DriverId`) REFERENCES `person` (`PersonId`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `school_drivers`
---
-
-LOCK TABLES `school_drivers` WRITE;
-/*!40000 ALTER TABLE `school_drivers` DISABLE KEYS */;
-INSERT INTO `school_drivers` VALUES (1,4),(1,5);
-/*!40000 ALTER TABLE `school_drivers` ENABLE KEYS */;
-UNLOCK TABLES;
 
 --
 -- Table structure for table `school_journeys`
@@ -354,15 +247,6 @@ CREATE TABLE `school_journeys` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `school_journeys`
---
-
-LOCK TABLES `school_journeys` WRITE;
-/*!40000 ALTER TABLE `school_journeys` DISABLE KEYS */;
-/*!40000 ALTER TABLE `school_journeys` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
 -- Table structure for table `school_routes`
 --
 
@@ -380,16 +264,6 @@ CREATE TABLE `school_routes` (
   CONSTRAINT `FK_ip03jssj83u4tn5q3jpi77aii` FOREIGN KEY (`RouteId`) REFERENCES `route` (`RouteId`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `school_routes`
---
-
-LOCK TABLES `school_routes` WRITE;
-/*!40000 ALTER TABLE `school_routes` DISABLE KEYS */;
-INSERT INTO `school_routes` VALUES (1,1),(1,2),(1,3),(1,4);
-/*!40000 ALTER TABLE `school_routes` ENABLE KEYS */;
-UNLOCK TABLES;
 
 --
 -- Table structure for table `waypoint`
@@ -417,15 +291,6 @@ CREATE TABLE `waypoint` (
   CONSTRAINT `FK_mai6nwhqjicrrvetj5gabla38` FOREIGN KEY (`JourneyId`) REFERENCES `journey` (`JourneyId`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `waypoint`
---
-
-LOCK TABLES `waypoint` WRITE;
-/*!40000 ALTER TABLE `waypoint` DISABLE KEYS */;
-/*!40000 ALTER TABLE `waypoint` ENABLE KEYS */;
-UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
@@ -436,4 +301,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2015-05-07 14:33:48
+-- Dump completed on 2015-05-07 14:28:47

@@ -1,12 +1,7 @@
-package nz.co.scuff.data.journey;
+package nz.co.scuff.data.journey.snapshot;
 
-import nz.co.scuff.data.journey.snapshot.WaypointSnapshot;
 import nz.co.scuff.data.util.TrackingState;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-import javax.persistence.*;
-import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
 import java.sql.Timestamp;
@@ -15,76 +10,29 @@ import java.sql.Timestamp;
  * Created by Callum on 20/04/2015.
  */
 @XmlRootElement
-@Entity
-public class Waypoint implements Serializable, Comparable {
+public class WaypointSnapshot implements Comparable, Serializable {
 
-    //private static final long serialVersionUID = 1L;
-
-    @Transient
-    private final Logger l = LoggerFactory.getLogger(Waypoint.class.getName());
-
-    @Id
-    @Column(name="WaypointId")
     private String waypointId;
-    @NotNull
-    @Column(name="Latitude")
     private double latitude;
-    @NotNull
-    @Column(name="Longitude")
     private double longitude;
-    @NotNull
-    @Column(name="Speed")
     private float speed;
-    @NotNull
-    @Column(name="Bearing")
     private float bearing;
-    @NotNull
-    @Column(name="Distance")
     private float distance;
-    @NotNull
-    @Column(name="Duration")
     private long duration;
-    @NotNull
-    @Column(name="Provider")
     private String provider;
-    @NotNull
-    @Column(name="Accuracy")
     private float accuracy;
-    @NotNull
-    @Column(name="Altitude")
     private double altitude;
-    @NotNull
-    @Column(name="State")
-    @Enumerated(EnumType.STRING)
     private TrackingState state;
-    @NotNull
-    @Column(name="Created")
     private Timestamp created;
 
-    public Waypoint() {
-    }
-
-    public Waypoint(WaypointSnapshot snapshot) {
-        this.waypointId = snapshot.getWaypointId();
-        this.latitude = snapshot.getLatitude();
-        this.longitude = snapshot.getLongitude();
-        this.speed = snapshot.getSpeed();
-        this.bearing = snapshot.getBearing();
-        this.distance = snapshot.getDistance();
-        this.duration = snapshot.getDuration();
-        this.provider = snapshot.getProvider();
-        this.accuracy = snapshot.getAccuracy();
-        this.altitude = snapshot.getAltitude();
-        this.state = snapshot.getState();
-        this.created = snapshot.getCreated();
-    }
+    public WaypointSnapshot() {}
 
     public String getWaypointId() {
         return waypointId;
     }
 
-    public void setWaypointId(String id) {
-        this.waypointId = id;
+    public void setWaypointId(String waypointId) {
+        this.waypointId = waypointId;
     }
 
     public double getLatitude() {
@@ -175,48 +123,33 @@ public class Waypoint implements Serializable, Comparable {
         this.created = created;
     }
 
-    public WaypointSnapshot toSnapshot() {
-        WaypointSnapshot snapshot = new WaypointSnapshot();
-        snapshot.setWaypointId(waypointId);
-        snapshot.setLatitude(latitude);
-        snapshot.setLongitude(longitude);
-        snapshot.setSpeed(speed);
-        snapshot.setBearing(bearing);
-        snapshot.setDistance(distance);
-        snapshot.setDuration(duration);
-        snapshot.setProvider(provider);
-        snapshot.setAccuracy(accuracy);
-        snapshot.setAltitude(altitude);
-        snapshot.setState(state);
-        snapshot.setCreated(created);
-        return snapshot;
-    }
-
-    @Override
-    public int compareTo(Object another) {
-        Waypoint other = (Waypoint)another;
-        return other.created == null ? 1 : this.created.compareTo(other.created);
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        Waypoint waypoint = (Waypoint) o;
+        WaypointSnapshot that = (WaypointSnapshot) o;
 
-        return waypointId.equals(waypoint.waypointId);
+        return waypointId.equals(that.waypointId);
 
     }
 
     @Override
     public int hashCode() {
-        return waypointId.hashCode();
+        int result = waypointId != null ? waypointId.hashCode() : 0;
+        result = 31 * result + (created != null ? created.hashCode() : 0);
+        return result;
+    }
+
+    @Override
+    public int compareTo(Object another) {
+        WaypointSnapshot other = (WaypointSnapshot)another;
+        return this.created.compareTo(other.created);
     }
 
     @Override
     public String toString() {
-        return "Waypoint{" +
+        return "WaypointSnapshot{" +
                 "waypointId='" + waypointId + '\'' +
                 ", latitude=" + latitude +
                 ", longitude=" + longitude +
@@ -231,4 +164,6 @@ public class Waypoint implements Serializable, Comparable {
                 ", created=" + created +
                 '}';
     }
+
 }
+

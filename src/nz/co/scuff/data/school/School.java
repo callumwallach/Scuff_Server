@@ -4,20 +4,19 @@ import java.io.Serializable;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-import nz.co.scuff.data.family.Child;
-import nz.co.scuff.data.family.Parent;
+import nz.co.scuff.data.family.Driver;
+import nz.co.scuff.data.family.Passenger;
+import nz.co.scuff.data.journey.Journey;
 import nz.co.scuff.data.school.snapshot.SchoolSnapshot;
 import org.hibernate.annotations.Sort;
 import org.hibernate.annotations.SortType;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
-import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  * Created by Callum on 17/03/2015.
  */
-@XmlRootElement
 @Entity
 public class School implements Comparable, Serializable {
 
@@ -36,7 +35,7 @@ public class School implements Comparable, Serializable {
     private double altitude;
 
     // one to many
-    @ManyToMany(fetch = FetchType.EAGER)
+    @OneToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name="school_routes",
             joinColumns={@JoinColumn(name="SchoolId", referencedColumnName="schoolId")},
@@ -47,19 +46,27 @@ public class School implements Comparable, Serializable {
     // many to many
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
-            name="schools_children",
+            name="school_children",
             joinColumns={@JoinColumn(name="SchoolId", referencedColumnName="schoolId")},
             inverseJoinColumns={@JoinColumn(name="ChildId", referencedColumnName="personId")})
     @Sort(type = SortType.NATURAL)
-    private SortedSet<Child> children;
+    private SortedSet<Passenger> children;
 
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
-            name="schools_parents",
+            name="school_drivers",
             joinColumns={@JoinColumn(name="SchoolId", referencedColumnName="schoolId")},
-            inverseJoinColumns={@JoinColumn(name="ParentId", referencedColumnName="personId")})
+            inverseJoinColumns={@JoinColumn(name="DriverId", referencedColumnName="personId")})
     @Sort(type = SortType.NATURAL)
-    private SortedSet<Parent> parents;
+    private SortedSet<Driver> drivers;
+
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(
+            name="school_journeys",
+            joinColumns={@JoinColumn(name="SchoolId", referencedColumnName="schoolId")},
+            inverseJoinColumns={@JoinColumn(name="JourneyId", referencedColumnName="journeyId")})
+    @Sort(type = SortType.NATURAL)
+    private SortedSet<Journey> journeys;
 
     public School() {
         super();
@@ -123,26 +130,37 @@ public class School implements Comparable, Serializable {
         this.routes = routes;
     }
 
-    public SortedSet<Child> getChildren() {
+    public SortedSet<Passenger> getChildren() {
         if (children == null) {
             children = new TreeSet<>();
         }
         return children;
     }
 
-    public void setChildren(SortedSet<Child> children) {
+    public void setChildren(SortedSet<Passenger> children) {
         this.children = children;
     }
 
-    public SortedSet<Parent> getParents() {
-        if (parents == null) {
-            parents = new TreeSet<>();
+    public SortedSet<Driver> getDrivers() {
+        if (drivers == null) {
+            drivers = new TreeSet<>();
         }
-        return parents;
+        return drivers;
     }
 
-    public void setParents(SortedSet<Parent> parents) {
-        this.parents = parents;
+    public void setDrivers(SortedSet<Driver> drivers) {
+        this.drivers = drivers;
+    }
+
+    public SortedSet<Journey> getJourneys() {
+        if (journeys == null) {
+            journeys = new TreeSet<>();
+        }
+        return journeys;
+    }
+
+    public void setJourneys(SortedSet<Journey> journeys) {
+        this.journeys = journeys;
     }
 
     public SchoolSnapshot toSnapshot() {
@@ -176,19 +194,18 @@ public class School implements Comparable, Serializable {
 
     @Override
     public String toString() {
-        final StringBuffer sb = new StringBuffer("School{");
-        sb.append("schoolId=").append(schoolId);
-        sb.append(", name='").append(name).append('\'');
-        sb.append(", latitude=").append(latitude);
-        sb.append(", longitude=").append(longitude);
-        sb.append(", altitude=").append(altitude);
-        sb.append('}');
-        return sb.toString();
+        return "School{" +
+                "schoolId=" + schoolId +
+                ", name='" + name + '\'' +
+                ", latitude=" + latitude +
+                ", longitude=" + longitude +
+                ", altitude=" + altitude +
+                '}';
     }
 
     @Override
     public int compareTo(Object another) {
         School other = (School)another;
-        return this.name.compareTo(other.name);
+        return other.name == null ? 1 : this.name.compareTo(other.name);
     }
 }
