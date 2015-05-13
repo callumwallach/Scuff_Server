@@ -11,6 +11,7 @@ import nz.co.scuff.data.school.Route;
 import nz.co.scuff.data.school.School;
 import nz.co.scuff.data.school.snapshot.RouteSnapshot;
 import nz.co.scuff.data.school.snapshot.SchoolSnapshot;
+import nz.co.scuff.data.util.DataPacket;
 import nz.co.scuff.server.family.DriverServiceBean;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,7 +30,7 @@ public class ProfileResourceService {
     @EJB
     private DriverServiceBean driverService;
 
-    @Path("/{id}")
+/*    @Path("/{id}")
     @GET
     @Produces("application/json")
     public DriverSnapshot getDriverSnapshot(@PathParam("id") long id) {
@@ -39,25 +40,72 @@ public class ProfileResourceService {
         if (found == null) {
             return null;
         }
-        return prune(found);
-    }
+        return assemble(found);
+    }*/
 
+    @Path("/{email}")
     @GET
     @Produces("application/json")
-    public DriverSnapshot getDriverSnapshotByEmail(@QueryParam("email") String email) {
+    public DataPacket getDriver(@PathParam("email") String email) {
         if (l.isDebugEnabled()) l.debug("get driver by email");
 
         Driver found = driverService.findByEmail(email);
         if (found == null) {
             return null;
         }
-        return prune(found);
+        return assemble(found);
     }
 
-    private DriverSnapshot prune(Driver toPrune) {
+    private DataPacket assemble(Driver toAssemble) {
+        if (l.isDebugEnabled()) l.debug("assemble driver for transit");
+
+        // assemble for user
+        DataPacket packet = new DataPacket();
+
+        DriverSnapshot dss = toAssemble.toSnapshot();
+
+        for (Passenger p : toAssemble.getChildren()) {
+            PassengerSnapshot ps = p.toSnapshot();
+            for (School s : p.getSchools()) {
+                SchoolSnapshot ss = s.toSnapshot();
+                ps.getSchoolIds().add(ss.getSchoolId());
+                packet.getSchoolSnapshots().put(ss.getSchoolId(), ss);
+            }
+            for (Driver d : p.getParents()) {
+                DriverSnapshot ds = d.toSnapshot();
+                ps.getParentIds().add(ds.getPersonId());
+                packet.getDriverSnapshots().put(ds.getPersonId(), ds);
+            }
+            for (Route r : p.getRegisteredRoutes()) {
+                RouteSnapshot rs = r.toSnapshot();
+                ps.getRegisteredRouteIds().add(rs.getRouteId());
+                packet.getRouteSnapshots().put(rs.getRouteId(), rs);
+            }
+            dss.getChildrenIds().add(ps.getPersonId());
+            packet.getPassengerSnapshots().put(ps.getPersonId(), ps);
+        }
+        for (School s : toAssemble.getSchoolsDrivingFor()) {
+            SchoolSnapshot ss = s.toSnapshot();
+            dss.getSchoolIdsDrivenFor().add(ss.getSchoolId());
+            packet.getSchoolSnapshots().put(ss.getSchoolId(), ss);
+        }
+        for (Route r : toAssemble.getRoutesDriven()) {
+            RouteSnapshot rs = r.toSnapshot();
+            dss.getRegisteredRouteIds().add(rs.getRouteId());
+            packet.getRouteSnapshots().put(rs.getRouteId(), rs);
+        }
+
+        packet.getDriverSnapshots().put(dss.getPersonId(), dss);
+
+        if (l.isDebugEnabled()) l.debug("assembled packet="+packet);
+
+        return packet;
+    }
+
+    /*private DriverSnapshot assemble(Driver toPrune) {
         if (l.isDebugEnabled()) l.debug("pruning driver for transit");
 
-        // prune for user
+        // assemble for user
         DriverSnapshot driverSnapshot = toPrune.toSnapshot();
         for (Passenger p : toPrune.getChildren()) {
             PassengerSnapshot ps = p.toSnapshot();
@@ -72,9 +120,9 @@ public class ProfileResourceService {
             }
             for (Journey j : p.getJourneys()) {
                 JourneySnapshot js = j.toSnapshot();
-                js.setSchool(j.getSchool().toSnapshot());
-                js.setRoute(j.getRoute().toSnapshot());
-                js.setDriver(j.getDriver().toSnapshot());
+                js.setSchoolId(j.getSchool().getSchoolId());
+                js.setRouteId(j.getRoute().getRouteId());
+                js.setDriverId(j.getDriver().getPersonId());
                 ps.getJourneys().add(j.toSnapshot());
             }
             driverSnapshot.getChildren().add(ps);
@@ -87,9 +135,9 @@ public class ProfileResourceService {
             for (Waypoint w : j.getWaypoints()) {
                 js.getWaypoints().add(w.toSnapshot());
             }
-            js.setSchool(j.getSchool().toSnapshot());
-            js.setRoute(j.getRoute().toSnapshot());
-            js.setDriver(j.getDriver().toSnapshot());
+            js.setSchoolId(j.getSchool().getSchoolId());
+            js.setRouteId(j.getRoute().getRouteId());
+            js.setDriverId(j.getDriver().getPersonId());
             driverSnapshot.getJourneys().add(js);
         }
         for (School s : toPrune.getSchoolsDrivingFor()) {
@@ -102,7 +150,7 @@ public class ProfileResourceService {
             driverSnapshot.getRegisteredRoutes().add(rs);
         }
         return driverSnapshot;
-    }
+    }*/
 
         /*@Path("/{id}")
     @GET
@@ -134,7 +182,7 @@ public class ProfileResourceService {
         if (parent == null) {
             return null;
         }
-        // prune for user
+        // assemble for user
         ProfileSnapshot profileSnapshot = new ProfileSnapshot();
         profileSnapshot.setParent(parent.toSnapshot());
         for (Child child : parent.getChildren()) {

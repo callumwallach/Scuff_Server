@@ -75,6 +75,7 @@ public class Route implements Comparable, Serializable {
         snapshot.setRouteId(routeId);
         snapshot.setName(name);
         snapshot.setRouteMap(routeMap);
+        snapshot.setSchoolId(school.getSchoolId());
         return snapshot;
     }
 

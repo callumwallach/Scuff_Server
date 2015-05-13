@@ -6,9 +6,7 @@ import nz.co.scuff.server.util.AbstractFacade;
 
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
-import javax.persistence.EntityManager;
-import javax.persistence.NoResultException;
-import javax.persistence.PersistenceContext;
+import javax.persistence.*;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
@@ -66,7 +64,24 @@ public class JourneyServiceBean extends AbstractFacade<Journey> {
     public List<Journey> findActiveByRouteAndSchool(long routeId, long schoolId) {
         if (l.isDebugEnabled()) l.debug("find journey by routeId=" + routeId + " schoolId=" + schoolId);
 
-        final CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
+        //create an ejbql expression
+        String ejbQL = "select j from Journey j where j.route.routeId =:routeId and j.school.schoolId =:schoolId and j.state !=:state";
+        //create query
+        Query query = em.createQuery(ejbQL);
+        //substitute parameter.
+        query.setParameter("routeId", routeId);
+        query.setParameter("schoolId", schoolId);
+        query.setParameter("state", TrackingState.COMPLETED);
+        //execute the query
+        List<Journey> found = query.getResultList();
+        if (l.isDebugEnabled()) {
+            for (Journey journey : found) {
+                l.debug("found journey=" + journey);
+            }
+        }
+        return found;
+
+/*        final CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
         // Create criteria query and pass the value object which needs to be populated as result
         final CriteriaQuery criteriaQuery = criteriaBuilder.createQuery(Journey.class);
         // Tell to criteria query which tables/entities you want to fetch
@@ -84,13 +99,14 @@ public class JourneyServiceBean extends AbstractFacade<Journey> {
         // Pass the criteria list to the where method of criteria query
         criteriaQuery.where(criteriaBuilder.and(criteriaList.toArray(new Predicate[criteriaList.size()])));
         // Here entity manager will create actual SQL query out of criteria query
-        List<Journey> found = em.createQuery(criteriaQuery).getResultList();
+        TypedQuery<Journey> query = em.createQuery(criteriaQuery);
+        List<Journey> found = query.getResultList();
         if (l.isDebugEnabled()) {
             for (Journey journey : found) {
                 l.debug("found journey=" + journey);
             }
         }
-        return found;
+        return found;*/
     }
 
 

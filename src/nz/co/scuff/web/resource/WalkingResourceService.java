@@ -1,13 +1,7 @@
 package nz.co.scuff.web.resource;
 
-import nz.co.scuff.data.family.Passenger;
-import nz.co.scuff.data.family.snapshot.DriverSnapshot;
 import nz.co.scuff.data.journey.Journey;
-import nz.co.scuff.data.journey.Waypoint;
 import nz.co.scuff.data.journey.snapshot.BusSnapshot;
-import nz.co.scuff.data.journey.snapshot.JourneySnapshot;
-import nz.co.scuff.data.school.snapshot.RouteSnapshot;
-import nz.co.scuff.data.school.snapshot.SchoolSnapshot;
 import nz.co.scuff.server.journey.JourneyServiceBean;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,8 +26,8 @@ public class WalkingResourceService {
     @Path("/{id}")
     @GET
     @Produces("application/json")
-    public BusSnapshot getActiveBusSnapshot(@PathParam("id") String journeyId) {
-        if (l.isDebugEnabled()) l.debug("getActiveBusSnapshot busId="+journeyId);
+    public BusSnapshot getActiveBus(@PathParam("id") String journeyId) {
+        if (l.isDebugEnabled()) l.debug("getActiveBus busId="+journeyId);
 
         Journey journey = journeyService.findActiveByPK(journeyId);
         BusSnapshot snapshot = null;
@@ -46,9 +40,11 @@ public class WalkingResourceService {
 
     @GET
     @Produces("application/json")
-    public List<BusSnapshot> getActiveBusSnapshots(@QueryParam("routeId") long routeId, @QueryParam("schoolId") long schoolId) {
-        if (l.isDebugEnabled()) l.debug("getActiveBusSnapshots routeId="+routeId+" schoolId="+schoolId);
+    public List<BusSnapshot> getActiveBuses(@QueryParam("routeId") long routeId, @QueryParam("schoolId") long schoolId) {
+        if (l.isDebugEnabled()) l.debug("getActiveBuses routeId="+routeId+" schoolId="+schoolId);
 
+        // only need location details as data is matched up to local copy (and constant fields ignored)
+        // so set driver school and route as ids only
         List<Journey> journeys = journeyService.findActiveByRouteAndSchool(routeId, schoolId);
         List<BusSnapshot> snapshots = new ArrayList<>();
         for (Journey journey : journeys) {

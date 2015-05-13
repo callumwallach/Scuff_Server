@@ -33,11 +33,11 @@ public class TestClient {
         logger.info("GET user=" + profileSnapshot + "]");
         response.close();*/
 
-        target = client.target("http://localhost:8080/scuff/drivers?email=callum@gmail.com");
+/*        target = client.target("http://localhost:8080/scuff/drivers?email=callum@gmail.com");
         response = target.request().get();
         DriverSnapshot parent = response.readEntity(DriverSnapshot.class);
         logger.info("GET user=" + parent + "]");
-        response.close();
+        response.close();*/
 
 /*        target = client.target("http://localhost:8080/scuff/test/2/callum@gmail.com");
         response = target.request().get();

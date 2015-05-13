@@ -1,12 +1,8 @@
 package nz.co.scuff.data.family.snapshot;
 
-import nz.co.scuff.data.journey.snapshot.JourneySnapshot;
-import nz.co.scuff.data.school.snapshot.RouteSnapshot;
-import nz.co.scuff.data.school.snapshot.SchoolSnapshot;
-
 import javax.xml.bind.annotation.XmlRootElement;
-import java.util.SortedSet;
-import java.util.TreeSet;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Created by Callum on 4/05/2015.
@@ -14,57 +10,58 @@ import java.util.TreeSet;
 @XmlRootElement
 public class PassengerSnapshot extends PersonSnapshot {
 
-    private SortedSet<SchoolSnapshot> schools;
-    private SortedSet<DriverSnapshot> parents;
-    private SortedSet<JourneySnapshot> journeys;
-    private SortedSet<RouteSnapshot> registeredRoutes;
+    private Set<Long> schoolIds;
+    private Set<Long> parentIds;
+    private Set<String> boardingInfoIds;
+    private Set<Long> registeredRouteIds;
 
     public PassengerSnapshot() {
-        schools = new TreeSet<>();
-        parents = new TreeSet<>();
-        journeys = new TreeSet<>();
-        registeredRoutes = new TreeSet<>();
+        schoolIds = new HashSet<>();
+        parentIds = new HashSet<>();
+        boardingInfoIds = new HashSet<>();
+        registeredRouteIds = new HashSet<>();
     }
 
-    public SortedSet<SchoolSnapshot> getSchools() {
-        return schools;
+    public Set<Long> getSchoolIds() {
+        return schoolIds;
     }
 
-    public void setSchools(SortedSet<SchoolSnapshot> schools) {
-        this.schools = schools;
+    public void setSchools(Set<Long> schoolIds) {
+        this.schoolIds = schoolIds;
     }
 
-    public SortedSet<DriverSnapshot> getParents() {
-        return parents;
+    public Set<Long> getParentIds() {
+        return parentIds;
     }
 
-    public void setParents(SortedSet<DriverSnapshot> parents) {
-        this.parents = parents;
+    public void setParentIds(Set<Long> parentIds) {
+        this.parentIds = parentIds;
     }
 
-    public SortedSet<JourneySnapshot> getJourneys() {
-        return journeys;
+    public Set<String> getBoardingInfoIds() {
+        return boardingInfoIds;
     }
 
-    public void setJourneys(SortedSet<JourneySnapshot> journeys) {
-        this.journeys = journeys;
+    public void setBoardingInfoIds(Set<String> boardingInfoIds) {
+        this.boardingInfoIds = boardingInfoIds;
     }
 
-    public SortedSet<RouteSnapshot> getRegisteredRoutes() {
-        return registeredRoutes;
+    public Set<Long> getRegisteredRouteIds() {
+        return registeredRouteIds;
     }
 
-    public void setRegisteredRoutes(SortedSet<RouteSnapshot> registeredRoutes) {
-        this.registeredRoutes = registeredRoutes;
+    public void setRegisteredRouteIds(Set<Long> registeredRouteIds) {
+        this.registeredRouteIds = registeredRouteIds;
     }
 
     @Override
     public String toString() {
-        return "PassengerSnapshot{" +
-                "schools=" + schools +
-                ", parents=" + parents +
-                ", journeys=" + journeys +
-                ", registeredRoutes=" + registeredRoutes +
-                "} " + super.toString();
+        final StringBuffer sb = new StringBuffer("PassengerSnapshot{");
+        sb.append("schoolIds=").append(schoolIds);
+        sb.append(", parentIds=").append(parentIds);
+        sb.append(", boardingInfoIds=").append(boardingInfoIds);
+        sb.append(", registeredRouteIds=").append(registeredRouteIds);
+        sb.append('}');
+        return sb.toString();
     }
 }

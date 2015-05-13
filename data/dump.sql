@@ -111,30 +111,31 @@ LOCK TABLES `journey` WRITE;
 UNLOCK TABLES;
 
 --
--- Table structure for table `journey_passengers`
+-- Table structure for table `journey_tickets`
 --
 
-DROP TABLE IF EXISTS `journey_passengers`;
+DROP TABLE IF EXISTS `journey_tickets`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `journey_passengers` (
+CREATE TABLE `journey_tickets` (
   `JourneyId` varchar(255) NOT NULL,
-  `PassengerId` bigint(20) NOT NULL,
-  PRIMARY KEY (`JourneyId`,`PassengerId`),
-  KEY `FK_k6mvca3r9tpw1i5srkqvj3ptb` (`PassengerId`),
-  KEY `FK_7rsp0lu9d4woq3vype6rib29b` (`JourneyId`),
-  CONSTRAINT `FK_7rsp0lu9d4woq3vype6rib29b` FOREIGN KEY (`JourneyId`) REFERENCES `journey` (`JourneyId`),
-  CONSTRAINT `FK_k6mvca3r9tpw1i5srkqvj3ptb` FOREIGN KEY (`PassengerId`) REFERENCES `person` (`PersonId`)
+  `TicketId` varchar(255) NOT NULL,
+  PRIMARY KEY (`JourneyId`,`TicketId`),
+  UNIQUE KEY `UK_otbf3mqgr6vsgv872ecxciawp` (`TicketId`),
+  KEY `FK_otbf3mqgr6vsgv872ecxciawp` (`TicketId`),
+  KEY `FK_plq6hrgcvig1561n934sqa06s` (`JourneyId`),
+  CONSTRAINT `FK_plq6hrgcvig1561n934sqa06s` FOREIGN KEY (`JourneyId`) REFERENCES `journey` (`JourneyId`),
+  CONSTRAINT `FK_otbf3mqgr6vsgv872ecxciawp` FOREIGN KEY (`TicketId`) REFERENCES `ticket` (`TicketId`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `journey_passengers`
+-- Dumping data for table `journey_tickets`
 --
 
-LOCK TABLES `journey_passengers` WRITE;
-/*!40000 ALTER TABLE `journey_passengers` DISABLE KEYS */;
-/*!40000 ALTER TABLE `journey_passengers` ENABLE KEYS */;
+LOCK TABLES `journey_tickets` WRITE;
+/*!40000 ALTER TABLE `journey_tickets` DISABLE KEYS */;
+/*!40000 ALTER TABLE `journey_tickets` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -191,6 +192,34 @@ LOCK TABLES `passenger_routes` WRITE;
 /*!40000 ALTER TABLE `passenger_routes` DISABLE KEYS */;
 INSERT INTO `passenger_routes` VALUES (1,1),(2,1),(3,1),(2,2);
 /*!40000 ALTER TABLE `passenger_routes` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `passenger_tickets`
+--
+
+DROP TABLE IF EXISTS `passenger_tickets`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `passenger_tickets` (
+  `PassengerId` bigint(20) NOT NULL,
+  `TicketId` varchar(255) NOT NULL,
+  PRIMARY KEY (`PassengerId`,`TicketId`),
+  UNIQUE KEY `UK_813m2gtvsupb66yjs39rm1qlb` (`TicketId`),
+  KEY `FK_813m2gtvsupb66yjs39rm1qlb` (`TicketId`),
+  KEY `FK_byibonc4r9jhuqpdfifb5fmhb` (`PassengerId`),
+  CONSTRAINT `FK_byibonc4r9jhuqpdfifb5fmhb` FOREIGN KEY (`PassengerId`) REFERENCES `person` (`PersonId`),
+  CONSTRAINT `FK_813m2gtvsupb66yjs39rm1qlb` FOREIGN KEY (`TicketId`) REFERENCES `ticket` (`TicketId`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `passenger_tickets`
+--
+
+LOCK TABLES `passenger_tickets` WRITE;
+/*!40000 ALTER TABLE `passenger_tickets` DISABLE KEYS */;
+/*!40000 ALTER TABLE `passenger_tickets` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -392,6 +421,37 @@ INSERT INTO `school_routes` VALUES (1,1),(1,2),(1,3),(1,4);
 UNLOCK TABLES;
 
 --
+-- Table structure for table `ticket`
+--
+
+DROP TABLE IF EXISTS `ticket`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `ticket` (
+  `TicketId` varchar(255) NOT NULL,
+  `Latitude` double DEFAULT NULL,
+  `Longitude` bigint(20) DEFAULT NULL,
+  `Timestamp` datetime DEFAULT NULL,
+  `Journey` varchar(255) DEFAULT NULL,
+  `Passenger` bigint(20) DEFAULT NULL,
+  PRIMARY KEY (`TicketId`),
+  KEY `FK_d4nubepam37xw5277wopr6q1w` (`Journey`),
+  KEY `FK_qld062xlclu7bpe22s9o0qs57` (`Passenger`),
+  CONSTRAINT `FK_qld062xlclu7bpe22s9o0qs57` FOREIGN KEY (`Passenger`) REFERENCES `person` (`PersonId`),
+  CONSTRAINT `FK_d4nubepam37xw5277wopr6q1w` FOREIGN KEY (`Journey`) REFERENCES `journey` (`JourneyId`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `ticket`
+--
+
+LOCK TABLES `ticket` WRITE;
+/*!40000 ALTER TABLE `ticket` DISABLE KEYS */;
+/*!40000 ALTER TABLE `ticket` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `waypoint`
 --
 
@@ -436,4 +496,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2015-05-07 14:33:48
+-- Dump completed on 2015-05-12 14:01:38

@@ -1,9 +1,5 @@
 package nz.co.scuff.data.journey.snapshot;
 
-import nz.co.scuff.data.family.snapshot.DriverSnapshot;
-import nz.co.scuff.data.family.snapshot.PassengerSnapshot;
-import nz.co.scuff.data.school.snapshot.RouteSnapshot;
-import nz.co.scuff.data.school.snapshot.SchoolSnapshot;
 import nz.co.scuff.data.util.TrackingState;
 
 import javax.xml.bind.annotation.XmlRootElement;
@@ -27,16 +23,16 @@ public class JourneySnapshot implements Comparable, Serializable {
     private Timestamp completed;
     private TrackingState state;
 
-    private SchoolSnapshot school;
-    private DriverSnapshot driver;
-    private RouteSnapshot route;
+    private long schoolId;
+    private long driverId;
+    private long routeId;
 
     private SortedSet<WaypointSnapshot> waypoints;
-    private SortedSet<PassengerSnapshot> passengers;
+    private SortedSet<TicketSnapshot> tickets;
 
     public JourneySnapshot() {
         waypoints = new TreeSet<>();
-        passengers = new TreeSet<>();
+        tickets = new TreeSet<>();
     }
 
     public String getJourneyId() {
@@ -103,28 +99,28 @@ public class JourneySnapshot implements Comparable, Serializable {
         this.state = state;
     }
 
-    public SchoolSnapshot getSchool() {
-        return school;
+    public long getSchoolId() {
+        return schoolId;
     }
 
-    public void setSchool(SchoolSnapshot school) {
-        this.school = school;
+    public void setSchoolId(long schoolId) {
+        this.schoolId = schoolId;
     }
 
-    public DriverSnapshot getDriver() {
-        return driver;
+    public long getDriverId() {
+        return driverId;
     }
 
-    public void setDriver(DriverSnapshot driver) {
-        this.driver = driver;
+    public void setDriverId(long driverId) {
+        this.driverId = driverId;
     }
 
-    public RouteSnapshot getRoute() {
-        return route;
+    public long getRouteId() {
+        return routeId;
     }
 
-    public void setRoute(RouteSnapshot route) {
-        this.route = route;
+    public void setRouteId(long routeId) {
+        this.routeId = routeId;
     }
 
     public SortedSet<WaypointSnapshot> getWaypoints() {
@@ -135,12 +131,12 @@ public class JourneySnapshot implements Comparable, Serializable {
         this.waypoints = waypoints;
     }
 
-    public SortedSet<PassengerSnapshot> getPassengers() {
-        return passengers;
+    public SortedSet<TicketSnapshot> getTickets() {
+        return tickets;
     }
 
-    public void setPassengers(SortedSet<PassengerSnapshot> passengers) {
-        this.passengers = passengers;
+    public void setTickets(SortedSet<TicketSnapshot> tickets) {
+        this.tickets = tickets;
     }
 
     @Override
@@ -179,11 +175,11 @@ public class JourneySnapshot implements Comparable, Serializable {
                 ", created=" + created +
                 ", completed=" + completed +
                 ", state=" + state +
-                ", school=" + school +
-                ", driver=" + driver +
-                ", route=" + route +
+                ", schoolId=" + schoolId +
+                ", driverId=" + driverId +
+                ", routeId=" + routeId +
                 ", waypoints=" + waypoints +
-                ", passengers=" + passengers +
+                ", tickets=" + tickets +
                 '}';
     }
 

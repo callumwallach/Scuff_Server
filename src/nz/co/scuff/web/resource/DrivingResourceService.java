@@ -1,15 +1,20 @@
 package nz.co.scuff.web.resource;
 
 import nz.co.scuff.data.family.Driver;
+import nz.co.scuff.data.family.Passenger;
 import nz.co.scuff.data.journey.Journey;
+import nz.co.scuff.data.journey.Ticket;
 import nz.co.scuff.data.journey.Waypoint;
 import nz.co.scuff.data.journey.snapshot.JourneySnapshot;
+import nz.co.scuff.data.journey.snapshot.TicketSnapshot;
 import nz.co.scuff.data.journey.snapshot.WaypointSnapshot;
 import nz.co.scuff.data.school.School;
 import nz.co.scuff.server.family.DriverServiceBean;
+import nz.co.scuff.server.family.PassengerServiceBean;
 import nz.co.scuff.server.journey.JourneyServiceBean;
 import nz.co.scuff.server.school.RouteServiceBean;
 import nz.co.scuff.server.school.SchoolServiceBean;
+import nz.co.scuff.server.school.TicketServiceBean;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,6 +37,10 @@ public class DrivingResourceService {
     private RouteServiceBean routeService;
     @EJB
     private DriverServiceBean driverService;
+    @EJB
+    private PassengerServiceBean passengerService;
+    @EJB
+    private TicketServiceBean ticketService;
 
     @Path("/journeys")
     @POST
@@ -43,10 +52,10 @@ public class DrivingResourceService {
             // new journey
             if (l.isDebugEnabled()) l.debug("create journey");
             Journey newJourney = new Journey(snapshot);
-            School school = schoolService.load(snapshot.getSchool().getSchoolId(), new int[] { SchoolServiceBean.JOURNEYS });
+            School school = schoolService.load(snapshot.getSchoolId(), new int[] { SchoolServiceBean.JOURNEYS });
             newJourney.setSchool(school);
-            newJourney.setRoute(routeService.find(snapshot.getRoute().getRouteId()));
-            Driver driver = driverService.find(snapshot.getDriver().getPersonId());
+            newJourney.setRoute(routeService.find(snapshot.getRouteId()));
+            Driver driver = driverService.find(snapshot.getDriverId());
             newJourney.setDriver(driver);
             journeyService.create(newJourney);
 
@@ -71,4 +80,22 @@ public class DrivingResourceService {
             journeyService.edit(foundJourney);
         }
     }
+
+    @Path("/journeys/{id}/tickets")
+    @POST
+    @Consumes("application/json")
+    public void postTicket(@PathParam("id") String journeyId, TicketSnapshot snapshot) {
+        if (l.isDebugEnabled()) l.debug("add journey="+journeyId+ " ticket=" + snapshot);
+        Journey foundJourney = journeyService.find(journeyId);
+        Passenger foundPassenger = passengerService.find(snapshot.getPassengerId());
+        Ticket ticket = new Ticket(snapshot);
+        ticket.setJourney(foundJourney);
+        ticket.setPassenger(foundPassenger);
+        ticketService.create(ticket);
+        foundJourney.getTickets().add(ticket);
+        foundPassenger.getTickets().add(ticket);
+        journeyService.edit(foundJourney);
+        passengerService.edit(foundPassenger);
+    }
+
 }

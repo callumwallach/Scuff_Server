@@ -1,7 +1,6 @@
 package nz.co.scuff.data.journey;
 
 import nz.co.scuff.data.family.Driver;
-import nz.co.scuff.data.family.Passenger;
 import nz.co.scuff.data.journey.snapshot.JourneySnapshot;
 import nz.co.scuff.data.school.Route;
 import nz.co.scuff.data.school.School;
@@ -69,13 +68,13 @@ public class Journey implements Serializable, Comparable {
     @Sort(type = SortType.NATURAL)
     private SortedSet<Waypoint> waypoints;
 
-    @ManyToMany(fetch = FetchType.EAGER)
+    @OneToMany(fetch = FetchType.EAGER)
     @JoinTable(
-            name="journey_passengers",
+            name="journey_tickets",
             joinColumns={@JoinColumn(name="JourneyId", referencedColumnName="journeyId")},
-            inverseJoinColumns={@JoinColumn(name="PassengerId", referencedColumnName="personId")})
+            inverseJoinColumns={@JoinColumn(name="TicketId", referencedColumnName="ticketId")})
     @Sort(type = SortType.NATURAL)
-    private SortedSet<Passenger> passengers;
+    private SortedSet<Ticket> tickets;
 
     // TODO sync with sorted set to ensure first is the most recent
     public Waypoint getMostRecentWaypoint() {
@@ -198,15 +197,15 @@ public class Journey implements Serializable, Comparable {
         this.waypoints = waypoints;
     }
 
-    public SortedSet<Passenger> getPassengers() {
-        if (passengers == null) {
-            passengers = new TreeSet<>();
+    public SortedSet<Ticket> getTickets() {
+        if (tickets == null) {
+            tickets = new TreeSet<>();
         }
-        return passengers;
+        return tickets;
     }
 
-    public void setPassengers(SortedSet<Passenger> passengers) {
-        this.passengers = passengers;
+    public void setTickets(SortedSet<Ticket> tickets) {
+        this.tickets = tickets;
     }
 
     public JourneySnapshot toSnapshot() {
@@ -219,13 +218,19 @@ public class Journey implements Serializable, Comparable {
         snapshot.setCreated(created);
         snapshot.setCompleted(completed);
         snapshot.setState(state);
+        // entities
+        snapshot.setSchoolId(school.getSchoolId());
+        snapshot.setDriverId(driver.getPersonId());
+        snapshot.setRouteId(route.getRouteId());
         return snapshot;
     }
 
     @Override
     public int compareTo(Object another) {
         Journey other = (Journey)another;
-        return other.created == null ? 1 : this.created.compareTo(other.created);
+        if (other.created == null) return 1;
+        if (this.created == null) return -1;
+        return this.created.compareTo(other.created);
     }
 
     @Override

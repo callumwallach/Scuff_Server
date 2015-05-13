@@ -4,7 +4,7 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 import nz.co.scuff.data.family.snapshot.PassengerSnapshot;
-import nz.co.scuff.data.journey.Journey;
+import nz.co.scuff.data.journey.Ticket;
 import nz.co.scuff.data.school.Route;
 import nz.co.scuff.data.school.School;
 import org.hibernate.annotations.Sort;
@@ -27,10 +27,6 @@ public class Passenger extends Person {
     @Sort(type = SortType.NATURAL)
     private SortedSet<Driver> parents;
 
-    @ManyToMany(mappedBy="passengers", fetch = FetchType.EAGER)
-    @Sort(type = SortType.NATURAL)
-    private SortedSet<Journey> journeys;
-
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name="passenger_routes",
@@ -38,6 +34,15 @@ public class Passenger extends Person {
             inverseJoinColumns={@JoinColumn(name="RouteId", referencedColumnName="routeId")})
     @Sort(type = SortType.NATURAL)
     private SortedSet<Route> registeredRoutes;
+
+    // one to many
+    @OneToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+            name="passenger_tickets",
+            joinColumns={@JoinColumn(name="PassengerId", referencedColumnName="personId")},
+            inverseJoinColumns={@JoinColumn(name="TicketId", referencedColumnName="ticketId")})
+    @Sort(type = SortType.NATURAL)
+    private SortedSet<Ticket> tickets;
 
     public Passenger() { }
 
@@ -71,15 +76,15 @@ public class Passenger extends Person {
         this.parents = parents;
     }
 
-    public SortedSet<Journey> getJourneys() {
-        if (journeys == null) {
-            journeys = new TreeSet<>();
+    public SortedSet<Ticket> getTickets() {
+        if (tickets == null) {
+            tickets = new TreeSet<>();
         }
-        return journeys;
+        return tickets;
     }
 
-    public void setJourneys(SortedSet<Journey> journeys) {
-        this.journeys = journeys;
+    public void setTickets(SortedSet<Ticket> tickets) {
+        this.tickets = tickets;
     }
 
     public SortedSet<Route> getRegisteredRoutes() {
