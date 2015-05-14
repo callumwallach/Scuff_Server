@@ -1,6 +1,7 @@
 package nz.co.scuff.test;
 
 import nz.co.scuff.data.family.snapshot.DriverSnapshot;
+import nz.co.scuff.data.journey.snapshot.TicketSnapshot;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
@@ -37,6 +38,12 @@ public class TestClient {
         response = target.request().get();
         DriverSnapshot parent = response.readEntity(DriverSnapshot.class);
         logger.info("GET user=" + parent + "]");
+        response.close();*/
+
+/*        target = client.target("http://localhost:8080/scuff/test/populate/hereistheid");
+        response = target.request().put(Entity.entity("PUT", "application/json"));
+        TicketSnapshot ticket = response.readEntity(TicketSnapshot.class);
+        logger.info("PUT ticket=" + ticket + "]");
         response.close();*/
 
 /*        target = client.target("http://localhost:8080/scuff/test/2/callum@gmail.com");

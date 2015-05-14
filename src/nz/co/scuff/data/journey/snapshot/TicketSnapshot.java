@@ -10,9 +10,10 @@ import java.sql.Timestamp;
 public class TicketSnapshot implements Comparable {
 
     private String ticketId;
-    private double latitude;
-    private long longitude;
-    private Timestamp timestamp;
+    private Timestamp issueDate;
+
+    private StampSnapshot stamp;
+
     private String journeyId;
     private long passengerId;
 
@@ -42,28 +43,20 @@ public class TicketSnapshot implements Comparable {
         this.passengerId = passengerId;
     }
 
-    public double getLatitude() {
-        return latitude;
+    public Timestamp getIssueDate() {
+        return issueDate;
     }
 
-    public void setLatitude(double latitude) {
-        this.latitude = latitude;
+    public void setIssueDate(Timestamp issueDate) {
+        this.issueDate = issueDate;
     }
 
-    public long getLongitude() {
-        return longitude;
+    public StampSnapshot getStamp() {
+        return stamp;
     }
 
-    public void setLongitude(long longitude) {
-        this.longitude = longitude;
-    }
-
-    public Timestamp getTimestamp() {
-        return timestamp;
-    }
-
-    public void setTimestamp(Timestamp timestamp) {
-        this.timestamp = timestamp;
+    public void setStamp(StampSnapshot stamp) {
+        this.stamp = stamp;
     }
 
     @Override
@@ -85,6 +78,19 @@ public class TicketSnapshot implements Comparable {
     @Override
     public int compareTo(Object another) {
         TicketSnapshot other = (TicketSnapshot) another;
-        return this.timestamp.compareTo(other.timestamp);
+        return this.issueDate.compareTo(other.issueDate);
     }
+
+    @Override
+    public String toString() {
+        final StringBuffer sb = new StringBuffer("TicketSnapshot{");
+        sb.append("ticketId='").append(ticketId).append('\'');
+        sb.append(", issueDate=").append(issueDate);
+        sb.append(", stamp=").append(stamp);
+        sb.append(", journeyId='").append(journeyId).append('\'');
+        sb.append(", passengerId=").append(passengerId);
+        sb.append('}');
+        return sb.toString();
+    }
+
 }

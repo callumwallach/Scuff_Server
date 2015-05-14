@@ -294,9 +294,10 @@ DROP TABLE IF EXISTS `ticket`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `ticket` (
   `TicketId` varchar(255) NOT NULL,
+  `IssueDate` datetime DEFAULT NULL,
   `Latitude` double DEFAULT NULL,
   `Longitude` bigint(20) DEFAULT NULL,
-  `Timestamp` datetime DEFAULT NULL,
+  `StampDate` datetime DEFAULT NULL,
   `Journey` varchar(255) DEFAULT NULL,
   `Passenger` bigint(20) DEFAULT NULL,
   PRIMARY KEY (`TicketId`),
@@ -343,4 +344,4 @@ CREATE TABLE `waypoint` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2015-05-12 14:00:31
+-- Dump completed on 2015-05-15  1:42:03

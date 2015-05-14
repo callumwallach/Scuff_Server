@@ -2,12 +2,15 @@ package nz.co.scuff.test;
 
 import nz.co.scuff.data.family.Driver;
 import nz.co.scuff.data.family.snapshot.DriverSnapshot;
+import nz.co.scuff.data.journey.snapshot.JourneySnapshot;
+import nz.co.scuff.data.journey.snapshot.TicketSnapshot;
 import nz.co.scuff.server.family.DriverServiceBean;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.ejb.EJB;
 import javax.ws.rs.*;
+import javax.ws.rs.core.Response;
 
 /**
  * Created by Callum on 4/05/2015.
@@ -30,6 +33,17 @@ public class TestResourceService {
         if (D) l.debug("populating test data resource");
 
         testService.populateTestData();
+    }
+
+    @Path("/populate/{id}")
+    @PUT
+    @Consumes("application/json")
+    @Produces("application/json")
+    public Response putAndReturnTestData(@PathParam("id") String journeyId, String data) {
+        if (D) l.debug("put and return data journeyId="+journeyId+" data received="+data);
+        TicketSnapshot obj = new TicketSnapshot();
+        obj.setJourneyId("ticket no 3");
+        return Response.ok().entity(obj).build();
     }
 
 /*    @Path("/snapshot/1")

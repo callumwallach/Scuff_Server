@@ -20,6 +20,9 @@ import org.slf4j.LoggerFactory;
 
 import javax.ejb.EJB;
 import javax.ws.rs.*;
+import javax.ws.rs.core.Response;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by Callum on 7/05/2015.
@@ -45,48 +48,77 @@ public class DrivingResourceService {
     @Path("/journeys")
     @POST
     @Consumes("application/json")
-    public void postJourney(JourneySnapshot snapshot) {
+    @Produces("application/json")
+    public TicketSnapshot postJourney(JourneySnapshot snapshot) {
         if (l.isDebugEnabled()) l.debug("post resource journey snapshot=" + snapshot);
-        Journey foundJourney = journeyService.find(snapshot.getJourneyId());
-        if (foundJourney == null) {
-            // new journey
-            if (l.isDebugEnabled()) l.debug("create journey");
-            Journey newJourney = new Journey(snapshot);
-            School school = schoolService.load(snapshot.getSchoolId(), new int[] { SchoolServiceBean.JOURNEYS });
-            newJourney.setSchool(school);
-            newJourney.setRoute(routeService.find(snapshot.getRouteId()));
-            Driver driver = driverService.find(snapshot.getDriverId());
-            newJourney.setDriver(driver);
-            journeyService.create(newJourney);
 
-            school.getJourneys().add(newJourney);
-            schoolService.edit(school);
-            driver.getJourneys().add(newJourney);
-            driverService.edit(driver);
-            for (WaypointSnapshot ws : snapshot.getWaypoints()) {
-                newJourney.getWaypoints().add(new Waypoint(ws));
-            }
-            journeyService.edit(newJourney);
-        } else {
-            // update journey
-            if (l.isDebugEnabled()) l.debug("update journey="+foundJourney);
-            foundJourney.setTotalDistance(snapshot.getTotalDistance());
-            foundJourney.setTotalDuration(snapshot.getTotalDuration());
-            foundJourney.setCompleted(snapshot.getCompleted());
-            foundJourney.setState(snapshot.getState());
-            for (WaypointSnapshot ws : snapshot.getWaypoints()) {
-                foundJourney.getWaypoints().add(new Waypoint(ws));
-            }
-            journeyService.edit(foundJourney);
+        Journey journey = journeyService.find(snapshot.getJourneyId());
+        assert(journey == null);
+        // new journey
+        if (l.isDebugEnabled()) l.debug("create journey");
+        journey = new Journey(snapshot);
+        School school = schoolService.load(snapshot.getSchoolId(), new int[] { SchoolServiceBean.JOURNEYS });
+        journey.setSchool(school);
+        journey.setRoute(routeService.find(snapshot.getRouteId()));
+        Driver driver = driverService.find(snapshot.getDriverId());
+        journey.setDriver(driver);
+        journeyService.create(journey);
+
+        school.getJourneys().add(journey);
+        schoolService.edit(school);
+        driver.getJourneys().add(journey);
+        driverService.edit(driver);
+        for (WaypointSnapshot ws : snapshot.getWaypoints()) {
+            journey.getWaypoints().add(new Waypoint(ws));
         }
+        journeyService.edit(journey);
+
+        //return Response.ok().entity(journey.getJourneyId()).build();
+        TicketSnapshot ticket = new TicketSnapshot();
+        ticket.setJourneyId("ticket no. 3");
+        return ticket;
+    }
+
+    @Path("/journeys/{id}")
+    @PUT
+    @Consumes("application/json")
+    @Produces("application/json")
+    public TicketSnapshot updateJourney(@PathParam("id") String journeyId, JourneySnapshot snapshot) {
+        if (l.isDebugEnabled()) l.debug("put resource journey snapshot=" + snapshot);
+
+        Journey journey = journeyService.find(snapshot.getJourneyId());
+        assert(journey != null);
+        // TODO
+        /*if (foundJourney == null) {
+            return null;
+        }*/
+        // update journey
+        if (l.isDebugEnabled()) l.debug("update journey="+journey);
+        journey.setTotalDistance(snapshot.getTotalDistance());
+        journey.setTotalDuration(snapshot.getTotalDuration());
+        journey.setCompleted(snapshot.getCompleted());
+        journey.setState(snapshot.getState());
+        for (WaypointSnapshot ws : snapshot.getWaypoints()) {
+            journey.getWaypoints().add(new Waypoint(ws));
+        }
+        journeyService.edit(journey);
+
+        //return Response.ok().entity(journey.getJourneyId()).build();
+        TicketSnapshot ticket = new TicketSnapshot();
+        ticket.setJourneyId("ticket no. 3");
+        return ticket;
     }
 
     @Path("/journeys/{id}/tickets")
     @POST
     @Consumes("application/json")
-    public void postTicket(@PathParam("id") String journeyId, TicketSnapshot snapshot) {
-        if (l.isDebugEnabled()) l.debug("add journey="+journeyId+ " ticket=" + snapshot);
-        Journey foundJourney = journeyService.find(journeyId);
+    public void postTickets(@PathParam("id") String journeyId, List<TicketSnapshot> tickets) {
+        if (l.isDebugEnabled()) l.debug("post tickets for journey="+journeyId);
+
+        for (TicketSnapshot ticket : tickets) {
+            if (l.isDebugEnabled()) l.debug("processing ticket=="+ticket);
+        }
+        /*Journey foundJourney = journeyService.find(journeyId);
         Passenger foundPassenger = passengerService.find(snapshot.getPassengerId());
         Ticket ticket = new Ticket(snapshot);
         ticket.setJourney(foundJourney);
@@ -95,7 +127,7 @@ public class DrivingResourceService {
         foundJourney.getTickets().add(ticket);
         foundPassenger.getTickets().add(ticket);
         journeyService.edit(foundJourney);
-        passengerService.edit(foundPassenger);
+        passengerService.edit(foundPassenger);*/
     }
 
 }
