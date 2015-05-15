@@ -9,7 +9,7 @@ import java.sql.Timestamp;
 @XmlRootElement
 public class TicketSnapshot implements Comparable {
 
-    private String ticketId;
+    private long ticketId;
     private Timestamp issueDate;
 
     private StampSnapshot stamp;
@@ -19,11 +19,11 @@ public class TicketSnapshot implements Comparable {
 
     public TicketSnapshot() {}
 
-    public String getTicketId() {
+    public long getTicketId() {
         return ticketId;
     }
 
-    public void setTicketId(String ticketId) {
+    public void setTicketId(long ticketId) {
         this.ticketId = ticketId;
     }
 
@@ -66,13 +66,13 @@ public class TicketSnapshot implements Comparable {
 
         TicketSnapshot that = (TicketSnapshot) o;
 
-        return !(ticketId != null ? !ticketId.equals(that.ticketId) : that.ticketId != null);
+        return ticketId == that.ticketId;
 
     }
 
     @Override
     public int hashCode() {
-        return ticketId != null ? ticketId.hashCode() : 0;
+        return (int) (ticketId ^ (ticketId >>> 32));
     }
 
     @Override

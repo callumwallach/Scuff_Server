@@ -25,32 +25,35 @@ public abstract class AbstractFacade<T> {
     protected abstract EntityManager getEntityManager();
 
     public void create(T entity) {
-        l.debug("create");
+        if (l.isDebugEnabled()) l.debug("create "+ entityClass.getCanonicalName());
         getEntityManager().persist(entity);
     }
 
     public void edit(T entity) {
-        l.debug("edit");
+        if (l.isDebugEnabled()) l.debug("edit "+ entityClass.getCanonicalName());
         getEntityManager().merge(entity);
     }
 
     public void remove(T entity) {
+        if (l.isDebugEnabled()) l.debug("remove "+ entityClass.getCanonicalName());
         getEntityManager().remove(getEntityManager().merge(entity));
     }
 
     // returns null if entity not found
     public T find(Object id) {
-        l.debug("find");
+        if (l.isDebugEnabled()) l.debug("find "+ entityClass.getCanonicalName());
         return getEntityManager().find(entityClass, id);
     }
 
     public List<T> findAll() {
+        if (l.isDebugEnabled()) l.debug("findAll "+ entityClass.getCanonicalName());
         CriteriaQuery cq = getEntityManager().getCriteriaBuilder().createQuery();
         cq.select(cq.from(entityClass));
         return getEntityManager().createQuery(cq).getResultList();
     }
 
     public List<T> findRange(int[] range) {
+        if (l.isDebugEnabled()) l.debug("findRange "+ entityClass.getCanonicalName());
         CriteriaQuery cq = getEntityManager().getCriteriaBuilder().createQuery();
         cq.select(cq.from(entityClass));
         Query q = getEntityManager().createQuery(cq);
@@ -60,6 +63,7 @@ public abstract class AbstractFacade<T> {
     }
 
     public int count() {
+        if (l.isDebugEnabled()) l.debug("count "+ entityClass.getCanonicalName());
         CriteriaQuery cq = getEntityManager().getCriteriaBuilder().createQuery();
         Root<T> rt = cq.from(entityClass);
         cq.select(getEntityManager().getCriteriaBuilder().count(rt));

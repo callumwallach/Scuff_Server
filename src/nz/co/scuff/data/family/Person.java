@@ -113,6 +113,8 @@ public abstract class Person implements Comparable, Serializable {
     @Override
     public int compareTo(Object another) {
         Person other = (Person)another;
+        if (other.lastName == null) return 1;
+        if (this.lastName == null) return -1;
         int lastNameCompared = this.lastName.compareTo(other.lastName);
         if (lastNameCompared != 0) return lastNameCompared;
         return this.firstName.compareTo(other.firstName);

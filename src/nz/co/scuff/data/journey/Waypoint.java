@@ -195,6 +195,8 @@ public class Waypoint implements Serializable, Comparable {
     @Override
     public int compareTo(Object another) {
         Waypoint other = (Waypoint)another;
+        if (other.created == null) return 1;
+        if (this.created == null) return -1;
         return other.created == null ? 1 : this.created.compareTo(other.created);
     }
 

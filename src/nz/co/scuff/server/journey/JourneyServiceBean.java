@@ -32,10 +32,22 @@ public class JourneyServiceBean extends AbstractFacade<Journey> {
         super(Journey.class);
     }
 
-    public Journey findActiveByPK(String journeyId) {
-        if (l.isDebugEnabled()) l.debug("find journey by journeyId="+journeyId);
+    public Journey findActive(String journeyId) {
+        if (l.isDebugEnabled()) l.debug("find active journey by journeyId="+journeyId);
 
-        final CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
+        //create an ejbql expression
+        String ejbQL = "select j from Journey j where j.journeyId =:journeyId and j.state !=:state";
+        //create query
+        Query query = em.createQuery(ejbQL);
+        //substitute parameter.
+        query.setParameter("journeyId", journeyId);
+        query.setParameter("state", TrackingState.COMPLETED);
+        //execute the query
+        Journey found = (Journey)query.getSingleResult();
+        if (l.isDebugEnabled()) l.debug("found journey=" + found);
+        return found;
+
+/*        final CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
         // Create criteria query and pass the value object which needs to be populated as result
         final CriteriaQuery criteriaQuery = criteriaBuilder.createQuery(Journey.class);
         // Tell to criteria query which tables/entities you want to fetch
@@ -58,7 +70,7 @@ public class JourneyServiceBean extends AbstractFacade<Journey> {
             // just return null
         }
         if (l.isDebugEnabled()) l.debug("found journey=" + found);
-        return found;
+        return found;*/
     }
 
     public List<Journey> findActiveByRouteAndSchool(long routeId, long schoolId) {

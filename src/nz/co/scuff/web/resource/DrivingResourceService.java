@@ -49,7 +49,7 @@ public class DrivingResourceService {
     @POST
     @Consumes("application/json")
     @Produces("application/json")
-    public TicketSnapshot postJourney(JourneySnapshot snapshot) {
+    public List<TicketSnapshot> postJourney(JourneySnapshot snapshot) {
         if (l.isDebugEnabled()) l.debug("post resource journey snapshot=" + snapshot);
 
         Journey journey = journeyService.find(snapshot.getJourneyId());
@@ -73,17 +73,18 @@ public class DrivingResourceService {
         }
         journeyService.edit(journey);
 
-        //return Response.ok().entity(journey.getJourneyId()).build();
-        TicketSnapshot ticket = new TicketSnapshot();
-        ticket.setJourneyId("ticket no. 3");
-        return ticket;
+        List<TicketSnapshot> tickets = new ArrayList<>();
+        for (Ticket ticket : journey.getTickets()) {
+            tickets.add(ticket.toSnapshot());
+        }
+        return tickets;
     }
 
     @Path("/journeys/{id}")
     @PUT
     @Consumes("application/json")
     @Produces("application/json")
-    public TicketSnapshot updateJourney(@PathParam("id") String journeyId, JourneySnapshot snapshot) {
+    public List<TicketSnapshot> updateJourney(@PathParam("id") String journeyId, JourneySnapshot snapshot) {
         if (l.isDebugEnabled()) l.debug("put resource journey snapshot=" + snapshot);
 
         Journey journey = journeyService.find(snapshot.getJourneyId());
@@ -103,31 +104,11 @@ public class DrivingResourceService {
         }
         journeyService.edit(journey);
 
-        //return Response.ok().entity(journey.getJourneyId()).build();
-        TicketSnapshot ticket = new TicketSnapshot();
-        ticket.setJourneyId("ticket no. 3");
-        return ticket;
-    }
-
-    @Path("/journeys/{id}/tickets")
-    @POST
-    @Consumes("application/json")
-    public void postTickets(@PathParam("id") String journeyId, List<TicketSnapshot> tickets) {
-        if (l.isDebugEnabled()) l.debug("post tickets for journey="+journeyId);
-
-        for (TicketSnapshot ticket : tickets) {
-            if (l.isDebugEnabled()) l.debug("processing ticket=="+ticket);
+        List<TicketSnapshot> tickets = new ArrayList<>();
+        for (Ticket ticket : journey.getTickets()) {
+            tickets.add(ticket.toSnapshot());
         }
-        /*Journey foundJourney = journeyService.find(journeyId);
-        Passenger foundPassenger = passengerService.find(snapshot.getPassengerId());
-        Ticket ticket = new Ticket(snapshot);
-        ticket.setJourney(foundJourney);
-        ticket.setPassenger(foundPassenger);
-        ticketService.create(ticket);
-        foundJourney.getTickets().add(ticket);
-        foundPassenger.getTickets().add(ticket);
-        journeyService.edit(foundJourney);
-        passengerService.edit(foundPassenger);*/
+        return tickets;
     }
 
 }

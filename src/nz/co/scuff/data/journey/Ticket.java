@@ -15,20 +15,23 @@ import javax.persistence.*;
 public class Ticket implements Comparable, Serializable {
 
     @Id
+    @GeneratedValue(strategy= GenerationType.IDENTITY)
     @Column(name="TicketId")
-    private String ticketId;
+    private long ticketId;
     @Column(name="IssueDate")
     private Timestamp issueDate;
 
     @Column(name="Stamp")
     private Stamp stamp;
 
-    @ManyToOne(fetch=FetchType.LAZY)
-    @JoinColumn(name="Journey")
+    @ManyToOne(fetch=FetchType.EAGER)
+    //@JoinColumn(name="Journey")
+    @PrimaryKeyJoinColumn(name="JourneyId", referencedColumnName="JourneyId")
     private Journey journey;
 
-    @ManyToOne(fetch=FetchType.LAZY)
-    @JoinColumn(name="Passenger")
+    @ManyToOne(fetch=FetchType.EAGER)
+    //@JoinColumn(name="Passenger")
+    @PrimaryKeyJoinColumn(name="PassengerId", referencedColumnName="PersonId")
     private Passenger passenger;
 
     public Ticket() {}
@@ -36,14 +39,14 @@ public class Ticket implements Comparable, Serializable {
     public Ticket(TicketSnapshot snapshot) {
         this.ticketId = snapshot.getTicketId();
         this.issueDate = snapshot.getIssueDate();
-        this.stamp = new Stamp(snapshot.getStamp());
+        this.stamp = (snapshot.getStamp() == null ? null : new Stamp(snapshot.getStamp()));
     }
 
-    public String getTicketId() {
+    public long getTicketId() {
         return ticketId;
     }
 
-    public void setTicketId(String ticketId) {
+    public void setTicketId(long ticketId) {
         this.ticketId = ticketId;
     }
 
@@ -83,7 +86,7 @@ public class Ticket implements Comparable, Serializable {
         TicketSnapshot snapshot = new TicketSnapshot();
         snapshot.setTicketId(this.ticketId);
         snapshot.setIssueDate(this.issueDate);
-        snapshot.setStamp(this.stamp.toSnapshot());
+        snapshot.setStamp(this.stamp == null ? null : this.stamp.toSnapshot());
         snapshot.setJourneyId(this.journey.getJourneyId());
         snapshot.setPassengerId(this.passenger.getPersonId());
         return snapshot;
@@ -93,24 +96,34 @@ public class Ticket implements Comparable, Serializable {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        if (!super.equals(o)) return false;
 
-        Ticket that = (Ticket) o;
+        Ticket ticket = (Ticket) o;
 
-        return !(ticketId != null ? !ticketId.equals(that.ticketId) : that.ticketId != null);
+        return ticketId == ticket.ticketId;
 
     }
 
     @Override
     public int hashCode() {
-        int result = super.hashCode();
-        result = 31 * result + (ticketId != null ? ticketId.hashCode() : 0);
-        return result;
+        return (int) (ticketId ^ (ticketId >>> 32));
     }
 
     @Override
     public int compareTo(Object another) {
         Ticket other = (Ticket) another;
+        if (other.issueDate == null) return 1;
+        if (this.issueDate == null) return -1;
         return this.issueDate.compareTo(other.issueDate);
+    }
+
+    @Override
+    public String toString() {
+        return "Ticket{" +
+                "ticketId='" + ticketId + '\'' +
+                ", issueDate=" + issueDate +
+                ", stamp=" + stamp +
+                ", journey=" + (journey == null ? "null" : journey.getJourneyId()) +
+                ", passenger=" + (passenger == null ? "null" : passenger.getPersonId()) +
+                '}';
     }
 }
