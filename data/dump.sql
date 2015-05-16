@@ -433,13 +433,13 @@ CREATE TABLE `ticket` (
   `Latitude` double DEFAULT NULL,
   `Longitude` bigint(20) DEFAULT NULL,
   `StampDate` datetime DEFAULT NULL,
-  `journey_JourneyId` varchar(255) DEFAULT NULL,
-  `passenger_PersonId` bigint(20) DEFAULT NULL,
+  `Journey` varchar(255) DEFAULT NULL,
+  `Passenger` bigint(20) DEFAULT NULL,
   PRIMARY KEY (`TicketId`),
-  KEY `FK_8vi736gc6llcy3gbomkgosdcy` (`journey_JourneyId`),
-  KEY `FK_8q8h95o9efblv9okx8k3vjlah` (`passenger_PersonId`),
-  CONSTRAINT `FK_8q8h95o9efblv9okx8k3vjlah` FOREIGN KEY (`passenger_PersonId`) REFERENCES `person` (`PersonId`),
-  CONSTRAINT `FK_8vi736gc6llcy3gbomkgosdcy` FOREIGN KEY (`journey_JourneyId`) REFERENCES `journey` (`JourneyId`)
+  KEY `FK_d4nubepam37xw5277wopr6q1w` (`Journey`),
+  KEY `FK_qld062xlclu7bpe22s9o0qs57` (`Passenger`),
+  CONSTRAINT `FK_qld062xlclu7bpe22s9o0qs57` FOREIGN KEY (`Passenger`) REFERENCES `person` (`PersonId`),
+  CONSTRAINT `FK_d4nubepam37xw5277wopr6q1w` FOREIGN KEY (`Journey`) REFERENCES `journey` (`JourneyId`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -497,4 +497,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2015-05-15 20:04:14
+-- Dump completed on 2015-05-16 19:25:08

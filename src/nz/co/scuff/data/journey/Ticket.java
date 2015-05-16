@@ -25,13 +25,11 @@ public class Ticket implements Comparable, Serializable {
     private Stamp stamp;
 
     @ManyToOne(fetch=FetchType.EAGER)
-    //@JoinColumn(name="Journey")
-    @PrimaryKeyJoinColumn(name="JourneyId", referencedColumnName="JourneyId")
+    @JoinColumn(name="Journey")
     private Journey journey;
 
     @ManyToOne(fetch=FetchType.EAGER)
-    //@JoinColumn(name="Passenger")
-    @PrimaryKeyJoinColumn(name="PassengerId", referencedColumnName="PersonId")
+    @JoinColumn(name="Passenger")
     private Passenger passenger;
 
     public Ticket() {}

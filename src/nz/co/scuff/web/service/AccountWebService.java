@@ -1,18 +1,7 @@
-package nz.co.scuff.web.resource;
+package nz.co.scuff.web.service;
 
-import nz.co.scuff.data.family.Passenger;
-import nz.co.scuff.data.family.Driver;
-import nz.co.scuff.data.family.snapshot.PassengerSnapshot;
-import nz.co.scuff.data.family.snapshot.DriverSnapshot;
-import nz.co.scuff.data.journey.Journey;
-import nz.co.scuff.data.journey.Waypoint;
-import nz.co.scuff.data.journey.snapshot.JourneySnapshot;
-import nz.co.scuff.data.school.Route;
-import nz.co.scuff.data.school.School;
-import nz.co.scuff.data.school.snapshot.RouteSnapshot;
-import nz.co.scuff.data.school.snapshot.SchoolSnapshot;
 import nz.co.scuff.data.util.DataPacket;
-import nz.co.scuff.server.family.DriverServiceBean;
+import nz.co.scuff.server.service.AccountServiceBean;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -22,84 +11,27 @@ import javax.ws.rs.*;
 /**
  * Created by Callum on 27/04/2015.
  */
-@Path("/profiles")
-public class ProfileResourceService {
+@Path("/account")
+public class AccountWebService {
 
-    public static final Logger l = LoggerFactory.getLogger(ProfileResourceService.class.getCanonicalName());
+    public static final Logger l = LoggerFactory.getLogger(AccountWebService.class.getCanonicalName());
 
     @EJB
-    private DriverServiceBean driverService;
+    private AccountServiceBean accountService;
 
-/*    @Path("/{id}")
-    @GET
-    @Produces("application/json")
-    public DriverSnapshot getDriverSnapshot(@PathParam("id") long id) {
-        if (l.isDebugEnabled()) l.debug("get driver by id=" + id);
-
-        Driver found = driverService.find(id);
-        if (found == null) {
-            return null;
-        }
-        return assemble(found);
-    }*/
-
-    @Path("/{email}")
+    @Path("/drivers/{email}")
     @GET
     @Produces("application/json")
     public DataPacket getDriver(@PathParam("email") String email) {
-        if (l.isDebugEnabled()) l.debug("get driver by email");
-
-        Driver found = driverService.findByEmail(email);
-        if (found == null) {
-            return null;
-        }
-        return assemble(found);
+        return accountService.getDriver(email);
     }
 
-    private DataPacket assemble(Driver toAssemble) {
-        if (l.isDebugEnabled()) l.debug("assemble driver for transit");
-
-        // assemble for user
-        DataPacket packet = new DataPacket();
-
-        DriverSnapshot dss = toAssemble.toSnapshot();
-
-        for (Passenger p : toAssemble.getChildren()) {
-            PassengerSnapshot ps = p.toSnapshot();
-            for (School s : p.getSchools()) {
-                SchoolSnapshot ss = s.toSnapshot();
-                ps.getSchoolIds().add(ss.getSchoolId());
-                packet.getSchoolSnapshots().put(ss.getSchoolId(), ss);
-            }
-            for (Driver d : p.getParents()) {
-                DriverSnapshot ds = d.toSnapshot();
-                ps.getParentIds().add(ds.getPersonId());
-                packet.getDriverSnapshots().put(ds.getPersonId(), ds);
-            }
-            for (Route r : p.getRegisteredRoutes()) {
-                RouteSnapshot rs = r.toSnapshot();
-                ps.getRegisteredRouteIds().add(rs.getRouteId());
-                packet.getRouteSnapshots().put(rs.getRouteId(), rs);
-            }
-            dss.getChildrenIds().add(ps.getPersonId());
-            packet.getPassengerSnapshots().put(ps.getPersonId(), ps);
-        }
-        for (School s : toAssemble.getSchoolsDrivingFor()) {
-            SchoolSnapshot ss = s.toSnapshot();
-            dss.getSchoolIdsDrivenFor().add(ss.getSchoolId());
-            packet.getSchoolSnapshots().put(ss.getSchoolId(), ss);
-        }
-        for (Route r : toAssemble.getRoutesDriven()) {
-            RouteSnapshot rs = r.toSnapshot();
-            dss.getRegisteredRouteIds().add(rs.getRouteId());
-            packet.getRouteSnapshots().put(rs.getRouteId(), rs);
-        }
-
-        packet.getDriverSnapshots().put(dss.getPersonId(), dss);
-
-        if (l.isDebugEnabled()) l.debug("assembled packet="+packet);
-
-        return packet;
+    @Path("/schools")
+    @GET
+    @Produces("application/json")
+    public DataPacket getSchools(@QueryParam("latitude") double latitude,
+                                 @QueryParam("longitude") double longitude, @QueryParam("radius") int radius) {
+        return accountService.getSchools(latitude, longitude, radius);
     }
 
     /*private DriverSnapshot assemble(Driver toPrune) {

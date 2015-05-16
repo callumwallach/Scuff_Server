@@ -1,76 +1,39 @@
-package nz.co.scuff.web.resource;
+package nz.co.scuff.web.service;
 
-import nz.co.scuff.data.family.Passenger;
-import nz.co.scuff.data.journey.Journey;
-import nz.co.scuff.data.journey.Ticket;
 import nz.co.scuff.data.journey.snapshot.BusSnapshot;
 import nz.co.scuff.data.journey.snapshot.TicketSnapshot;
-import nz.co.scuff.server.error.ScuffServerException;
-import nz.co.scuff.server.family.PassengerServiceBean;
-import nz.co.scuff.server.journey.JourneyServiceBean;
-import nz.co.scuff.server.school.TicketServiceBean;
-import nz.co.scuff.server.error.ErrorContextCode;
-import org.joda.time.DateTimeUtils;
+import nz.co.scuff.server.service.WalkingServiceBean;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.sql.Timestamp;
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.ejb.EJB;
 import javax.ws.rs.*;
-import javax.ws.rs.core.Response;
 
 /**
  * Created by Callum on 7/05/2015.
  */
 @Path("/walking")
-public class WalkingResourceService {
+public class WalkingWebService {
 
-    public static final Logger l = LoggerFactory.getLogger(WalkingResourceService.class.getCanonicalName());
+    public static final Logger l = LoggerFactory.getLogger(WalkingWebService.class.getCanonicalName());
 
     @EJB
-    private JourneyServiceBean journeyService;
-    @EJB
-    private PassengerServiceBean passengerService;
-    @EJB
-    private TicketServiceBean ticketService;
+    private WalkingServiceBean walkingService;
 
     @Path("/buses/{id}")
     @GET
     @Produces("application/json")
     public BusSnapshot getActiveBus(@PathParam("id") String journeyId) {
-        if (l.isDebugEnabled()) l.debug("getActiveBus busId="+journeyId);
-
-        Journey journey = journeyService.findActive(journeyId);
-        BusSnapshot snapshot = null;
-        if (journey != null) {
-            snapshot = new BusSnapshot(journey);
-        }
-        if (l.isDebugEnabled()) l.debug("found snapshot="+ snapshot);
-        return snapshot;
+        return walkingService.getActiveBus(journeyId);
     }
 
     @Path("/buses")
     @GET
     @Produces("application/json")
     public List<BusSnapshot> getActiveBuses(@QueryParam("routeId") long routeId, @QueryParam("schoolId") long schoolId) {
-        if (l.isDebugEnabled()) l.debug("getActiveBuses routeId="+routeId+" schoolId="+schoolId);
-
-        // only need location details as data is matched up to local copy (and constant fields ignored)
-        // so set driver school and route as ids only
-        List<Journey> journeys = journeyService.findActiveByRouteAndSchool(routeId, schoolId);
-        List<BusSnapshot> snapshots = new ArrayList<>();
-        for (Journey journey : journeys) {
-            snapshots.add(new BusSnapshot(journey));
-        }
-        if (l.isDebugEnabled()) {
-            for (BusSnapshot js : snapshots) {
-                l.debug("found snapshot="+js);
-            }
-        }
-        return snapshots;
+        return walkingService.getActiveBuses(routeId, schoolId);
     }
 
     @Path("/buses/{id}/tickets")
@@ -78,45 +41,7 @@ public class WalkingResourceService {
     @Consumes("application/json")
     @Produces("application/json")
     public List<TicketSnapshot> requestTickets(@PathParam("id") String journeyId, List<Long> passengerIds) throws Exception {
-        if (l.isDebugEnabled()) l.debug("post tickets for journey="+journeyId+" and passenger ids="+passengerIds);
-
-        Journey journey = journeyService.findActive(journeyId);
-        // if journey == null then it has been completed since this ticket was requested
-        if (journey == null) {
-            throw new ScuffServerException("Resource not found", "The selected journey may have been completed",
-                    Response.Status.NOT_FOUND, ErrorContextCode.JOURNEY_NOT_FOUND);
-        }
-        List<TicketSnapshot> tickets = new ArrayList<>();
-        for (Long id : passengerIds) {
-            if (l.isDebugEnabled()) l.debug("processing passenger=" + id);
-            // ensure no duplicates
-            if (!journey.getTickets().stream().anyMatch(t -> t.getPassenger().getPersonId() == id)) {
-                Ticket ticket = new Ticket();
-                ticket.setIssueDate(new Timestamp(DateTimeUtils.currentTimeMillis()));
-                ticket.setJourney(journey);
-                Passenger passenger = passengerService.find(id);
-                assert (passenger != null);
-                ticket.setPassenger(passenger);
-                ticketService.create(ticket);
-                passenger.getTickets().add(ticket);
-                passengerService.edit(passenger);
-                journey.getTickets().add(ticket);
-                journey.getTickets()
-                    .stream()
-                    .map(Ticket::getTicketId)
-                    .forEach(ticketId -> l.debug("added ticket=" + ticketId));
-                if (l.isDebugEnabled()) l.debug("created ticket=" + ticket);
-                tickets.add(ticket.toSnapshot());
-                //journeyService.edit(journey);
-            }
-        }
-        // TODO work out why tickets not sticking
-        journey.getTickets()
-                .stream()
-                .map(Ticket::getTicketId)
-                .forEach(ticketId -> l.debug("final ticket="+ticketId));
-        journeyService.edit(journey);
-        return tickets;
+        return walkingService.requestTickets(journeyId, passengerIds);
     }
 
     /*@Path("/{id}")

@@ -1,7 +1,6 @@
-package nz.co.scuff.web.resource;
+package nz.co.scuff.server.service;
 
 import nz.co.scuff.data.family.Driver;
-import nz.co.scuff.data.family.Passenger;
 import nz.co.scuff.data.journey.Journey;
 import nz.co.scuff.data.journey.Ticket;
 import nz.co.scuff.data.journey.Waypoint;
@@ -19,18 +18,17 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.ejb.EJB;
-import javax.ws.rs.*;
-import javax.ws.rs.core.Response;
+import javax.ejb.Stateless;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created by Callum on 7/05/2015.
+ * Created by Callum on 16/05/2015.
  */
-@Path("/driving")
-public class DrivingResourceService {
+@Stateless(name = "DrivingServiceEJB")
+public class DrivingServiceBean {
 
-    public static final Logger l = LoggerFactory.getLogger(DrivingResourceService.class.getCanonicalName());
+    public static final Logger l = LoggerFactory.getLogger(DrivingServiceBean.class.getCanonicalName());
 
     @EJB
     private JourneyServiceBean journeyService;
@@ -45,10 +43,8 @@ public class DrivingResourceService {
     @EJB
     private TicketServiceBean ticketService;
 
-    @Path("/journeys")
-    @POST
-    @Consumes("application/json")
-    @Produces("application/json")
+    public DrivingServiceBean() { }
+
     public List<TicketSnapshot> postJourney(JourneySnapshot snapshot) {
         if (l.isDebugEnabled()) l.debug("post resource journey snapshot=" + snapshot);
 
@@ -80,11 +76,7 @@ public class DrivingResourceService {
         return tickets;
     }
 
-    @Path("/journeys/{id}")
-    @PUT
-    @Consumes("application/json")
-    @Produces("application/json")
-    public List<TicketSnapshot> updateJourney(@PathParam("id") String journeyId, JourneySnapshot snapshot) {
+    public List<TicketSnapshot> updateJourney(String journeyId, JourneySnapshot snapshot) {
         if (l.isDebugEnabled()) l.debug("put resource journey snapshot=" + snapshot);
 
         Journey journey = journeyService.find(snapshot.getJourneyId());
