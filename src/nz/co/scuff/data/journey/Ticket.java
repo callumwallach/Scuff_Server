@@ -5,6 +5,8 @@ import java.sql.Timestamp;
 
 import nz.co.scuff.data.family.Passenger;
 import nz.co.scuff.data.journey.snapshot.TicketSnapshot;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.persistence.*;
 
@@ -13,6 +15,8 @@ import javax.persistence.*;
  */
 @Entity
 public class Ticket implements Comparable, Serializable {
+
+    public static final Logger l = LoggerFactory.getLogger(Ticket.class.getCanonicalName());
 
     @Id
     @GeneratedValue(strategy= GenerationType.IDENTITY)
@@ -92,6 +96,7 @@ public class Ticket implements Comparable, Serializable {
 
     @Override
     public boolean equals(Object o) {
+        if (l.isDebugEnabled()) l.debug(this+" equals:"+o);
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
@@ -108,10 +113,14 @@ public class Ticket implements Comparable, Serializable {
 
     @Override
     public int compareTo(Object another) {
+        if (l.isDebugEnabled()) l.debug(this+" compareTo:"+another);
         Ticket other = (Ticket) another;
-        if (other.issueDate == null) return 1;
-        if (this.issueDate == null) return -1;
-        return this.issueDate.compareTo(other.issueDate);
+/*        if (other.issueDate == null) return 1;
+        if (this.issueDate == null) return -1;*/
+        //return this.issueDate.compareTo(other.issueDate);
+        // TODO why??
+        if (ticketId == other.ticketId) return 0;
+        return (ticketId < other.ticketId)? -1 : 1;
     }
 
     @Override

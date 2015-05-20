@@ -42,7 +42,7 @@ public class TicketServiceBean extends AbstractFacade<Ticket> {
         super(Ticket.class);
     }
 
-    public List<TicketSnapshot> requestTickets(String journeyId, List<Long> passengerIds) throws Exception {
+/*    public List<TicketSnapshot> requestTickets(String journeyId, List<Long> passengerIds) throws Exception {
         if (l.isDebugEnabled()) l.debug("post tickets for journey="+journeyId+" and passenger ids="+passengerIds);
 
         Journey journey = journeyService.findActive(journeyId);
@@ -72,6 +72,6 @@ public class TicketServiceBean extends AbstractFacade<Ticket> {
         }
         journeyService.edit(journey);
         return tickets;
-    }
+    }*/
 
 }

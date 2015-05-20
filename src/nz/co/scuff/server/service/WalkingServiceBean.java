@@ -1,10 +1,14 @@
 package nz.co.scuff.server.service;
 
 import nz.co.scuff.data.family.Passenger;
+import nz.co.scuff.data.family.snapshot.DriverSnapshot;
 import nz.co.scuff.data.journey.Journey;
 import nz.co.scuff.data.journey.Ticket;
 import nz.co.scuff.data.journey.snapshot.BusSnapshot;
+import nz.co.scuff.data.journey.snapshot.JourneySnapshot;
 import nz.co.scuff.data.journey.snapshot.TicketSnapshot;
+import nz.co.scuff.data.journey.snapshot.WaypointSnapshot;
+import nz.co.scuff.data.util.DataPacket;
 import nz.co.scuff.server.error.ErrorContextCode;
 import nz.co.scuff.server.error.ScuffServerException;
 import nz.co.scuff.server.family.PassengerServiceBean;
@@ -50,7 +54,7 @@ public class WalkingServiceBean {
         return snapshot;
     }
 
-    public List<BusSnapshot> getActiveBuses(long routeId, long schoolId) {
+    /*public List<BusSnapshot> getActiveBuses(long routeId, long schoolId) {
         if (l.isDebugEnabled()) l.debug("getActiveBuses routeId="+routeId+" schoolId="+schoolId);
 
         // only need location details as data is matched up to local copy (and constant fields ignored)
@@ -66,6 +70,26 @@ public class WalkingServiceBean {
             }
         }
         return snapshots;
+    }*/
+
+    public DataPacket getActiveJourneys(long routeId, long schoolId) {
+        if (l.isDebugEnabled()) l.debug("getActiveBuses routeId="+routeId+" schoolId="+schoolId);
+
+        // only need location details as data is matched up to local copy (and constant fields ignored)
+        // so set driver school and route as ids only
+        List<Journey> journeys = journeyService.findActiveByRouteAndSchool(routeId, schoolId);
+        DataPacket packet = new DataPacket();
+        for (Journey journey : journeys) {
+            JourneySnapshot js = journey.toSnapshot();
+            WaypointSnapshot ws = journey.getMostRecentWaypoint().toSnapshot();
+            DriverSnapshot ds = journey.getDriver().toSnapshot();
+            js.getWaypoints().add(ws);
+            packet.getJourneySnapshots().put(js.getJourneyId(), js);
+            packet.getWaypointSnapshots().put(ws.getWaypointId(), ws);
+            packet.getDriverSnapshots().put(ds.getPersonId(), ds);
+        }
+        if (l.isDebugEnabled()) l.debug("found journeys as datapacket="+packet);
+        return packet;
     }
 
     public List<TicketSnapshot> requestTickets(String journeyId, List<Long> passengerIds) throws Exception {

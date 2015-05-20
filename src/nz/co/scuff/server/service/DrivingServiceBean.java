@@ -38,15 +38,11 @@ public class DrivingServiceBean {
     private RouteServiceBean routeService;
     @EJB
     private DriverServiceBean driverService;
-    @EJB
-    private PassengerServiceBean passengerService;
-    @EJB
-    private TicketServiceBean ticketService;
 
     public DrivingServiceBean() { }
 
     public List<TicketSnapshot> postJourney(JourneySnapshot snapshot) {
-        if (l.isDebugEnabled()) l.debug("post resource journey snapshot=" + snapshot);
+        if (l.isDebugEnabled()) l.debug("create journey snapshot=" + snapshot);
 
         Journey journey = journeyService.find(snapshot.getJourneyId());
         assert(journey == null);
@@ -77,7 +73,7 @@ public class DrivingServiceBean {
     }
 
     public List<TicketSnapshot> updateJourney(String journeyId, JourneySnapshot snapshot) {
-        if (l.isDebugEnabled()) l.debug("put resource journey snapshot=" + snapshot);
+        if (l.isDebugEnabled()) l.debug("update journey snapshot=" + snapshot);
 
         Journey journey = journeyService.find(snapshot.getJourneyId());
         assert(journey != null);
@@ -97,9 +93,13 @@ public class DrivingServiceBean {
         journeyService.edit(journey);
 
         List<TicketSnapshot> tickets = new ArrayList<>();
+        // TODO not getting all tickets???
+        if (l.isDebugEnabled()) l.debug("processing new journey tickets="+journey.getTickets());
         for (Ticket ticket : journey.getTickets()) {
+            if (l.isDebugEnabled()) l.debug("processing ticket="+ticket);
             tickets.add(ticket.toSnapshot());
         }
+        if (l.isDebugEnabled()) l.debug("returning tickets="+tickets);
         return tickets;
     }
 

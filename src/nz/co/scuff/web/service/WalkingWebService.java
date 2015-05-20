@@ -2,6 +2,7 @@ package nz.co.scuff.web.service;
 
 import nz.co.scuff.data.journey.snapshot.BusSnapshot;
 import nz.co.scuff.data.journey.snapshot.TicketSnapshot;
+import nz.co.scuff.data.util.DataPacket;
 import nz.co.scuff.server.service.WalkingServiceBean;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,8 +33,8 @@ public class WalkingWebService {
     @Path("/buses")
     @GET
     @Produces("application/json")
-    public List<BusSnapshot> getActiveBuses(@QueryParam("routeId") long routeId, @QueryParam("schoolId") long schoolId) {
-        return walkingService.getActiveBuses(routeId, schoolId);
+    public DataPacket getActiveJourneys(@QueryParam("routeId") long routeId, @QueryParam("schoolId") long schoolId) {
+        return walkingService.getActiveJourneys(routeId, schoolId);
     }
 
     @Path("/buses/{id}/tickets")
