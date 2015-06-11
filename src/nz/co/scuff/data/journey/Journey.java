@@ -1,16 +1,18 @@
 package nz.co.scuff.data.journey;
 
-import nz.co.scuff.data.family.Driver;
+import nz.co.scuff.data.base.Coordinator;
+import nz.co.scuff.data.base.ModifiableEntity;
+import nz.co.scuff.data.base.Snapshotable;
+import nz.co.scuff.data.family.Adult;
 import nz.co.scuff.data.journey.snapshot.JourneySnapshot;
-import nz.co.scuff.data.school.Route;
-import nz.co.scuff.data.school.School;
+import nz.co.scuff.data.institution.Route;
+import nz.co.scuff.data.place.Place;
 import nz.co.scuff.data.util.TrackingState;
 import org.hibernate.annotations.Sort;
 import org.hibernate.annotations.SortType;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
-import java.io.Serializable;
 import java.sql.Timestamp;
 import java.util.SortedSet;
 import java.util.TreeSet;
@@ -19,7 +21,7 @@ import java.util.TreeSet;
  * Created by Callum on 20/04/2015.
  */
 @Entity
-public class Journey implements Serializable, Comparable {
+public class Journey extends ModifiableEntity implements Snapshotable, Comparable {
 
     @Id
     @Column(name="JourneyId")
@@ -49,16 +51,30 @@ public class Journey implements Serializable, Comparable {
 
     @NotNull
     @ManyToOne(fetch=FetchType.EAGER)
-    @JoinColumn(name="school")
-    private School school;
-    @NotNull
-    @ManyToOne(fetch=FetchType.EAGER)
-    @JoinColumn(name="driver")
-    private Driver driver;
-    @NotNull
-    @ManyToOne(fetch=FetchType.EAGER)
-    @JoinColumn(name="route")
+    @JoinColumn(name="Route")
     private Route route;
+
+    @NotNull
+    @ManyToOne(fetch=FetchType.EAGER)
+    @JoinColumn(name="Owner")
+    private Coordinator owner;
+    @NotNull
+    @ManyToOne(fetch=FetchType.EAGER)
+    @JoinColumn(name="Agent")
+    private Coordinator agent;
+    @NotNull
+    @ManyToOne(fetch=FetchType.EAGER)
+    @JoinColumn(name="Guide")
+    private Adult guide;
+
+    @NotNull
+    @ManyToOne(fetch=FetchType.EAGER)
+    @JoinColumn(name="Origin")
+    private Place origin;
+    @NotNull
+    @ManyToOne(fetch=FetchType.EAGER)
+    @JoinColumn(name="Destination")
+    private Place destination;
 
     // TODO fix sort order to ensure most recent is first
 
@@ -82,20 +98,27 @@ public class Journey implements Serializable, Comparable {
         return waypoints.last();
     }
 
-    public Journey() {}
+    public Journey() {
+        super();
+        waypoints = new TreeSet<>();
+        tickets = new TreeSet<>();
+    }
 
     public Journey(JourneySnapshot snapshot) {
         this.journeyId = snapshot.getJourneyId();
         this.appId = snapshot.getAppId();
         this.source = snapshot.getSource();
-        // school, route and driver set manually
         this.totalDistance = snapshot.getTotalDistance();
         this.totalDuration = snapshot.getTotalDuration();
         this.created = snapshot.getCreated();
         this.completed = snapshot.getCompleted();
         this.state = snapshot.getState();
 
+        this.active = snapshot.isActive();
+        this.lastModified = snapshot.getLastModified();
+
         waypoints = new TreeSet<>();
+        tickets = new TreeSet<>();
     }
 
     public String getJourneyId() {
@@ -162,20 +185,44 @@ public class Journey implements Serializable, Comparable {
         this.state = state;
     }
 
-    public School getSchool() {
-        return school;
+    public Coordinator getOwner() {
+        return owner;
     }
 
-    public void setSchool(School school) {
-        this.school = school;
+    public void setOwner(Coordinator owner) {
+        this.owner = owner;
     }
 
-    public Driver getDriver() {
-        return driver;
+    public Coordinator getAgent() {
+        return agent;
     }
 
-    public void setDriver(Driver driver) {
-        this.driver = driver;
+    public void setAgent(Coordinator agent) {
+        this.agent = agent;
+    }
+
+    public Adult getGuide() {
+        return guide;
+    }
+
+    public void setGuide(Adult guide) {
+        this.guide = guide;
+    }
+
+    public Place getOrigin() {
+        return origin;
+    }
+
+    public void setOrigin(Place origin) {
+        this.origin = origin;
+    }
+
+    public Place getDestination() {
+        return destination;
+    }
+
+    public void setDestination(Place destination) {
+        this.destination = destination;
     }
 
     public Route getRoute() {
@@ -219,9 +266,15 @@ public class Journey implements Serializable, Comparable {
         snapshot.setCompleted(completed);
         snapshot.setState(state);
         // entities
-        snapshot.setSchoolId(school.getSchoolId());
-        snapshot.setDriverId(driver.getPersonId());
+        snapshot.setOwnerId(owner.getCoordinatorId());
+        snapshot.setAgentId(agent.getCoordinatorId());
+        snapshot.setGuideId(guide.getCoordinatorId());
+        snapshot.setOriginId(origin.getPlaceId());
+        snapshot.setDestinationId(destination.getPlaceId());
         snapshot.setRouteId(route.getRouteId());
+
+        snapshot.setActive(active);
+        snapshot.setLastModified(lastModified);
         return snapshot;
     }
 
@@ -252,7 +305,7 @@ public class Journey implements Serializable, Comparable {
 
     @Override
     public String toString() {
-        return "Journey{" +
+        String s = "Journey{" +
                 "journeyId='" + journeyId + '\'' +
                 ", appId='" + appId + '\'' +
                 ", source='" + source + '\'' +
@@ -261,9 +314,23 @@ public class Journey implements Serializable, Comparable {
                 ", created=" + created +
                 ", completed=" + completed +
                 ", state=" + state +
-                ", school=" + school.getName() +
-                ", driver=" + driver.getFirstName() +
-                ", route=" + route.getName() +
-                '}';
+                ", route=" + route.getRouteId() +
+                ", owner=" + owner.getCoordinatorId() +
+                ", agent=" + agent.getCoordinatorId() +
+                ", guide=" + guide.getCoordinatorId() +
+                ", origin=" + origin.getPlaceId() +
+                ", destination=" + destination.getPlaceId() +
+                ", waypoints=" + waypoints;
+        s += ", tickets=";
+        if ((tickets == null) || tickets.isEmpty()) {
+            s += "[empty]";
+        } else {
+            for (Ticket o : tickets) {
+                s += " ";
+                s += o.getTicketId();
+            }
+        }
+        s += "} " + super.toString();
+        return s;
     }
 }

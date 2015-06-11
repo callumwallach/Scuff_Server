@@ -3,43 +3,57 @@ package nz.co.scuff.data.util;
 import java.util.HashMap;
 import java.util.Map;
 
-import nz.co.scuff.data.family.snapshot.DriverSnapshot;
-import nz.co.scuff.data.family.snapshot.PassengerSnapshot;
+import nz.co.scuff.data.family.snapshot.AdultSnapshot;
+import nz.co.scuff.data.family.snapshot.ChildSnapshot;
+import nz.co.scuff.data.institution.snapshot.InstitutionSnapshot;
 import nz.co.scuff.data.journey.snapshot.JourneySnapshot;
+import nz.co.scuff.data.journey.snapshot.StampSnapshot;
 import nz.co.scuff.data.journey.snapshot.TicketSnapshot;
 import nz.co.scuff.data.journey.snapshot.WaypointSnapshot;
-import nz.co.scuff.data.school.snapshot.RouteSnapshot;
-import nz.co.scuff.data.school.snapshot.SchoolSnapshot;
+import nz.co.scuff.data.institution.snapshot.RouteSnapshot;
+import nz.co.scuff.data.place.snapshot.PlaceSnapshot;
 
 /**
  * Created by Callum on 11/05/2015.
  */
 public class DataPacket {
 
-    Map<Long, SchoolSnapshot> schoolSnapshots;
+    Map<Long, PlaceSnapshot> placeSnapshots;
+    Map<Long, InstitutionSnapshot> institutionSnapshots;
     Map<Long, RouteSnapshot> routeSnapshots;
     Map<String, JourneySnapshot> journeySnapshots;
     Map<String, WaypointSnapshot> waypointSnapshots;
-    Map<Long, PassengerSnapshot> passengerSnapshots;
-    Map<Long, DriverSnapshot> driverSnapshots;
+    Map<Long, ChildSnapshot> childSnapshots;
+    Map<Long, AdultSnapshot> adultSnapshots;
     Map<Long, TicketSnapshot> ticketSnapshots;
+    Map<Long, StampSnapshot> stampSnapshots;
 
     public DataPacket() {
-        this.schoolSnapshots = new HashMap<>();
+        this.placeSnapshots = new HashMap<>();
+        this.institutionSnapshots = new HashMap<>();
         this.routeSnapshots = new HashMap<>();
         this.journeySnapshots = new HashMap<>();
         this.waypointSnapshots = new HashMap<>();
-        this.passengerSnapshots = new HashMap<>();
-        this.driverSnapshots = new HashMap<>();
+        this.childSnapshots = new HashMap<>();
+        this.adultSnapshots = new HashMap<>();
         this.ticketSnapshots = new HashMap<>();
+        this.stampSnapshots = new HashMap<>();
     }
 
-    public Map<Long, SchoolSnapshot> getSchoolSnapshots() {
-        return schoolSnapshots;
+    public Map<Long, PlaceSnapshot> getPlaceSnapshots() {
+        return placeSnapshots;
     }
 
-    public void setSchoolSnapshots(Map<Long, SchoolSnapshot> schoolSnapshots) {
-        this.schoolSnapshots = schoolSnapshots;
+    public void setPlaceSnapshots(Map<Long, PlaceSnapshot> placeSnapshots) {
+        this.placeSnapshots = placeSnapshots;
+    }
+
+    public Map<Long, InstitutionSnapshot> getInstitutionSnapshots() {
+        return institutionSnapshots;
+    }
+
+    public void setInstitutionSnapshots(Map<Long, InstitutionSnapshot> institutionSnapshots) {
+        this.institutionSnapshots = institutionSnapshots;
     }
 
     public Map<Long, RouteSnapshot> getRouteSnapshots() {
@@ -58,20 +72,20 @@ public class DataPacket {
         this.journeySnapshots = journeySnapshots;
     }
 
-    public Map<Long, PassengerSnapshot> getPassengerSnapshots() {
-        return passengerSnapshots;
+    public Map<Long, ChildSnapshot> getChildSnapshots() {
+        return childSnapshots;
     }
 
-    public void setPassengerSnapshots(Map<Long, PassengerSnapshot> passengerSnapshots) {
-        this.passengerSnapshots = passengerSnapshots;
+    public void setChildSnapshots(Map<Long, ChildSnapshot> childSnapshots) {
+        this.childSnapshots = childSnapshots;
     }
 
-    public Map<Long, DriverSnapshot> getDriverSnapshots() {
-        return driverSnapshots;
+    public Map<Long, AdultSnapshot> getAdultSnapshots() {
+        return adultSnapshots;
     }
 
-    public void setDriverSnapshots(Map<Long, DriverSnapshot> driverSnapshots) {
-        this.driverSnapshots = driverSnapshots;
+    public void setAdultSnapshots(Map<Long, AdultSnapshot> adultSnapshots) {
+        this.adultSnapshots = adultSnapshots;
     }
 
     public Map<String, WaypointSnapshot> getWaypointSnapshots() {
@@ -93,13 +107,24 @@ public class DataPacket {
     @Override
     public String toString() {
         return "DataPacket{" +
-                "schoolSnapshots=" + schoolSnapshots +
+                "placeSnapshots=" + placeSnapshots +
+                ", institutionSnapshots=" + institutionSnapshots +
                 ", routeSnapshots=" + routeSnapshots +
                 ", journeySnapshots=" + journeySnapshots +
                 ", waypointSnapshots=" + waypointSnapshots +
-                ", passengerSnapshots=" + passengerSnapshots +
-                ", driverSnapshots=" + driverSnapshots +
+                ", childSnapshots=" + childSnapshots +
+                ", adultSnapshots=" + adultSnapshots +
                 ", ticketSnapshots=" + ticketSnapshots +
+                ", stampSnapshots=" + stampSnapshots +
                 '}';
     }
+
+    public Map<Long, StampSnapshot> getStampSnapshots() {
+        return stampSnapshots;
+    }
+
+    public void setStampSnapshots(Map<Long, StampSnapshot> stampSnapshots) {
+        this.stampSnapshots = stampSnapshots;
+    }
+
 }

@@ -1,24 +1,14 @@
-package nz.co.scuff.server.school;
+package nz.co.scuff.server.institution;
 
-import nz.co.scuff.data.family.Passenger;
-import nz.co.scuff.data.journey.Journey;
 import nz.co.scuff.data.journey.Ticket;
-import nz.co.scuff.data.journey.snapshot.TicketSnapshot;
-import nz.co.scuff.server.error.ErrorContextCode;
-import nz.co.scuff.server.error.ScuffServerException;
-import nz.co.scuff.server.family.PassengerServiceBean;
+import nz.co.scuff.server.family.ChildServiceBean;
 import nz.co.scuff.server.journey.JourneyServiceBean;
 import nz.co.scuff.server.util.AbstractFacade;
-import org.joda.time.DateTimeUtils;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import javax.ws.rs.core.Response;
-import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created by Callum on 12/05/2015.
@@ -29,7 +19,7 @@ public class TicketServiceBean extends AbstractFacade<Ticket> {
     @EJB
     private JourneyServiceBean journeyService;
     @EJB
-    private PassengerServiceBean passengerService;
+    private ChildServiceBean passengerService;
 
     @PersistenceContext
     private EntityManager em;
@@ -55,17 +45,17 @@ public class TicketServiceBean extends AbstractFacade<Ticket> {
         for (Long id : passengerIds) {
             if (l.isDebugEnabled()) l.debug("processing passenger=" + id);
             // ensure no duplicates
-            if (!journey.getTickets().stream().anyMatch(t -> t.getPassenger().getPersonId() == id)) {
+            if (!journey.getTicketIds().stream().anyMatch(t -> t.getChild().getPersonId() == id)) {
                 Ticket ticket = new Ticket();
                 ticket.setIssueDate(new Timestamp(DateTimeUtils.currentTimeMillis()));
                 ticket.setJourney(journey);
-                Passenger passenger = passengerService.find(id);
+                Child passenger = passengerService.find(id);
                 assert (passenger != null);
-                ticket.setPassenger(passenger);
+                ticket.setChild(passenger);
                 create(ticket);
-                passenger.getTickets().add(ticket);
+                passenger.getTicketIds().add(ticket);
                 passengerService.edit(passenger);
-                journey.getTickets().add(ticket);
+                journey.getTicketIds().add(ticket);
                 if (l.isDebugEnabled()) l.debug("created ticket=" + ticket);
                 tickets.add(ticket.toSnapshot());
             }

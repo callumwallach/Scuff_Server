@@ -1,5 +1,6 @@
 package nz.co.scuff.data.journey.snapshot;
 
+import nz.co.scuff.data.base.snapshot.Snapshot;
 import nz.co.scuff.data.util.TrackingState;
 
 import javax.xml.bind.annotation.XmlRootElement;
@@ -10,7 +11,7 @@ import java.sql.Timestamp;
  * Created by Callum on 20/04/2015.
  */
 @XmlRootElement
-public class WaypointSnapshot implements Comparable, Serializable {
+public class WaypointSnapshot implements Snapshot, Comparable, Serializable {
 
     private String waypointId;
     private double latitude;

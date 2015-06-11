@@ -3,6 +3,7 @@ package nz.co.scuff.data.journey;
 import java.io.Serializable;
 import java.sql.Timestamp;
 
+import nz.co.scuff.data.base.Snapshotable;
 import nz.co.scuff.data.journey.snapshot.StampSnapshot;
 
 import javax.persistence.Column;
@@ -12,21 +13,32 @@ import javax.persistence.Embeddable;
  * Created by Callum on 14/05/2015.
  */
 @Embeddable
-public class Stamp implements Serializable {
+public class Stamp implements Snapshotable, Serializable {
 
+    @Column(name="StampId")
+    private long stampId;
     @Column(name="Latitude")
     private double latitude;
     @Column(name="Longitude")
-    private long longitude;
+    private double longitude;
     @Column(name="StampDate")
     private Timestamp stampDate;
 
     public Stamp() {}
 
     public Stamp(StampSnapshot snapshot) {
+        this.stampId = snapshot.getStampId();
         this.latitude = snapshot.getLatitude();
         this.longitude = snapshot.getLongitude();
         this.stampDate = snapshot.getStampDate();
+    }
+
+    public long getStampId() {
+        return stampId;
+    }
+
+    public void setStampId(long stampId) {
+        this.stampId = stampId;
     }
 
     public double getLatitude() {
@@ -37,11 +49,11 @@ public class Stamp implements Serializable {
         this.latitude = latitude;
     }
 
-    public long getLongitude() {
+    public double getLongitude() {
         return longitude;
     }
 
-    public void setLongitude(long longitude) {
+    public void setLongitude(double longitude) {
         this.longitude = longitude;
     }
 
@@ -55,6 +67,7 @@ public class Stamp implements Serializable {
 
     public StampSnapshot toSnapshot() {
         StampSnapshot snapshot = new StampSnapshot();
+        snapshot.setStampId(this.stampId);
         snapshot.setLatitude(this.latitude);
         snapshot.setLongitude(this.longitude);
         snapshot.setStampDate(this.stampDate);
@@ -65,34 +78,25 @@ public class Stamp implements Serializable {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        if (!super.equals(o)) return false;
 
         Stamp stamp = (Stamp) o;
 
-        if (Double.compare(stamp.latitude, latitude) != 0) return false;
-        if (longitude != stamp.longitude) return false;
-        return !(stampDate != null ? !stampDate.equals(stamp.stampDate) : stamp.stampDate != null);
+        return stampId == stamp.stampId;
 
     }
 
     @Override
     public int hashCode() {
-        int result = super.hashCode();
-        long temp;
-        temp = Double.doubleToLongBits(latitude);
-        result = 31 * result + (int) (temp ^ (temp >>> 32));
-        result = 31 * result + (int) (longitude ^ (longitude >>> 32));
-        result = 31 * result + (stampDate != null ? stampDate.hashCode() : 0);
-        return result;
+        return (int) (stampId ^ (stampId >>> 32));
     }
 
     @Override
     public String toString() {
-        final StringBuffer sb = new StringBuffer("Stamp{");
-        sb.append("latitude=").append(latitude);
-        sb.append(", longitude=").append(longitude);
-        sb.append(", stampDate=").append(stampDate);
-        sb.append('}');
-        return sb.toString();
+        return "Stamp{" +
+                "stampId=" + stampId +
+                ", latitude=" + latitude +
+                ", longitude=" + longitude +
+                ", stampDate=" + stampDate +
+                '}';
     }
 }

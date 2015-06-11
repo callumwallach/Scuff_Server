@@ -2,6 +2,7 @@ package nz.co.scuff.web.service;
 
 import nz.co.scuff.data.journey.snapshot.JourneySnapshot;
 import nz.co.scuff.data.journey.snapshot.TicketSnapshot;
+import nz.co.scuff.data.util.DataPacket;
 import nz.co.scuff.server.service.DrivingServiceBean;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,16 +26,16 @@ public class DrivingWebService {
     @POST
     @Consumes("application/json")
     @Produces("application/json")
-    public List<TicketSnapshot> postJourney(JourneySnapshot snapshot) {
-        return drivingService.postJourney(snapshot);
+    public DataPacket postJourney(DataPacket packet) {
+        return drivingService.postJourney(packet);
     }
 
     @Path("/journeys/{id}")
     @PUT
     @Consumes("application/json")
     @Produces("application/json")
-    public List<TicketSnapshot> updateJourney(@PathParam("id") String journeyId, JourneySnapshot snapshot) {
-        return drivingService.updateJourney(journeyId, snapshot);
+    public DataPacket updateJourney(@PathParam("id") String journeyId, DataPacket packet) {
+        return drivingService.updateJourney(journeyId, packet);
     }
 
 }

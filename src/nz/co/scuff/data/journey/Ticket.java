@@ -3,8 +3,11 @@ package nz.co.scuff.data.journey;
 import java.io.Serializable;
 import java.sql.Timestamp;
 
-import nz.co.scuff.data.family.Passenger;
+import nz.co.scuff.data.base.ModifiableEntity;
+import nz.co.scuff.data.base.Snapshotable;
+import nz.co.scuff.data.family.Child;
 import nz.co.scuff.data.journey.snapshot.TicketSnapshot;
+import nz.co.scuff.data.util.Constants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -14,7 +17,7 @@ import javax.persistence.*;
  * Created by Callum on 10/05/2015.
  */
 @Entity
-public class Ticket implements Comparable, Serializable {
+public class Ticket extends ModifiableEntity implements Snapshotable, Serializable {
 
     public static final Logger l = LoggerFactory.getLogger(Ticket.class.getCanonicalName());
 
@@ -33,15 +36,17 @@ public class Ticket implements Comparable, Serializable {
     private Journey journey;
 
     @ManyToOne(fetch=FetchType.EAGER)
-    @JoinColumn(name="Passenger")
-    private Passenger passenger;
+    @JoinColumn(name="Child")
+    private Child child;
 
-    public Ticket() {}
+    public Ticket() {
+        super();
+    }
 
     public Ticket(TicketSnapshot snapshot) {
+        super();
         this.ticketId = snapshot.getTicketId();
         this.issueDate = snapshot.getIssueDate();
-        this.stamp = (snapshot.getStamp() == null ? null : new Stamp(snapshot.getStamp()));
     }
 
     public long getTicketId() {
@@ -60,12 +65,12 @@ public class Ticket implements Comparable, Serializable {
         this.journey = journey;
     }
 
-    public Passenger getPassenger() {
-        return passenger;
+    public Child getChild() {
+        return child;
     }
 
-    public void setPassenger(Passenger passenger) {
-        this.passenger = passenger;
+    public void setChild(Child child) {
+        this.child = child;
     }
 
     public Timestamp getIssueDate() {
@@ -88,9 +93,9 @@ public class Ticket implements Comparable, Serializable {
         TicketSnapshot snapshot = new TicketSnapshot();
         snapshot.setTicketId(this.ticketId);
         snapshot.setIssueDate(this.issueDate);
-        snapshot.setStamp(this.stamp == null ? null : this.stamp.toSnapshot());
+        snapshot.setStampId(this.stamp == null ? Constants.LONG_VALUE_SET_TO_NULL : this.stamp.getStampId());
         snapshot.setJourneyId(this.journey.getJourneyId());
-        snapshot.setPassengerId(this.passenger.getPersonId());
+        snapshot.setChildId(this.child.getChildId());
         return snapshot;
     }
 
@@ -111,26 +116,26 @@ public class Ticket implements Comparable, Serializable {
         return (int) (ticketId ^ (ticketId >>> 32));
     }
 
-    @Override
+/*    @Override
     public int compareTo(Object another) {
         if (l.isDebugEnabled()) l.debug(this+" compareTo:"+another);
         Ticket other = (Ticket) another;
-/*        if (other.issueDate == null) return 1;
-        if (this.issueDate == null) return -1;*/
+*//*        if (other.issueDate == null) return 1;
+        if (this.issueDate == null) return -1;*//*
         //return this.issueDate.compareTo(other.issueDate);
         // TODO why??
         if (ticketId == other.ticketId) return 0;
         return (ticketId < other.ticketId)? -1 : 1;
-    }
+    }*/
 
     @Override
     public String toString() {
         return "Ticket{" +
                 "ticketId='" + ticketId + '\'' +
                 ", issueDate=" + issueDate +
-                ", stamp=" + stamp +
-                ", journey=" + (journey == null ? "null" : journey.getJourneyId()) +
-                ", passenger=" + (passenger == null ? "null" : passenger.getPersonId()) +
+                ", stamp=" + stamp.getStampId() +
+                ", journey=" + journey.getJourneyId() +
+                ", child=" + child.getChildId() +
                 '}';
     }
 }

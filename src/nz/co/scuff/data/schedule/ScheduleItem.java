@@ -1,7 +1,7 @@
 package nz.co.scuff.data.schedule;
 
-import nz.co.scuff.data.family.Driver;
-import nz.co.scuff.data.school.Route;
+import nz.co.scuff.data.family.Adult;
+import nz.co.scuff.data.institution.Route;
 
 import java.sql.Timestamp;
 
@@ -10,12 +10,12 @@ import java.sql.Timestamp;
  */
 public class ScheduleItem {
 
-    private Driver driver;
+    private Adult adult;
     private Route route;
     private Timestamp date;
 
-    public ScheduleItem(Driver driver, Route route, Timestamp date) {
-        this.driver = driver;
+    public ScheduleItem(Adult adult, Route route, Timestamp date) {
+        this.adult = adult;
         this.route = route;
         this.date = date;
     }
@@ -27,7 +27,7 @@ public class ScheduleItem {
 
         ScheduleItem that = (ScheduleItem) o;
 
-        if (!driver.equals(that.driver)) return false;
+        if (!adult.equals(that.adult)) return false;
         if (!route.equals(that.route)) return false;
         return date.equals(that.date);
 
@@ -35,19 +35,19 @@ public class ScheduleItem {
 
     @Override
     public int hashCode() {
-        int result = driver.hashCode();
+        int result = adult.hashCode();
         result = 31 * result + route.hashCode();
         result = 31 * result + date.hashCode();
         return result;
     }
 
-    public Driver getDriver() {
+    public Adult getAdult() {
 
-        return driver;
+        return adult;
     }
 
-    public void setDriver(Driver driver) {
-        this.driver = driver;
+    public void setAdult(Adult adult) {
+        this.adult = adult;
     }
 
     public Route getRoute() {

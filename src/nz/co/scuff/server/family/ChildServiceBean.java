@@ -1,6 +1,6 @@
 package nz.co.scuff.server.family;
 
-import nz.co.scuff.data.family.Passenger;
+import nz.co.scuff.data.family.Child;
 import nz.co.scuff.server.util.AbstractFacade;
 
 import javax.ejb.LocalBean;
@@ -12,8 +12,8 @@ import javax.persistence.PersistenceContext;
  * Created by Callum on 4/05/2015.
  */
 @LocalBean
-@Stateless(name = "PassengerServiceEJB")
-public class PassengerServiceBean extends AbstractFacade<Passenger> {
+@Stateless(name = "ChildServiceEJB")
+public class ChildServiceBean extends AbstractFacade<Child> {
 
     @PersistenceContext
     private EntityManager em;
@@ -22,7 +22,7 @@ public class PassengerServiceBean extends AbstractFacade<Passenger> {
         return em;
     }
 
-    public PassengerServiceBean() {
-        super(Passenger.class);
+    public ChildServiceBean() {
+        super(Child.class);
     }
 }

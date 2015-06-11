@@ -1,26 +1,24 @@
 package nz.co.scuff.server.service;
 
-import nz.co.scuff.data.family.Driver;
+import nz.co.scuff.data.base.Coordinator;
+import nz.co.scuff.data.family.Adult;
 import nz.co.scuff.data.journey.Journey;
 import nz.co.scuff.data.journey.Ticket;
 import nz.co.scuff.data.journey.Waypoint;
 import nz.co.scuff.data.journey.snapshot.JourneySnapshot;
-import nz.co.scuff.data.journey.snapshot.TicketSnapshot;
-import nz.co.scuff.data.journey.snapshot.WaypointSnapshot;
-import nz.co.scuff.data.school.School;
-import nz.co.scuff.server.family.DriverServiceBean;
-import nz.co.scuff.server.family.PassengerServiceBean;
+import nz.co.scuff.data.util.DataPacket;
+import nz.co.scuff.data.util.TrackingState;
+import nz.co.scuff.server.base.CoordinatorServiceBean;
+import nz.co.scuff.server.family.AdultServiceBean;
 import nz.co.scuff.server.journey.JourneyServiceBean;
-import nz.co.scuff.server.school.RouteServiceBean;
-import nz.co.scuff.server.school.SchoolServiceBean;
-import nz.co.scuff.server.school.TicketServiceBean;
+import nz.co.scuff.server.institution.RouteServiceBean;
+import nz.co.scuff.server.institution.InstitutionServiceBean;
+import nz.co.scuff.server.place.PlaceServiceBean;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created by Callum on 16/05/2015.
@@ -33,74 +31,113 @@ public class DrivingServiceBean {
     @EJB
     private JourneyServiceBean journeyService;
     @EJB
-    private SchoolServiceBean schoolService;
+    private CoordinatorServiceBean coordinatorService;
+    @EJB
+    private InstitutionServiceBean institutionService;
     @EJB
     private RouteServiceBean routeService;
     @EJB
-    private DriverServiceBean driverService;
+    private AdultServiceBean adultService;
+    @EJB
+    private PlaceServiceBean placeService;
 
     public DrivingServiceBean() { }
 
-    public List<TicketSnapshot> postJourney(JourneySnapshot snapshot) {
-        if (l.isDebugEnabled()) l.debug("create journey snapshot=" + snapshot);
+    public DataPacket postJourney(DataPacket packet) {
+        if (l.isDebugEnabled()) l.debug("create journey packet=" + packet);
 
-        Journey journey = journeyService.find(snapshot.getJourneyId());
-        assert(journey == null);
-        // new journey
-        if (l.isDebugEnabled()) l.debug("create journey");
-        journey = new Journey(snapshot);
-        School school = schoolService.load(snapshot.getSchoolId(), new int[] { SchoolServiceBean.JOURNEYS });
-        journey.setSchool(school);
-        journey.setRoute(routeService.find(snapshot.getRouteId()));
-        Driver driver = driverService.find(snapshot.getDriverId());
-        journey.setDriver(driver);
-        journeyService.create(journey);
+        for (String jId : packet.getJourneySnapshots().keySet()) {
+            JourneySnapshot snapshot = packet.getJourneySnapshots().get(jId);
+            Journey journey = journeyService.find(snapshot.getJourneyId());
+            assert (journey == null);
+            // new journey
+            if (l.isDebugEnabled()) l.debug("create journey");
+            journey = new Journey(snapshot);
 
-        school.getJourneys().add(journey);
-        schoolService.edit(school);
-        driver.getJourneys().add(journey);
-        driverService.edit(driver);
-        for (WaypointSnapshot ws : snapshot.getWaypoints()) {
-            journey.getWaypoints().add(new Waypoint(ws));
+            Coordinator owner = coordinatorService.find(snapshot.getOwnerId());
+            journey.setOwner(owner);
+            Coordinator agent = coordinatorService.find(snapshot.getAgentId());
+            journey.setAgent(agent);
+            Adult guide = adultService.find(snapshot.getGuideId());
+            journey.setGuide(guide);
+            journey.setOrigin(placeService.find(snapshot.getOriginId()));
+            journey.setDestination(placeService.find(snapshot.getDestinationId()));
+            journey.setRoute(routeService.find(snapshot.getRouteId()));
+
+            journeyService.create(journey);
+
+            owner.getCurrentJourneys().add(journey);
+            coordinatorService.edit(owner);
+            agent.getCurrentJourneys().add(journey);
+            coordinatorService.edit(agent);
+            guide.getCurrentJourneys().add(journey);
+            adultService.edit(guide);
+
+            for (String wId : snapshot.getWaypointIds()) {
+                Waypoint waypoint = new Waypoint(packet.getWaypointSnapshots().get(wId));
+                journey.getWaypoints().add(waypoint);
+            }
+            journeyService.edit(journey);
+
         }
-        journeyService.edit(journey);
 
-        List<TicketSnapshot> tickets = new ArrayList<>();
-        for (Ticket ticket : journey.getTickets()) {
-            tickets.add(ticket.toSnapshot());
-        }
-        return tickets;
+        return null;
+
     }
 
-    public List<TicketSnapshot> updateJourney(String journeyId, JourneySnapshot snapshot) {
-        if (l.isDebugEnabled()) l.debug("update journey snapshot=" + snapshot);
+    public DataPacket updateJourney(String journeyId, DataPacket packet) {
+        if (l.isDebugEnabled()) l.debug("update journey packet=" + packet);
 
-        Journey journey = journeyService.find(snapshot.getJourneyId());
-        assert(journey != null);
-        // TODO
-        /*if (foundJourney == null) {
-            return null;
-        }*/
-        // update journey
-        if (l.isDebugEnabled()) l.debug("update journey="+journey);
-        journey.setTotalDistance(snapshot.getTotalDistance());
-        journey.setTotalDuration(snapshot.getTotalDuration());
-        journey.setCompleted(snapshot.getCompleted());
-        journey.setState(snapshot.getState());
-        for (WaypointSnapshot ws : snapshot.getWaypoints()) {
-            journey.getWaypoints().add(new Waypoint(ws));
-        }
-        journeyService.edit(journey);
+        DataPacket returnPacket = new DataPacket();
 
-        List<TicketSnapshot> tickets = new ArrayList<>();
-        // TODO not getting all tickets???
-        if (l.isDebugEnabled()) l.debug("processing new journey tickets="+journey.getTickets());
-        for (Ticket ticket : journey.getTickets()) {
-            if (l.isDebugEnabled()) l.debug("processing ticket="+ticket);
-            tickets.add(ticket.toSnapshot());
+        for (String jId : packet.getJourneySnapshots().keySet()) {
+            JourneySnapshot snapshot = packet.getJourneySnapshots().get(jId);
+            Journey journey = journeyService.find(snapshot.getJourneyId());
+            assert (journey != null);
+            // TODO
+            /*if (foundJourney == null) {
+                return null;
+            }*/
+            // update journey
+            if (l.isDebugEnabled()) l.debug("update journey=" + journey);
+            journey.setTotalDistance(snapshot.getTotalDistance());
+            journey.setTotalDuration(snapshot.getTotalDuration());
+            journey.setCompleted(snapshot.getCompleted());
+            journey.setState(snapshot.getState());
+            journey.setLastModified(snapshot.getLastModified());
+
+            for (String wId : snapshot.getWaypointIds()) {
+                Waypoint waypoint = new Waypoint(packet.getWaypointSnapshots().get(wId));
+                journey.getWaypoints().add(waypoint);
+            }
+            journeyService.edit(journey);
+
+            if (journey.getState().equals(TrackingState.COMPLETED)) {
+                if (l.isDebugEnabled()) l.debug("moving journey from current to past");
+                Coordinator owner = coordinatorService.load(journey.getOwner().getCoordinatorId(), new int[]{CoordinatorServiceBean.PAST_JOURNEYS});
+                owner.getCurrentJourneys().remove(journey);
+                owner.getPastJourneys().add(journey);
+                coordinatorService.edit(owner);
+                Coordinator agent = coordinatorService.load(journey.getAgent().getCoordinatorId(), new int[]{CoordinatorServiceBean.PAST_JOURNEYS});
+                agent.getCurrentJourneys().remove(journey);
+                agent.getPastJourneys().add(journey);
+                coordinatorService.edit(agent);
+                Adult guide = adultService.load(journey.getGuide().getCoordinatorId(), new int[]{AdultServiceBean.PAST_JOURNEYS});
+                guide.getCurrentJourneys().remove(journey);
+                guide.getPastJourneys().add(journey);
+                adultService.edit(guide);
+            } else {
+                if (l.isDebugEnabled()) l.debug("processing journey tickets=" + journey.getTickets());
+                for (Ticket ticket : journey.getTickets()) {
+                    if (l.isDebugEnabled()) l.debug("processing ticket=" + ticket);
+                    returnPacket.getTicketSnapshots().put(ticket.getTicketId(), ticket.toSnapshot());
+                }
+            }
         }
-        if (l.isDebugEnabled()) l.debug("returning tickets="+tickets);
-        return tickets;
+
+        if (l.isDebugEnabled()) l.debug("returning tickets=" + returnPacket);
+        return returnPacket;
+
     }
 
 }

@@ -1,6 +1,6 @@
-package nz.co.scuff.server.school;
+package nz.co.scuff.server.institution;
 
-import nz.co.scuff.data.school.Route;
+import nz.co.scuff.data.institution.Route;
 import nz.co.scuff.server.util.AbstractFacade;
 
 import javax.ejb.LocalBean;

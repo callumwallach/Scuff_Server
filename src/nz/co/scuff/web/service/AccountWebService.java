@@ -22,29 +22,29 @@ public class AccountWebService {
     @Path("/drivers/{email}")
     @GET
     @Produces("application/json")
-    public DataPacket getDriver(@PathParam("email") String email) {
-        return accountService.getDriver(email);
+    public DataPacket getDriver(@PathParam("email") String email, @QueryParam("lastChecked") long lastChecked) throws Exception {
+        return accountService.getDriver(email, lastChecked);
     }
 
-    @Path("/schools")
+/*    @Path("/schools")
     @GET
     @Produces("application/json")
     public DataPacket getSchools(@QueryParam("latitude") double latitude,
                                  @QueryParam("longitude") double longitude, @QueryParam("radius") int radius) {
         return accountService.getSchools(latitude, longitude, radius);
-    }
+    }*/
 
-    /*private DriverSnapshot assemble(Driver toPrune) {
+    /*private AdultSnapshot assemble(Adult toPrune) {
         if (l.isDebugEnabled()) l.debug("pruning driver for transit");
 
         // assemble for user
-        DriverSnapshot driverSnapshot = toPrune.toSnapshot();
-        for (Passenger p : toPrune.getChildren()) {
-            PassengerSnapshot ps = p.toSnapshot();
-            for (School s : p.getSchools()) {
+        AdultSnapshot driverSnapshot = toPrune.toSnapshot();
+        for (Child p : toPrune.getChildren()) {
+            ChildSnapshot ps = p.toSnapshot();
+            for (Institution s : p.getSchools()) {
                 ps.getSchools().add(s.toSnapshot());
             }
-            for (Driver d : p.getParents()) {
+            for (Adult d : p.getParents()) {
                 ps.getParents().add(d.toSnapshot());
             }
             for (Route r : p.getRegisteredRoutes()) {
@@ -52,33 +52,33 @@ public class AccountWebService {
             }
             for (Journey j : p.getJourneys()) {
                 JourneySnapshot js = j.toSnapshot();
-                js.setSchoolId(j.getSchool().getSchoolId());
+                js.setOwnerId(j.getInstitution().getOwnerId());
                 js.setRouteId(j.getRoute().getRouteId());
-                js.setDriverId(j.getDriver().getPersonId());
+                js.setDriverId(j.getAdult().getPersonId());
                 ps.getJourneys().add(j.toSnapshot());
             }
             driverSnapshot.getChildren().add(ps);
         }
         for (Journey j : toPrune.getJourneys()) {
             JourneySnapshot js = j.toSnapshot();
-            for (Passenger p : j.getPassengers()) {
+            for (Child p : j.getPassengers()) {
                 js.getPassengers().add(p.toSnapshot());
             }
-            for (Waypoint w : j.getWaypoints()) {
-                js.getWaypoints().add(w.toSnapshot());
+            for (Waypoint w : j.getWaypointIds()) {
+                js.getWaypointIds().add(w.toSnapshot());
             }
-            js.setSchoolId(j.getSchool().getSchoolId());
+            js.setOwnerId(j.getInstitution().getOwnerId());
             js.setRouteId(j.getRoute().getRouteId());
-            js.setDriverId(j.getDriver().getPersonId());
+            js.setDriverId(j.getAdult().getPersonId());
             driverSnapshot.getJourneys().add(js);
         }
-        for (School s : toPrune.getSchoolsDrivingFor()) {
-            SchoolSnapshot ss = s.toSnapshot();
+        for (Institution s : toPrune.getSchoolsDrivingFor()) {
+            InstitutionSnapshot ss = s.toSnapshot();
             driverSnapshot.getSchoolsDrivenFor().add(ss);
         }
         for (Route r : toPrune.getRoutesDriven()) {
             RouteSnapshot rs = r.toSnapshot();
-            rs.setSchool(r.getSchool().toSnapshot());
+            rs.setInstitution(r.getInstitution().toSnapshot());
             driverSnapshot.getRegisteredRoutes().add(rs);
         }
         return driverSnapshot;
@@ -87,7 +87,7 @@ public class AccountWebService {
         /*@Path("/{id}")
     @GET
     @Produces("application/json")
-    public ParentSnapshot getDriver(@PathParam("id") long id) {
+    public ParentSnapshot getAdult(@PathParam("id") long id) {
         l.debug("get user by id=" + id);
 
         Parent parent = driverService.find(id);
@@ -96,7 +96,7 @@ public class AccountWebService {
         for (Child child : parent.getChildren()) {
             profileSnapshot.getChildren().add(child.toSnapshot());
         }
-        for (School school : parent.getSchoolsDrivenFor()) {
+        for (Institution school : parent.getSchoolsDrivenFor()) {
             profileSnapshot.getSchoolsDrivenFor().add(school.toSnapshot());
         }
         for (Route route : parent.getRoutes()) {
@@ -120,7 +120,7 @@ public class AccountWebService {
         for (Child child : parent.getChildren()) {
             profileSnapshot.getChildren().add(child.toSnapshot());
         }
-        for (School school : parent.getSchoolsDrivenFor()) {
+        for (Institution school : parent.getSchoolsDrivenFor()) {
             profileSnapshot.getSchoolsDrivenFor().add(school.toSnapshot());
         }
         for (Route route : parent.getRoutes()) {

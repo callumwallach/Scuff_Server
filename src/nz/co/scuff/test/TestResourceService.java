@@ -1,10 +1,9 @@
 package nz.co.scuff.test;
 
-import nz.co.scuff.data.family.Driver;
-import nz.co.scuff.data.family.snapshot.DriverSnapshot;
-import nz.co.scuff.data.journey.snapshot.JourneySnapshot;
+import nz.co.scuff.data.family.Adult;
+import nz.co.scuff.data.family.snapshot.AdultSnapshot;
 import nz.co.scuff.data.journey.snapshot.TicketSnapshot;
-import nz.co.scuff.server.family.DriverServiceBean;
+import nz.co.scuff.server.family.AdultServiceBean;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -24,7 +23,7 @@ public class TestResourceService {
     @EJB
     private TestServiceBean testService;
     @EJB
-    private DriverServiceBean userService;
+    private AdultServiceBean userService;
 
     @Path("/populate")
     @POST
@@ -58,7 +57,7 @@ public class TestResourceService {
         for (Child child : parent.getChildren()) {
             profileSnapshot.getChildren().add(child.toSnapshot());
         }
-        for (School school : parent.getSchoolsDrivenFor()) {
+        for (Institution school : parent.getSchoolsDrivenFor()) {
             profileSnapshot.getSchoolsDrivenFor().add(school.toSnapshot());
         }
         for (Route route : parent.getRoutes()) {
@@ -70,18 +69,18 @@ public class TestResourceService {
 
     @GET
     @Produces("application/json")
-    public DriverSnapshot getParentSnapshotByEmail(@QueryParam("email") String email) {
+    public AdultSnapshot getParentSnapshotByEmail(@QueryParam("email") String email) {
         if (D) l.debug("get user by email");
 
-        Driver found = userService.findByEmail(email);
+        Adult found = userService.findByEmail(email);
         if (found == null) {
             return null;
         }
         // prune for user
-        DriverSnapshot driverSnapshot = found.toSnapshot();
+        AdultSnapshot adultSnapshot = found.toSnapshot();
         /*for (Child c : found.getChildren()) {
             ChildSnapshot cs = c.toSnapshot();
-            for (School s : c.getSchoolsDrivenFor()) {
+            for (Institution s : c.getSchoolsDrivenFor()) {
                 cs.getSchoolsDrivenFor().add(s.toSnapshot());
             }
             for (Parent p : c.getParents()) {
@@ -89,8 +88,8 @@ public class TestResourceService {
             }
             parentSnapshot.getChildren().add(cs);
         }
-        for (School s : found.getSchoolsDrivenFor()) {
-            SchoolSnapshot ss  = s.toSnapshot();
+        for (Institution s : found.getSchoolsDrivenFor()) {
+            InstitutionSnapshot ss  = s.toSnapshot();
             for (Route r : s.getRoutes()) {
                 ss.getRoutes().add(r.toSnapshot());
             }
@@ -99,7 +98,7 @@ public class TestResourceService {
         for (Route r : found.getRoutes()) {
             parentSnapshot.getRoutes().add(r.toSnapshot());
         }
-        */return driverSnapshot;
+        */return adultSnapshot;
     }
 
 /*    @Path("/1")
@@ -111,12 +110,12 @@ public class TestResourceService {
         Parent parent = userService.findByEmail(email);
 
         // prune
-        for (School s : parent.getSchoolsDrivenFor()) {
+        for (Institution s : parent.getSchoolsDrivenFor()) {
             s.setChildren(new TreeSet<>());
             s.setParents(new TreeSet<>());
         }
         for (Child c : parent.getChildren()) {
-            for (School s : c.getSchoolsDrivenFor()) {
+            for (Institution s : c.getSchoolsDrivenFor()) {
                 s.setChildren(new TreeSet<>());
                 s.setParents(new TreeSet<>());
             }
@@ -140,7 +139,7 @@ public class TestResourceService {
         Parent parent = userService.findByEmail(email);
 
         // prune
-        for (School s : parent.getSchoolsDrivenFor()) {
+        for (Institution s : parent.getSchoolsDrivenFor()) {
             for (Child c : s.getChildren()) {
                 if (D) l.debug("children="+c);
             }
@@ -149,7 +148,7 @@ public class TestResourceService {
             }
         }
         for (Child c : parent.getChildren()) {
-            for (School s : c.getSchoolsDrivenFor()) {
+            for (Institution s : c.getSchoolsDrivenFor()) {
                 s.setChildren(new TreeSet<>());
                 s.setParents(new TreeSet<>());
             }

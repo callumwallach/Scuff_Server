@@ -1,7 +1,7 @@
 package nz.co.scuff.server.service;
 
 import nz.co.scuff.data.util.DataPacket;
-import nz.co.scuff.server.school.SchoolServiceBean;
+import nz.co.scuff.server.institution.InstitutionServiceBean;
 import nz.co.scuff.web.service.AccountWebService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,7 +18,7 @@ public class RegistrationServiceBean {
     public static final Logger l = LoggerFactory.getLogger(AccountWebService.class.getCanonicalName());
 
     @EJB
-    private SchoolServiceBean schoolService;
+    private InstitutionServiceBean schoolService;
 
     public RegistrationServiceBean() {}
 

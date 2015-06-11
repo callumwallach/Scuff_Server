@@ -1,5 +1,6 @@
 package nz.co.scuff.data.journey;
 
+import nz.co.scuff.data.base.Snapshotable;
 import nz.co.scuff.data.journey.snapshot.WaypointSnapshot;
 import nz.co.scuff.data.util.TrackingState;
 import org.slf4j.Logger;
@@ -16,7 +17,7 @@ import java.sql.Timestamp;
  */
 @XmlRootElement
 @Entity
-public class Waypoint implements Serializable, Comparable {
+public class Waypoint implements Snapshotable, Serializable, Comparable {
 
     //private static final long serialVersionUID = 1L;
 

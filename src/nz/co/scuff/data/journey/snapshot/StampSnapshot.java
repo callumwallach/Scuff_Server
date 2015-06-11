@@ -1,5 +1,7 @@
 package nz.co.scuff.data.journey.snapshot;
 
+import nz.co.scuff.data.base.snapshot.Snapshot;
+
 import javax.xml.bind.annotation.XmlRootElement;
 import java.sql.Timestamp;
 
@@ -7,13 +9,22 @@ import java.sql.Timestamp;
  * Created by Callum on 10/05/2015.
  */
 @XmlRootElement
-public class StampSnapshot {
+public class StampSnapshot implements Snapshot {
 
+    private long stampId;
     private double latitude;
-    private long longitude;
+    private double longitude;
     private Timestamp stampDate;
 
     public StampSnapshot() {}
+
+    public long getStampId() {
+        return stampId;
+    }
+
+    public void setStampId(long stampId) {
+        this.stampId = stampId;
+    }
 
     public double getLatitude() {
         return latitude;
@@ -23,11 +34,11 @@ public class StampSnapshot {
         this.latitude = latitude;
     }
 
-    public long getLongitude() {
+    public double getLongitude() {
         return longitude;
     }
 
-    public void setLongitude(long longitude) {
+    public void setLongitude(double longitude) {
         this.longitude = longitude;
     }
 
@@ -46,31 +57,22 @@ public class StampSnapshot {
 
         StampSnapshot that = (StampSnapshot) o;
 
-        if (Double.compare(that.latitude, latitude) != 0) return false;
-        if (longitude != that.longitude) return false;
-        return stampDate.equals(that.stampDate);
+        return stampId == that.stampId;
 
     }
 
     @Override
     public int hashCode() {
-        int result;
-        long temp;
-        temp = Double.doubleToLongBits(latitude);
-        result = (int) (temp ^ (temp >>> 32));
-        result = 31 * result + (int) (longitude ^ (longitude >>> 32));
-        result = 31 * result + stampDate.hashCode();
-        return result;
+        return (int) (stampId ^ (stampId >>> 32));
     }
 
     @Override
     public String toString() {
-        final StringBuffer sb = new StringBuffer("StampSnapshot{");
-        sb.append("latitude=").append(latitude);
-        sb.append(", longitude=").append(longitude);
-        sb.append(", stampDate=").append(stampDate);
-        sb.append('}');
-        return sb.toString();
+        return "StampSnapshot{" +
+                "stampId=" + stampId +
+                ", latitude=" + latitude +
+                ", longitude=" + longitude +
+                ", stampDate=" + stampDate +
+                '}';
     }
-
 }

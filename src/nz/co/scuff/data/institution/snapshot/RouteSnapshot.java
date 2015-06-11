@@ -1,4 +1,6 @@
-package nz.co.scuff.data.school.snapshot;
+package nz.co.scuff.data.institution.snapshot;
+
+import nz.co.scuff.data.base.snapshot.ModifiableSnapshot;
 
 import javax.xml.bind.annotation.XmlRootElement;
 
@@ -6,14 +8,18 @@ import javax.xml.bind.annotation.XmlRootElement;
  * Created by Callum on 17/03/2015.
  */
 @XmlRootElement
-public class RouteSnapshot implements Comparable {
+public class RouteSnapshot extends ModifiableSnapshot {
 
     private long routeId;
     private String name;
     private String routeMap;
-    private long schoolId;
+    private long originId;
+    private long destinationId;
+    private long ownerId;
 
-    public RouteSnapshot() {}
+    public RouteSnapshot() {
+        super();
+    }
 
     public long getRouteId() {
         return routeId;
@@ -39,18 +45,28 @@ public class RouteSnapshot implements Comparable {
         this.routeMap = routeMap;
     }
 
-    public long getSchoolId() {
-        return schoolId;
+    public long getOriginId() {
+        return originId;
     }
 
-    public void setSchoolId(long schoolId) {
-        this.schoolId = schoolId;
+    public void setOriginId(long originId) {
+        this.originId = originId;
     }
 
-    @Override
-    public int compareTo(Object another) {
-        RouteSnapshot other = (RouteSnapshot)another;
-        return this.name.compareTo(other.name);
+    public long getDestinationId() {
+        return destinationId;
+    }
+
+    public void setDestinationId(long destinationId) {
+        this.destinationId = destinationId;
+    }
+
+    public long getOwnerId() {
+        return ownerId;
+    }
+
+    public void setOwnerId(long ownerId) {
+        this.ownerId = ownerId;
     }
 
     @Override
@@ -75,8 +91,10 @@ public class RouteSnapshot implements Comparable {
                 "routeId=" + routeId +
                 ", name='" + name + '\'' +
                 ", routeMap='" + routeMap + '\'' +
-                ", schoolId=" + schoolId +
-                '}';
+                ", originId=" + originId +
+                ", destinationId=" + destinationId +
+                ", ownerId=" + ownerId +
+                "} " + super.toString();
     }
 
 }

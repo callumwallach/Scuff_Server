@@ -46,34 +46,38 @@ public class JourneyServiceBean extends AbstractFacade<Journey> {
         Journey found = (Journey)query.getSingleResult();
         if (l.isDebugEnabled()) l.debug("found journey=" + found);
         return found;
-
-/*        final CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
-        // Create criteria query and pass the value object which needs to be populated as result
-        final CriteriaQuery criteriaQuery = criteriaBuilder.createQuery(Journey.class);
-        // Tell to criteria query which tables/entities you want to fetch
-        final Root taRoot = criteriaQuery.from(Journey.class);
-        // Time to define where clause in terms of Predicates
-        // This list will contain all Predicates (where clauses)
-        List<Predicate> criteriaList = new ArrayList<Predicate>();
-        Predicate predicate1 = criteriaBuilder.equal(taRoot.get("journeyId"), journeyId);
-        criteriaList.add(predicate1);
-        Predicate predicate3 = criteriaBuilder.notEqual(taRoot.get("state"), TrackingState.COMPLETED);
-        criteriaList.add(predicate3);
-        criteriaQuery.select(taRoot);
-        // Pass the criteria list to the where method of criteria query
-        criteriaQuery.where(criteriaBuilder.and(criteriaList.toArray(new Predicate[criteriaList.size()])));
-        // Here entity manager will create actual SQL query out of criteria query
-        Journey found = null;
-        try {
-            found = (Journey) em.createQuery(criteriaQuery).getSingleResult();
-        } catch (NoResultException e) {
-            // just return null
-        }
-        if (l.isDebugEnabled()) l.debug("found journey=" + found);
-        return found;*/
     }
 
-    public List<Journey> findActiveByRouteAndSchool(long routeId, long schoolId) {
+/*    // TODO complete
+    public List<Journey> findActiveByOwnerOrAgent(long coordinatorId) {
+        if (l.isDebugEnabled()) l.debug("find journey by owner or agent :coordinator=" + coordinatorId);
+
+        //create an ejbql expression
+        //String ejbQL = "select j from Journey j where j.owner.coordinatorId =:coordinatorId or j.agent.coordinatorId =:coordinatorId and j.state !=:state";
+        select b.fname, b.lname from Users b JOIN b.groups c where c.groupName = :groupName
+
+                select j from Journey j join j.owner o where o.coordinatorId member of
+                select j from Journeys
+        String jpQL = "SELECT c FROM Coordinator c WHERE :value MEMBER OF c.friends";
+        String ejbQL = "select j from Journey j, Coordinator c, " +
+                "IN (c.friends) as allFriends, Coordinator oneFriend where j.owner member of allFriends or j.agent member of allFriends" +
+                "and j.owner.coordinatorId =:coordinatorId or j.agent.coordinatorId =:coordinatorId and j.state !=:state";
+        //create query
+        Query query = em.createQuery(jpQL);
+        //substitute parameter.
+        query.setParameter("coordinatorId", coordinatorId);
+        query.setParameter("state", TrackingState.COMPLETED);
+        //execute the query
+        List<Journey> found = query.getResultList();
+        if (l.isDebugEnabled()) {
+            for (Journey journey : found) {
+                l.debug("found journey=" + journey);
+            }
+        }
+        return found;
+    }*/
+
+/*    public List<Journey> findActiveByRouteAndSchool(long routeId, long schoolId) {
         if (l.isDebugEnabled()) l.debug("find journey by routeId=" + routeId + " schoolId=" + schoolId);
 
         //create an ejbql expression
@@ -92,34 +96,5 @@ public class JourneyServiceBean extends AbstractFacade<Journey> {
             }
         }
         return found;
-
-/*        final CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
-        // Create criteria query and pass the value object which needs to be populated as result
-        final CriteriaQuery criteriaQuery = criteriaBuilder.createQuery(Journey.class);
-        // Tell to criteria query which tables/entities you want to fetch
-        final Root taRoot = criteriaQuery.from(Journey.class);
-        // Time to define where clause in terms of Predicates
-        // This list will contain all Predicates (where clauses)
-        List<Predicate> criteriaList = new ArrayList<Predicate>();
-        Predicate predicate1 = criteriaBuilder.equal(taRoot.get("route").get("routeId"), routeId);
-        criteriaList.add(predicate1);
-        Predicate predicate2 = criteriaBuilder.equal(taRoot.get("school").get("schoolId"), schoolId);
-        criteriaList.add(predicate2);
-        Predicate predicate3 = criteriaBuilder.notEqual(taRoot.get("state"), TrackingState.COMPLETED);
-        criteriaList.add(predicate3);
-        criteriaQuery.select(taRoot);
-        // Pass the criteria list to the where method of criteria query
-        criteriaQuery.where(criteriaBuilder.and(criteriaList.toArray(new Predicate[criteriaList.size()])));
-        // Here entity manager will create actual SQL query out of criteria query
-        TypedQuery<Journey> query = em.createQuery(criteriaQuery);
-        List<Journey> found = query.getResultList();
-        if (l.isDebugEnabled()) {
-            for (Journey journey : found) {
-                l.debug("found journey=" + journey);
-            }
-        }
-        return found;*/
-    }
-
-
+    }*/
 }

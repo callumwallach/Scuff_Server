@@ -1,6 +1,5 @@
 package nz.co.scuff.web.service;
 
-import nz.co.scuff.data.journey.snapshot.BusSnapshot;
 import nz.co.scuff.data.journey.snapshot.TicketSnapshot;
 import nz.co.scuff.data.util.DataPacket;
 import nz.co.scuff.server.service.WalkingServiceBean;
@@ -23,25 +22,32 @@ public class WalkingWebService {
     @EJB
     private WalkingServiceBean walkingService;
 
-    @Path("/buses/{id}")
+/*    @Path("/buses/{id}")
     @GET
     @Produces("application/json")
     public BusSnapshot getActiveBus(@PathParam("id") String journeyId) {
         return walkingService.getActiveBus(journeyId);
-    }
+    }*/
 
-    @Path("/buses")
+    /*@Path("/buses")
     @GET
     @Produces("application/json")
     public DataPacket getActiveJourneys(@QueryParam("routeId") long routeId, @QueryParam("schoolId") long schoolId) {
         return walkingService.getActiveJourneys(routeId, schoolId);
+    }*/
+
+    @Path("/buses")
+    @GET
+    @Produces("application/json")
+    public DataPacket getActiveJourneys(@QueryParam("coordinatorId") long coordinatorId) {
+        return walkingService.getActiveJourneys(coordinatorId);
     }
 
     @Path("/buses/{id}/tickets")
     @POST
     @Consumes("application/json")
     @Produces("application/json")
-    public List<TicketSnapshot> requestTickets(@PathParam("id") String journeyId, List<Long> passengerIds) throws Exception {
+    public DataPacket requestTickets(@PathParam("id") String journeyId, List<Long> passengerIds) throws Exception {
         return walkingService.requestTickets(journeyId, passengerIds);
     }
 
@@ -92,13 +98,13 @@ public class WalkingWebService {
 
         // prune for journey
         JourneySnapshot journeySnapshot = toPrune.toSnapshot();
-        SchoolSnapshot cs = toPrune.getSchool().toSnapshot();
-        journeySnapshot.setSchool(cs);
-        DriverSnapshot ds = toPrune.getDriver().toSnapshot();
-        journeySnapshot.setDriver(ds);
+        InstitutionSnapshot cs = toPrune.getInstitution().toSnapshot();
+        journeySnapshot.setInstitution(cs);
+        AdultSnapshot ds = toPrune.getAdult().toSnapshot();
+        journeySnapshot.setAdult(ds);
         RouteSnapshot rs = toPrune.getRoute().toSnapshot();
         journeySnapshot.setRoute(rs);
-        journeySnapshot.getWaypoints().add(toPrune.getMostRecentWaypoint().toSnapshot());
+        journeySnapshot.getWaypointIds().add(toPrune.getMostRecentWaypoint().toSnapshot());
         return journeySnapshot;
     }
 
@@ -107,16 +113,16 @@ public class WalkingWebService {
 
         // prune for journey
         JourneySnapshot journeySnapshot = toPrune.toSnapshot();
-        SchoolSnapshot cs = toPrune.getSchool().toSnapshot();
-        journeySnapshot.setSchool(cs);
-        DriverSnapshot ds = toPrune.getDriver().toSnapshot();
-        journeySnapshot.setDriver(ds);
+        InstitutionSnapshot cs = toPrune.getInstitution().toSnapshot();
+        journeySnapshot.setInstitution(cs);
+        AdultSnapshot ds = toPrune.getAdult().toSnapshot();
+        journeySnapshot.setAdult(ds);
         RouteSnapshot rs = toPrune.getRoute().toSnapshot();
         journeySnapshot.setRoute(rs);
-        for (Waypoint w : toPrune.getWaypoints()) {
-            journeySnapshot.getWaypoints().add(w.toSnapshot());
+        for (Waypoint w : toPrune.getWaypointIds()) {
+            journeySnapshot.getWaypointIds().add(w.toSnapshot());
         }
-        for (Passenger p : toPrune.getPassengers()) {
+        for (Child p : toPrune.getPassengers()) {
             journeySnapshot.getPassengers().add(p.toSnapshot());
         }
         return journeySnapshot;

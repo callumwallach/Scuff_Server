@@ -1,5 +1,7 @@
 package nz.co.scuff.data.journey.snapshot;
 
+import nz.co.scuff.data.base.snapshot.ModifiableSnapshot;
+
 import javax.xml.bind.annotation.XmlRootElement;
 import java.sql.Timestamp;
 
@@ -7,17 +9,18 @@ import java.sql.Timestamp;
  * Created by Callum on 10/05/2015.
  */
 @XmlRootElement
-public class TicketSnapshot implements Comparable {
+public class TicketSnapshot extends ModifiableSnapshot implements Comparable {
 
     private long ticketId;
     private Timestamp issueDate;
 
-    private StampSnapshot stamp;
-
+    private long stampId;
     private String journeyId;
-    private long passengerId;
+    private long childId;
 
-    public TicketSnapshot() {}
+    public TicketSnapshot() {
+        super();
+    }
 
     public long getTicketId() {
         return ticketId;
@@ -35,12 +38,12 @@ public class TicketSnapshot implements Comparable {
         this.journeyId = journeyId;
     }
 
-    public long getPassengerId() {
-        return passengerId;
+    public long getChildId() {
+        return childId;
     }
 
-    public void setPassengerId(long passengerId) {
-        this.passengerId = passengerId;
+    public void setChildId(long childId) {
+        this.childId = childId;
     }
 
     public Timestamp getIssueDate() {
@@ -51,12 +54,12 @@ public class TicketSnapshot implements Comparable {
         this.issueDate = issueDate;
     }
 
-    public StampSnapshot getStamp() {
-        return stamp;
+    public long getStampId() {
+        return stampId;
     }
 
-    public void setStamp(StampSnapshot stamp) {
-        this.stamp = stamp;
+    public void setStampId(long stampId) {
+        this.stampId = stampId;
     }
 
     @Override
@@ -83,14 +86,13 @@ public class TicketSnapshot implements Comparable {
 
     @Override
     public String toString() {
-        final StringBuffer sb = new StringBuffer("TicketSnapshot{");
-        sb.append("ticketId='").append(ticketId).append('\'');
-        sb.append(", issueDate=").append(issueDate);
-        sb.append(", stamp=").append(stamp);
-        sb.append(", journeyId='").append(journeyId).append('\'');
-        sb.append(", passengerId=").append(passengerId);
-        sb.append('}');
-        return sb.toString();
+        return "TicketSnapshot{" +
+                "ticketId=" + ticketId +
+                ", issueDate=" + issueDate +
+                ", stampId=" + stampId +
+                ", journeyId='" + journeyId + '\'' +
+                ", childId=" + childId +
+                "} " + super.toString();
     }
 
 }
