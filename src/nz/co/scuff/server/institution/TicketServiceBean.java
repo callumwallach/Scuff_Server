@@ -4,6 +4,7 @@ import nz.co.scuff.data.journey.Ticket;
 import nz.co.scuff.server.family.ChildServiceBean;
 import nz.co.scuff.server.journey.JourneyServiceBean;
 import nz.co.scuff.server.util.AbstractFacade;
+import nz.co.scuff.server.util.AbstractModifiableEntityFacade;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
@@ -14,7 +15,7 @@ import javax.persistence.PersistenceContext;
  * Created by Callum on 12/05/2015.
  */
 @Stateless(name = "TicketServiceEJB")
-public class TicketServiceBean extends AbstractFacade<Ticket> {
+public class TicketServiceBean extends AbstractModifiableEntityFacade<Ticket> {
 
     @EJB
     private JourneyServiceBean journeyService;

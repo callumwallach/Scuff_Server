@@ -29,8 +29,13 @@ import org.slf4j.LoggerFactory;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import javax.ws.rs.core.Response;
 import java.sql.Timestamp;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Created by Callum on 16/05/2015.
@@ -39,6 +44,15 @@ import java.sql.Timestamp;
 public class AccountServiceBean {
 
     public static final Logger l = LoggerFactory.getLogger(AccountServiceBean.class.getCanonicalName());
+
+    private static final boolean SHALLOW = false;
+
+    @PersistenceContext
+    private EntityManager em;
+
+    protected EntityManager getEntityManager() {
+        return em;
+    }
 
     @EJB
     private AdultServiceBean driverService;
@@ -55,31 +69,206 @@ public class AccountServiceBean {
             throw new ScuffServerException("Resource not found", "The requested person does not exist",
                     Response.Status.NOT_FOUND, ErrorContextCode.PERSON_NOT_FOUND);
         }
-        // assemble return data based on modified data (can be empty but never null)
+        found.setLastLogin(new Timestamp(System.currentTimeMillis()));
+        // save entity direct so lastModified is not changed (only lastLogin)
+        getEntityManager().merge(found);
         return assemble(found, lastChecked);
+
     }
 
-/*    public DataPacket getSchools(double latitude, double longitude, int radius) {
-        if (l.isDebugEnabled()) l.debug("getLocalSchools lat="+latitude+" long="+longitude+" radius="+radius);
+    private Set<Long> doAdults(Timestamp lastChecked, Collection<Adult> adults, DataPacket packet, boolean isDeepCopy) {
 
-        // TODO find by local area
-        // TODO http://stackoverflow.com/questions/8428209/show-current-location-and-nearby-places-and-route-between-two-places-using-googl
-        List<Institution> institutions = schoolService.findAll();
-        DataPacket dataPacket = new DataPacket();
-        for (Institution institution : institutions) {
-            InstitutionSnapshot ss = institution.toSnapshot();
-            if (l.isDebugEnabled()) l.debug("found institution="+ss);
-            for (Route route : institution.getRoutes()) {
-                RouteSnapshot rs = route.toSnapshot();
-                rs.setOwnerId(ss.getSchoolId());
-                dataPacket.getRouteSnapshots().put(rs.getRouteId(), rs);
-                ss.getGuideIds().add(rs.getRouteId());
-                if (l.isDebugEnabled()) l.debug("found route="+rs);
+        Set<Long> adultIds = new HashSet<>();
+        for (Adult adult : adults) {
+            if (l.isDebugEnabled()) l.debug("adult:"+adult);
+            adultIds.add(adult.getCoordinatorId());
+            if (adult.isDirty(lastChecked)) {
+                if (l.isDebugEnabled()) l.debug("adult="+adult.getCoordinatorId()+" is dirty");
+                AdultSnapshot adultSnapshot = adult.toSnapshot();
+                if (isDeepCopy) {
+                    if (l.isDebugEnabled()) l.debug("adult="+adult.getCoordinatorId()+" deep copy");
+                    adultSnapshot.setChildrenIds(doChildren(lastChecked, adult.getChildren(), packet));
+                    adultSnapshot.setGuideeIds(doInstitutions(lastChecked, adult.getGuidees(), packet, SHALLOW));
+                }
+                packet.getAdultSnapshots().put(adultSnapshot.getCoordinatorId(), adultSnapshot);
             }
-            dataPacket.getInstitutionSnapshots().put(ss.getSchoolId(), ss);
         }
-        return dataPacket;
-    }*/
+        return adultIds;
+    }
+
+    private Set<Long> doAdults(Timestamp lastChecked, Collection<Adult> adults, DataPacket packet) {
+
+        return doAdults(lastChecked, adults, packet, true);
+
+    }
+
+    private Set<Long> doChildren(Timestamp lastChecked, Collection<Child> children, DataPacket packet, boolean isDeepCopy) {
+
+        Set<Long> childIds = new HashSet<>();
+        for (Child child : children) {
+            if (l.isDebugEnabled()) l.debug("child:"+child);
+            childIds.add(child.getChildId());
+            if (child.isDirty(lastChecked)) {
+                if (l.isDebugEnabled()) l.debug("child="+child.getChildId()+" is dirty");
+                ChildSnapshot childSnapshot = child.toSnapshot();
+                if (isDeepCopy) {
+                    if (l.isDebugEnabled()) l.debug("child="+child.getChildId()+" deep copy");
+                    childSnapshot.setParentIds(doAdults(lastChecked, child.getParents(), packet, SHALLOW));
+                    childSnapshot.setTicketIds(doTickets(lastChecked, child.getTickets(), packet));
+                }
+                packet.getChildSnapshots().put(childSnapshot.getChildId(), childSnapshot);
+            }
+        }
+        return childIds;
+    }
+
+    private Set<Long> doChildren(Timestamp lastChecked, Collection<Child> children, DataPacket packet) {
+
+        return doChildren(lastChecked, children, packet, true);
+
+    }
+
+    private Set<Long> doTickets(Timestamp lastChecked, Collection<Ticket> tickets, DataPacket packet) {
+
+        Set<Long> ticketIds = new HashSet<>();
+        for (Ticket ticket : tickets) {
+            if (l.isDebugEnabled()) l.debug("ticket:"+ticket);
+            ticketIds.add(ticket.getTicketId());
+            if (ticket.isDirty(lastChecked)) {
+                TicketSnapshot ticketSnapshot = ticket.toSnapshot();
+                packet.getTicketSnapshots().put(ticketSnapshot.getTicketId(), ticketSnapshot);
+            }
+        }
+        return ticketIds;
+    }
+
+    private Set<Long> doRoutes(Timestamp lastChecked, Collection<Route> routes, DataPacket packet) {
+
+        Set<Long> routeIds = new HashSet<>();
+        for (Route route : routes) {
+            if (l.isDebugEnabled()) l.debug("route:"+route);
+            routeIds.add(route.getRouteId());
+            if (route.isDirty(lastChecked)) {
+                RouteSnapshot routeSnapshot = route.toSnapshot();
+                packet.getRouteSnapshots().put(routeSnapshot.getRouteId(), routeSnapshot);
+            }
+        }
+        return routeIds;
+    }
+
+    private Set<Long> doPlaces(Timestamp lastChecked, Collection<Place> places, DataPacket packet) {
+
+        Set<Long> placeIds = new HashSet<>();
+        for (Place place : places) {
+            if (l.isDebugEnabled()) l.debug("place:"+place);
+            placeIds.add(place.getPlaceId());
+            if (place.isDirty(lastChecked)) {
+                PlaceSnapshot placeSnapshot = place.toSnapshot();
+                packet.getPlaceSnapshots().put(placeSnapshot.getPlaceId(), placeSnapshot);
+            }
+        }
+        return placeIds;
+    }
+
+    private Set<String> doWaypoints(Timestamp lastChecked, Collection<Waypoint> waypoints, DataPacket packet) {
+
+        Set<String> waypointIds = new HashSet<>();
+        for (Waypoint waypoint : waypoints) {
+            if (l.isDebugEnabled()) l.debug("waypoint:"+waypoint);
+            waypointIds.add(waypoint.getWaypointId());
+            WaypointSnapshot waypointSnapshot = waypoint.toSnapshot();
+            packet.getWaypointSnapshots().put(waypointSnapshot.getWaypointId(), waypointSnapshot);
+        }
+        return waypointIds;
+    }
+
+    private Set<String> doJourneys(Timestamp lastChecked, Collection<Journey> journeys, DataPacket packet) {
+
+        Set<String> journeyIds = new HashSet<>();
+        for (Journey journey : journeys) {
+            if (l.isDebugEnabled()) l.debug("journey:"+journey);
+            journeyIds.add(journey.getJourneyId());
+            if (journey.isDirty(lastChecked)) {
+                if (l.isDebugEnabled()) l.debug("journey="+journey.getJourneyId()+" is dirty");
+                JourneySnapshot journeySnapshot = journey.toSnapshot();
+                journeySnapshot.setWaypointIds(doWaypoints(lastChecked, journey.getWaypoints(), packet));
+                journeySnapshot.setTicketIds(doTickets(lastChecked, journey.getTickets(), packet));
+                packet.getJourneySnapshots().put(journeySnapshot.getJourneyId(), journeySnapshot);
+            }
+        }
+        return journeyIds;
+    }
+
+    private Set<Long> doInstitutions(Timestamp lastChecked, Collection<Institution> institutions, DataPacket packet, boolean isDeepCopy) {
+
+        Set<Long> institutionIds = new HashSet<>();
+        for (Institution institution : institutions) {
+            if (l.isDebugEnabled()) l.debug("institution:"+institution);
+            institutionIds.add(institution.getCoordinatorId());
+            if (institution.isDirty(lastChecked)) {
+                if (l.isDebugEnabled()) l.debug("institution="+institution.getCoordinatorId()+" is dirty");
+                InstitutionSnapshot institutionSnapshot = institution.toSnapshot();
+                if (isDeepCopy) {
+                    if (l.isDebugEnabled()) l.debug("institution="+institution.getCoordinatorId()+" deep copy");
+                    institutionSnapshot.setGuideIds(doAdults(lastChecked, institution.getGuides(), packet, SHALLOW));
+                    institutionSnapshot.setRouteIds(doRoutes(lastChecked, institution.getRoutes(), packet));
+                    institutionSnapshot.setPlaceIds(doPlaces(lastChecked, institution.getPlaces(), packet));
+                }
+                packet.getInstitutionSnapshots().put(institutionSnapshot.getCoordinatorId(), institutionSnapshot);
+            }
+        }
+        return institutionIds;
+    }
+
+    private Set<Long> doInstitutions(Timestamp lastChecked, Collection<Institution> institutions, DataPacket packet) {
+
+        return doInstitutions(lastChecked, institutions, packet, true);
+
+    }
+
+    private Set<Long> doCoordinators(Timestamp lastChecked, Collection<Coordinator> coordinators, DataPacket packet, boolean isDeepCopy) {
+
+        Set<Long> coordinatorIds = new HashSet<>();
+        for (Coordinator coordinator : coordinators) {
+            if (l.isDebugEnabled()) l.debug("coordinator:"+coordinator);
+            coordinatorIds.add(coordinator.getCoordinatorId());
+            if (coordinator.isDirty(lastChecked)) {
+                if (l.isDebugEnabled()) l.debug("coordinator="+coordinator.getCoordinatorId()+" is dirty");
+                CoordinatorSnapshot coordinatorSnapshot = coordinator.toSnapshot();
+                if (isDeepCopy) {
+                    if (l.isDebugEnabled()) l.debug("coordinator="+coordinator.getCoordinatorId()+" deep copy");
+                    coordinatorSnapshot.setRouteIds(doRoutes(lastChecked, coordinator.getRoutes(), packet));
+                    coordinatorSnapshot.setPlaceIds(doPlaces(lastChecked, coordinator.getPlaces(), packet));
+                }
+                // tomfoolery due to android (active android inability to process table inheritance)
+                if (coordinatorSnapshot instanceof AdultSnapshot) {
+                    AdultSnapshot adultSnapshot = (AdultSnapshot)coordinatorSnapshot;
+                    AdultSnapshot alreadyPresentAdultSnapshot = packet.getAdultSnapshots().get(adultSnapshot.getCoordinatorId());
+                    if (alreadyPresentAdultSnapshot != null) {
+                        // merge them
+                        adultSnapshot.setGuideeIds(alreadyPresentAdultSnapshot.getGuideeIds());
+                        adultSnapshot.setChildrenIds(alreadyPresentAdultSnapshot.getChildrenIds());
+                    }
+                    packet.getAdultSnapshots().put(adultSnapshot.getCoordinatorId(), adultSnapshot);
+                } else {
+                    InstitutionSnapshot institutionSnapshot = (InstitutionSnapshot)coordinatorSnapshot;
+                    InstitutionSnapshot alreadyPresentInstitutionSnapshot = packet.getInstitutionSnapshots().get(institutionSnapshot.getCoordinatorId());
+                    if (alreadyPresentInstitutionSnapshot != null) {
+                        // merge them
+                        institutionSnapshot.setGuideIds(alreadyPresentInstitutionSnapshot.getGuideIds());
+                    }
+                    packet.getInstitutionSnapshots().put(institutionSnapshot.getCoordinatorId(), institutionSnapshot);
+                }
+            }
+        }
+        return coordinatorIds;
+    }
+
+    private Set<Long> doCoordinators(Timestamp lastChecked, Collection<Coordinator> coordinators, DataPacket packet) {
+
+        return doCoordinators(lastChecked, coordinators, packet, true);
+
+    }
 
     private DataPacket assemble(Adult adult, long lastCheckedMillis) {
         if (l.isDebugEnabled()) l.debug("assemble data for transit");
@@ -90,163 +279,160 @@ public class AccountServiceBean {
 
         if (l.isDebugEnabled()) l.debug("last modified="+adult.getLastModified().getTime()+" lastaccess="+lastCheckedMillis);
 
-        // TODO check dates here
-        if (adult.getLastModified().after(lastChecked)) {
-            AdultSnapshot ass = adult.toSnapshot();
+        if (adult.isDirty(lastChecked)) {
+            AdultSnapshot adultSnapshot = adult.toSnapshot();
+            adultSnapshot.setChildrenIds(doChildren(lastChecked, adult.getChildren(), packet));
+            //adultSnapshot.setPastJourneyIds(Constants.STRING_COLLECTION_NOT_RETRIEVED_PLACEHOLDER);
+            adultSnapshot.setCurrentJourneyIds(doJourneys(lastChecked, adult.getCurrentJourneys(), packet));
+            adultSnapshot.setGuideeIds(doInstitutions(lastChecked, adult.getGuidees(), packet));
+            adultSnapshot.setFriendIds(doCoordinators(lastChecked, adult.getFriends(), packet));
+            adultSnapshot.setPlaceIds(doPlaces(lastChecked, adult.getPlaces(), packet));
+            adultSnapshot.setRouteIds(doRoutes(lastChecked, adult.getRoutes(), packet));
+            packet.getAdultSnapshots().put(adultSnapshot.getCoordinatorId(), adultSnapshot);
+        }
+        if (l.isDebugEnabled()) l.debug("assembled packet="+packet);
+        return packet;
 
-            // ignore past journeys
-            ass.getPastJourneyIds().add(Constants.STRING_COLLECTION_NOT_RETRIEVED);
-
-            for (Child p : adult.getChildren()) {
-                if (l.isDebugEnabled()) l.debug("child:"+p);
-                if (p.getLastModified().after(lastChecked)) {
-                    ChildSnapshot ps = p.toSnapshot();
-                    for (Adult a : p.getParents()) {
-                        if (l.isDebugEnabled()) l.debug("parent:"+a);
+/*
+            for (Child c : adult.getChildren()) {
+                if (l.isDebugEnabled()) l.debug("child:"+c);
+                ChildSnapshot cs = c.toSnapshot();
+                for (Adult a : c.getParents()) {
+                    if (l.isDebugEnabled()) l.debug("parent:"+a);
+                    cs.getParentIds().add(a.getCoordinatorId());
+                    if (a.isDirty(lastChecked)) {
                         AdultSnapshot as = a.toSnapshot();
-                        ps.getParentIds().add(as.getCoordinatorId());
                         packet.getAdultSnapshots().put(as.getCoordinatorId(), as);
                     }
-                    for (Ticket t : p.getTickets()) {
-                        if (l.isDebugEnabled()) l.debug("ticket:"+t);
+                }
+                for (Ticket t : c.getTickets()) {
+                    if (l.isDebugEnabled()) l.debug("ticket:"+t);
+                    cs.getTicketIds().add(t.getTicketId());
+                    if (t.isDirty(lastChecked)) {
                         TicketSnapshot ts = t.toSnapshot();
-                        ps.getTicketIds().add(ts.getTicketId());
                         packet.getTicketSnapshots().put(ts.getTicketId(), ts);
                     }
-                    ass.getChildrenIds().add(ps.getChildId());
-                    packet.getChildSnapshots().put(ps.getChildId(), ps);
                 }
+                adultSnapshot.getChildrenIds().add(cs.getChildId());
+                packet.getChildSnapshots().put(cs.getChildId(), cs);
             }
+
             for (Journey j : adult.getCurrentJourneys()) {
                 if (l.isDebugEnabled()) l.debug("current journey:"+j);
-                if (j.getLastModified().after(lastChecked)) {
-                    JourneySnapshot js = j.toSnapshot();
-                    for (Waypoint w : j.getWaypoints()) {
-                        if (l.isDebugEnabled()) l.debug("waypoint:"+w);
-                        WaypointSnapshot ws = w.toSnapshot();
-                        js.getWaypointIds().add(ws.getWaypointId());
-                        packet.getWaypointSnapshots().put(ws.getWaypointId(), ws);
-                    }
-                    for (Ticket t : j.getTickets()) {
-                        if (l.isDebugEnabled()) l.debug("ticket:"+t);
-                        TicketSnapshot ts = t.toSnapshot();
-                        js.getTicketIds().add(ts.getTicketId());
-                        packet.getTicketSnapshots().put(ts.getTicketId(), ts);
-                    }
-                    ass.getCurrentJourneyIds().add(js.getJourneyId());
-                    packet.getJourneySnapshots().put(js.getJourneyId(), js);
+                JourneySnapshot js = j.toSnapshot();
+                for (Waypoint w : j.getWaypoints()) {
+                    if (l.isDebugEnabled()) l.debug("waypoint:"+w);
+                    WaypointSnapshot ws = w.toSnapshot();
+                    js.getWaypointIds().add(ws.getWaypointId());
+                    packet.getWaypointSnapshots().put(ws.getWaypointId(), ws);
                 }
+                for (Ticket t : j.getTickets()) {
+                    if (l.isDebugEnabled()) l.debug("ticket:"+t);
+                    TicketSnapshot ts = t.toSnapshot();
+                    js.getTicketIds().add(ts.getTicketId());
+                    packet.getTicketSnapshots().put(ts.getTicketId(), ts);
+                }
+                adultSnapshot.getCurrentJourneyIds().add(js.getJourneyId());
+                packet.getJourneySnapshots().put(js.getJourneyId(), js);
             }
+
             for (Institution i : adult.getGuidees()) {
                 if (l.isDebugEnabled()) l.debug("guidee:"+i);
-                if (i.getLastModified().after(lastChecked)) {
-                    InstitutionSnapshot is = i.toSnapshot();
-                    ass.getGuideeIds().add(is.getCoordinatorId());
-                    packet.getInstitutionSnapshots().put(is.getCoordinatorId(), is);
-                    // journey placeholder
-                    is.getCurrentJourneyIds().add(Constants.STRING_COLLECTION_NOT_RETRIEVED);
-                    is.getPastJourneyIds().add(Constants.STRING_COLLECTION_NOT_RETRIEVED);
-                    /*for (Journey j : i.getCurrentJourneys()) {
-                        if (l.isDebugEnabled()) l.debug("current journey:"+j);
-                        if (j.getLastModified().after(lastChecked)) {
-                            JourneySnapshot js = j.toSnapshot();
-                            for (Waypoint w : j.getWaypoints()) {
-                                if (l.isDebugEnabled()) l.debug("waypoint:"+w);
-                                WaypointSnapshot ws = w.toSnapshot();
-                                js.getWaypointIds().add(ws.getWaypointId());
-                                packet.getWaypointSnapshots().put(ws.getWaypointId(), ws);
-                            }
-                            // ignore tickets
-                            js.getTicketIds().add(Constants.LONG_COLLECTION_NOT_RETRIEVED);
-                            is.getCurrentJourneyIds().add(js.getJourneyId());
-                            packet.getJourneySnapshots().put(js.getJourneyId(), js);
+                InstitutionSnapshot is = i.toSnapshot();
+                adultSnapshot.getGuideeIds().add(is.getCoordinatorId());
+                packet.getInstitutionSnapshots().put(is.getCoordinatorId(), is);
+                // journey placeholder
+                is.getCurrentJourneyIds().add(Constants.STRING_COLLECTION_NOT_RETRIEVED);
+                is.getPastJourneyIds().add(Constants.STRING_COLLECTION_NOT_RETRIEVED);
+                *//*for (Journey j : i.getCurrentJourneys()) {
+                    if (l.isDebugEnabled()) l.debug("current journey:"+j);
+                    if (j.getLastModified().after(lastChecked)) {
+                        JourneySnapshot js = j.toSnapshot();
+                        for (Waypoint w : j.getWaypoints()) {
+                            if (l.isDebugEnabled()) l.debug("waypoint:"+w);
+                            WaypointSnapshot ws = w.toSnapshot();
+                            js.getWaypointIds().add(ws.getWaypointId());
+                            packet.getWaypointSnapshots().put(ws.getWaypointId(), ws);
                         }
-                    }*/
-                    for (Route r : i.getRoutes()) {
-                        if (l.isDebugEnabled()) l.debug("route:"+r);
-                        if (r.getLastModified().after(lastChecked)) {
-                            RouteSnapshot rs = r.toSnapshot();
-                            is.getRouteIds().add(rs.getRouteId());
-                            packet.getRouteSnapshots().put(rs.getRouteId(), rs);
-                        }
+                        // ignore tickets
+                        js.getTicketIds().add(Constants.LONG_COLLECTION_NOT_RETRIEVED);
+                        is.getCurrentJourneyIds().add(js.getJourneyId());
+                        packet.getJourneySnapshots().put(js.getJourneyId(), js);
                     }
-                    for (Place p : i.getPlaces()) {
-                        if (l.isDebugEnabled()) l.debug("place:"+p);
-                        if (p.getLastModified().after(lastChecked)) {
-                            PlaceSnapshot ps = p.toSnapshot();
-                            is.getPlaceIds().add(ps.getPlaceId());
-                            packet.getPlaceSnapshots().put(ps.getPlaceId(), ps);
-                        }
-                    }
+                }*//*
+                for (Adult g : i.getGuides()) {
+                    if (l.isDebugEnabled()) l.debug("guide:"+g);
+                    AdultSnapshot as = g.toSnapshot();
+                    is.getGuideIds().add(as.getCoordinatorId());
+                    packet.getAdultSnapshots().put(as.getCoordinatorId(), as);
+                }
+                for (Route r : i.getRoutes()) {
+                    if (l.isDebugEnabled()) l.debug("route:"+r);
+                    RouteSnapshot rs = r.toSnapshot();
+                    is.getRouteIds().add(rs.getRouteId());
+                    packet.getRouteSnapshots().put(rs.getRouteId(), rs);
+                }
+                for (Place p : i.getPlaces()) {
+                    if (l.isDebugEnabled()) l.debug("place:"+p);
+                    PlaceSnapshot ps = p.toSnapshot();
+                    is.getPlaceIds().add(ps.getPlaceId());
+                    packet.getPlaceSnapshots().put(ps.getPlaceId(), ps);
                 }
             }
             for (Coordinator c : adult.getFriends()) {
                 if (l.isDebugEnabled()) l.debug("friend:"+c);
-                if (c.getLastModified().after(lastChecked)) {
-                    CoordinatorSnapshot cs = c.toSnapshot();
-                    ass.getFriendIds().add(cs.getCoordinatorId());
-                    if (cs instanceof AdultSnapshot) {
-                        packet.getAdultSnapshots().put(cs.getCoordinatorId(), (AdultSnapshot)cs);
-                    } else {
-                        packet.getInstitutionSnapshots().put(cs.getCoordinatorId(), (InstitutionSnapshot)cs);
-                    }
-                    // journey placeholder
-                    cs.getCurrentJourneyIds().add(Constants.STRING_COLLECTION_NOT_RETRIEVED);
-                    cs.getPastJourneyIds().add(Constants.STRING_COLLECTION_NOT_RETRIEVED);
-/*                    for (Journey j : c.getCurrentJourneys()) {
-                        if (l.isDebugEnabled()) l.debug("journey:"+j);
-                        if (j.getLastModified().after(lastChecked)) {
-                            JourneySnapshot js = j.toSnapshot();
-                            for (Waypoint w : j.getWaypoints()) {
-                                WaypointSnapshot ws = w.toSnapshot();
-                                js.getWaypointIds().add(ws.getWaypointId());
-                                packet.getWaypointSnapshots().put(ws.getWaypointId(), ws);
-                            }
-                            // ignore tickets
-                            js.getTicketIds().add(Constants.LONG_COLLECTION_NOT_RETRIEVED);
-                            cs.getCurrentJourneyIds().add(js.getJourneyId());
-                            packet.getJourneySnapshots().put(js.getJourneyId(), js);
+                CoordinatorSnapshot cs = c.toSnapshot();
+                adultSnapshot.getFriendIds().add(cs.getCoordinatorId());
+                if (cs instanceof AdultSnapshot) {
+                    packet.getAdultSnapshots().put(cs.getCoordinatorId(), (AdultSnapshot)cs);
+                } else {
+                    packet.getInstitutionSnapshots().put(cs.getCoordinatorId(), (InstitutionSnapshot)cs);
+                }
+                // journey placeholder
+                cs.getCurrentJourneyIds().add(Constants.STRING_COLLECTION_NOT_RETRIEVED);
+                cs.getPastJourneyIds().add(Constants.STRING_COLLECTION_NOT_RETRIEVED);
+*//*                    for (Journey j : c.getCurrentJourneys()) {
+                    if (l.isDebugEnabled()) l.debug("journey:"+j);
+                    if (j.getLastModified().after(lastChecked)) {
+                        JourneySnapshot js = j.toSnapshot();
+                        for (Waypoint w : j.getWaypoints()) {
+                            WaypointSnapshot ws = w.toSnapshot();
+                            js.getWaypointIds().add(ws.getWaypointId());
+                            packet.getWaypointSnapshots().put(ws.getWaypointId(), ws);
                         }
-                    }*/
-                    for (Route r : c.getRoutes()) {
-                        if (l.isDebugEnabled()) l.debug("route:"+r);
-                        if (r.getLastModified().after(lastChecked)) {
-                            RouteSnapshot rs = r.toSnapshot();
-                            cs.getRouteIds().add(rs.getRouteId());
-                            packet.getRouteSnapshots().put(rs.getRouteId(), rs);
-                        }
+                        // ignore tickets
+                        js.getTicketIds().add(Constants.LONG_COLLECTION_NOT_RETRIEVED);
+                        cs.getCurrentJourneyIds().add(js.getJourneyId());
+                        packet.getJourneySnapshots().put(js.getJourneyId(), js);
                     }
-                    for (Place p : c.getPlaces()) {
-                        if (l.isDebugEnabled()) l.debug("place:"+p);
-                        if (p.getLastModified().after(lastChecked)) {
-                            PlaceSnapshot ps = p.toSnapshot();
-                            cs.getPlaceIds().add(ps.getPlaceId());
-                            packet.getPlaceSnapshots().put(ps.getPlaceId(), ps);
-                        }
-                    }
+                }*//*
+                for (Route r : c.getRoutes()) {
+                    if (l.isDebugEnabled()) l.debug("route:"+r);
+                    RouteSnapshot rs = r.toSnapshot();
+                    cs.getRouteIds().add(rs.getRouteId());
+                    packet.getRouteSnapshots().put(rs.getRouteId(), rs);
+                }
+                for (Place p : c.getPlaces()) {
+                    if (l.isDebugEnabled()) l.debug("place:"+p);
+                    PlaceSnapshot ps = p.toSnapshot();
+                    cs.getPlaceIds().add(ps.getPlaceId());
+                    packet.getPlaceSnapshots().put(ps.getPlaceId(), ps);
                 }
             }
             for (Route r : adult.getRoutes()) {
                 if (l.isDebugEnabled()) l.debug("route:"+r);
-                if (r.getLastModified().after(lastChecked)) {
-                    RouteSnapshot rs = r.toSnapshot();
-                    ass.getRouteIds().add(rs.getRouteId());
-                    packet.getRouteSnapshots().put(rs.getRouteId(), rs);
-                }
+                RouteSnapshot rs = r.toSnapshot();
+                adultSnapshot.getRouteIds().add(rs.getRouteId());
+                packet.getRouteSnapshots().put(rs.getRouteId(), rs);
             }
             for (Place p : adult.getPlaces()) {
                 if (l.isDebugEnabled()) l.debug("place:"+p);
-                if (p.getLastModified().after(lastChecked)) {
-                    PlaceSnapshot ps = p.toSnapshot();
-                    ass.getPlaceIds().add(ps.getPlaceId());
-                    packet.getPlaceSnapshots().put(ps.getPlaceId(), ps);
-                }
+                PlaceSnapshot ps = p.toSnapshot();
+                adultSnapshot.getPlaceIds().add(ps.getPlaceId());
+                packet.getPlaceSnapshots().put(ps.getPlaceId(), ps);
             }
-            packet.getAdultSnapshots().put(ass.getCoordinatorId(), ass);
-        }
+            packet.getAdultSnapshots().put(adultSnapshot.getCoordinatorId(), adultSnapshot);
+        }*/
 
-        if (l.isDebugEnabled()) l.debug("assembled packet="+packet);
-
-        return packet;
     }
 }

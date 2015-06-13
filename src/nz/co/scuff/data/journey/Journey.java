@@ -7,6 +7,7 @@ import nz.co.scuff.data.family.Adult;
 import nz.co.scuff.data.journey.snapshot.JourneySnapshot;
 import nz.co.scuff.data.institution.Route;
 import nz.co.scuff.data.place.Place;
+import nz.co.scuff.data.util.Constants;
 import nz.co.scuff.data.util.TrackingState;
 import org.hibernate.annotations.Sort;
 import org.hibernate.annotations.SortType;
@@ -275,6 +276,10 @@ public class Journey extends ModifiableEntity implements Snapshotable, Comparabl
 
         snapshot.setActive(active);
         snapshot.setLastModified(lastModified);
+
+        snapshot.setTicketIds(Constants.LONG_COLLECTION_NOT_RETRIEVED_PLACEHOLDER);
+        snapshot.setWaypointIds(Constants.STRING_COLLECTION_NOT_RETRIEVED_PLACEHOLDER);
+
         return snapshot;
     }
 

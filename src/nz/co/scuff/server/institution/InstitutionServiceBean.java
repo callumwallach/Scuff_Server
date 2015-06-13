@@ -2,6 +2,7 @@ package nz.co.scuff.server.institution;
 
 import nz.co.scuff.data.institution.Institution;
 import nz.co.scuff.server.util.AbstractFacade;
+import nz.co.scuff.server.util.AbstractModifiableEntityFacade;
 import org.hibernate.Hibernate;
 
 import javax.ejb.LocalBean;
@@ -14,7 +15,7 @@ import javax.persistence.PersistenceContext;
  */
 @LocalBean
 @Stateless(name = "InstitutionServiceEJB")
-public class InstitutionServiceBean extends AbstractFacade<Institution> {
+public class InstitutionServiceBean extends AbstractModifiableEntityFacade<Institution> {
 
     public static final int PAST_JOURNEYS = 1;
 

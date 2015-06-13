@@ -99,7 +99,7 @@ CREATE TABLE `child` (
 
 LOCK TABLES `child` WRITE;
 /*!40000 ALTER TABLE `child` DISABLE KEYS */;
-INSERT INTO `child` VALUES (1,1,'2015-06-10 19:14:00','Cayden',0,'Lin-Vaile',NULL,NULL),(2,1,'2015-06-10 19:14:00','Connor',0,'Lin',NULL,NULL),(3,1,'2015-06-10 19:14:00','Mia',1,'Lin',NULL,NULL);
+INSERT INTO `child` VALUES (1,1,'2015-06-13 12:45:43','Cayden',0,'Lin-Vaile',NULL,NULL),(2,1,'2015-06-13 12:45:43','Connor',0,'Lin',NULL,NULL),(3,1,'2015-06-13 12:45:43','Mia',1,'Lin',NULL,NULL);
 /*!40000 ALTER TABLE `child` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -143,14 +143,15 @@ CREATE TABLE `coordinator` (
   `CoordinatorId` bigint(20) NOT NULL AUTO_INCREMENT,
   `Active` tinyint(1) DEFAULT NULL,
   `LastModified` datetime NOT NULL,
+  `LastLogin` datetime DEFAULT NULL,
   `Email` varchar(255) DEFAULT NULL,
-  `Name` varchar(255) DEFAULT NULL,
-  `Phone` varchar(255) DEFAULT NULL,
   `FirstName` varchar(255) DEFAULT NULL,
   `Gender` varchar(255) DEFAULT NULL,
   `LastName` varchar(255) DEFAULT NULL,
   `MiddleName` varchar(255) DEFAULT NULL,
+  `Phone` varchar(255) DEFAULT NULL,
   `Picture` varchar(255) DEFAULT NULL,
+  `Name` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`CoordinatorId`)
 ) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -161,7 +162,7 @@ CREATE TABLE `coordinator` (
 
 LOCK TABLES `coordinator` WRITE;
 /*!40000 ALTER TABLE `coordinator` DISABLE KEYS */;
-INSERT INTO `coordinator` VALUES ('Institution',1,1,'2015-06-10 19:14:00','info@stheliersschool.govt.nz','St Heliers School','09 6578893',NULL,NULL,NULL,NULL,NULL),('Adult',2,1,'2015-06-10 19:14:00','christine@gmail.com',NULL,'021666377','Christine','FEMALE','Lin',NULL,NULL),('Adult',3,1,'2015-06-10 19:14:00','callum@gmail.com',NULL,'021658093','Callum','MALE','Wallach',NULL,NULL);
+INSERT INTO `coordinator` VALUES ('Institution',1,1,'2015-06-13 12:45:43','2015-06-13 12:45:43','info@stheliersschool.govt.nz',NULL,NULL,NULL,NULL,'09 6578893',NULL,'St Heliers School'),('Adult',2,1,'2015-06-13 12:45:43','2015-06-13 12:45:43','christine@gmail.com','Christine','FEMALE','Lin',NULL,'021666377',NULL,NULL),('Adult',3,1,'2015-06-13 12:45:43','2015-06-13 12:45:43','callum@gmail.com','Callum','MALE','Wallach',NULL,'021658093',NULL,NULL);
 /*!40000 ALTER TABLE `coordinator` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -271,7 +272,7 @@ CREATE TABLE `coordinator_places` (
 
 LOCK TABLES `coordinator_places` WRITE;
 /*!40000 ALTER TABLE `coordinator_places` DISABLE KEYS */;
-INSERT INTO `coordinator_places` VALUES (1,1),(1,2),(1,3),(1,4);
+INSERT INTO `coordinator_places` VALUES (1,1),(1,2),(1,3),(1,4),(3,5);
 /*!40000 ALTER TABLE `coordinator_places` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -300,7 +301,7 @@ CREATE TABLE `coordinator_routes` (
 
 LOCK TABLES `coordinator_routes` WRITE;
 /*!40000 ALTER TABLE `coordinator_routes` DISABLE KEYS */;
-INSERT INTO `coordinator_routes` VALUES (1,1),(1,2),(1,3);
+INSERT INTO `coordinator_routes` VALUES (1,1),(1,2),(1,3),(3,4);
 /*!40000 ALTER TABLE `coordinator_routes` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -425,7 +426,7 @@ CREATE TABLE `place` (
   `Longitude` double NOT NULL,
   `Name` varchar(255) NOT NULL,
   PRIMARY KEY (`PlaceId`)
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -434,7 +435,7 @@ CREATE TABLE `place` (
 
 LOCK TABLES `place` WRITE;
 /*!40000 ALTER TABLE `place` DISABLE KEYS */;
-INSERT INTO `place` VALUES (1,1,'2015-06-10 19:14:00',42.16,-36.858255,174.860823,'St Heliers School South Gate'),(2,1,'2015-06-10 19:14:00',0,-36.85087,174.851444,'Long Drive Start'),(3,1,'2015-06-10 19:14:00',0,-36.851951,174.858268,'St Heliers Bay Road Start'),(4,1,'2015-06-10 19:14:00',0,-36.860039,174.868348,'Riddell Road Start');
+INSERT INTO `place` VALUES (1,1,'2015-06-13 12:45:43',42.16,-36.858255,174.860823,'St Heliers School South Gate'),(2,1,'2015-06-13 12:45:43',0,-36.85087,174.851444,'Long Drive Start'),(3,1,'2015-06-13 12:45:43',0,-36.851951,174.858268,'St Heliers Bay Road Start'),(4,1,'2015-06-13 12:45:43',0,-36.860039,174.868348,'Riddell Road Start'),(5,1,'2015-06-13 12:45:43',0,-36.860039,174.868348,'29 Tarawera Tce');
 /*!40000 ALTER TABLE `place` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -461,7 +462,7 @@ CREATE TABLE `route` (
   CONSTRAINT `FK_dla590d7sdyrbcip6f6ikhjet` FOREIGN KEY (`Owner`) REFERENCES `coordinator` (`CoordinatorId`),
   CONSTRAINT `FK_ern9enuyi5abs57ti0co4lpg7` FOREIGN KEY (`Destination`) REFERENCES `place` (`PlaceId`),
   CONSTRAINT `FK_rt9dju8y6nj4i52e4cuvmhv77` FOREIGN KEY (`Origin`) REFERENCES `place` (`PlaceId`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -470,7 +471,7 @@ CREATE TABLE `route` (
 
 LOCK TABLES `route` WRITE;
 /*!40000 ALTER TABLE `route` DISABLE KEYS */;
-INSERT INTO `route` VALUES (1,1,'2015-06-10 19:14:00','Long Drive','longdrive.png',1,2,1),(2,1,'2015-06-10 19:14:00','St Heliers Bay Road','stheliersbayroad.png',1,3,1),(3,1,'2015-06-10 19:14:00','Riddell Road','riddellroadnorth.png',1,4,1);
+INSERT INTO `route` VALUES (1,1,'2015-06-13 12:45:43','Long Drive','longdrive.png',1,2,1),(2,1,'2015-06-13 12:45:43','St Heliers Bay Road','stheliersbayroad.png',1,3,1),(3,1,'2015-06-13 12:45:43','Riddell Road','riddellroadnorth.png',1,4,1),(4,1,'2015-06-13 12:45:43','To School','somemap.png',1,5,3);
 /*!40000 ALTER TABLE `route` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -554,4 +555,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2015-06-10 19:14:57
+-- Dump completed on 2015-06-13 12:45:50

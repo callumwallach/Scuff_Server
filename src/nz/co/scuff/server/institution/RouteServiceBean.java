@@ -2,6 +2,7 @@ package nz.co.scuff.server.institution;
 
 import nz.co.scuff.data.institution.Route;
 import nz.co.scuff.server.util.AbstractFacade;
+import nz.co.scuff.server.util.AbstractModifiableEntityFacade;
 
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
@@ -13,7 +14,7 @@ import javax.persistence.PersistenceContext;
  */
 @LocalBean
 @Stateless(name = "RouteServiceEJB")
-public class RouteServiceBean extends AbstractFacade<Route> {
+public class RouteServiceBean extends AbstractModifiableEntityFacade<Route> {
 
     @PersistenceContext
     private EntityManager em;

@@ -3,6 +3,7 @@ package nz.co.scuff.server.journey;
 import nz.co.scuff.data.journey.Journey;
 import nz.co.scuff.data.util.TrackingState;
 import nz.co.scuff.server.util.AbstractFacade;
+import nz.co.scuff.server.util.AbstractModifiableEntityFacade;
 
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
@@ -19,7 +20,7 @@ import java.util.List;
  */
 @LocalBean
 @Stateless(name = "JourneyServiceEJB")
-public class JourneyServiceBean extends AbstractFacade<Journey> {
+public class JourneyServiceBean extends AbstractModifiableEntityFacade<Journey> {
 
     @PersistenceContext
     private EntityManager em;

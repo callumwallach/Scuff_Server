@@ -2,6 +2,7 @@ package nz.co.scuff.server.family;
 
 import nz.co.scuff.data.family.Child;
 import nz.co.scuff.server.util.AbstractFacade;
+import nz.co.scuff.server.util.AbstractModifiableEntityFacade;
 
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
@@ -13,7 +14,7 @@ import javax.persistence.PersistenceContext;
  */
 @LocalBean
 @Stateless(name = "ChildServiceEJB")
-public class ChildServiceBean extends AbstractFacade<Child> {
+public class ChildServiceBean extends AbstractModifiableEntityFacade<Child> {
 
     @PersistenceContext
     private EntityManager em;

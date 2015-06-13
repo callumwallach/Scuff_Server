@@ -99,7 +99,7 @@ public class DrivingServiceBean {
                 return null;
             }*/
             // update journey
-            if (l.isDebugEnabled()) l.debug("update journey=" + journey);
+            if (l.isDebugEnabled()) l.debug("update journey=" + journey.getJourneyId());
             journey.setTotalDistance(snapshot.getTotalDistance());
             journey.setTotalDuration(snapshot.getTotalDuration());
             journey.setCompleted(snapshot.getCompleted());

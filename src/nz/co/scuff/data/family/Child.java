@@ -7,6 +7,7 @@ import nz.co.scuff.data.base.ModifiableEntity;
 import nz.co.scuff.data.base.Snapshotable;
 import nz.co.scuff.data.family.snapshot.ChildSnapshot;
 import nz.co.scuff.data.journey.Ticket;
+import nz.co.scuff.data.util.Constants;
 import org.hibernate.annotations.Sort;
 import org.hibernate.annotations.SortType;
 
@@ -91,8 +92,13 @@ public class Child extends ModifiableEntity implements Snapshotable, Comparable 
         ChildSnapshot snapshot = new ChildSnapshot();
         snapshot.setChildId(childId);
         snapshot.setChildData(childData);
+
         snapshot.setActive(active);
         snapshot.setLastModified(lastModified);
+
+        snapshot.setTicketIds(Constants.LONG_COLLECTION_NOT_RETRIEVED_PLACEHOLDER);
+        snapshot.setParentIds(Constants.LONG_COLLECTION_NOT_RETRIEVED_PLACEHOLDER);
+
         return snapshot;
     }
 

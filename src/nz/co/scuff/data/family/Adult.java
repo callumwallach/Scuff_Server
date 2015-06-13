@@ -1,11 +1,13 @@
 package nz.co.scuff.data.family;
 
+import java.util.HashSet;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
 import nz.co.scuff.data.base.Coordinator;
 import nz.co.scuff.data.family.snapshot.AdultSnapshot;
 import nz.co.scuff.data.institution.Institution;
+import nz.co.scuff.data.util.Constants;
 import org.hibernate.annotations.Sort;
 import org.hibernate.annotations.SortType;
 
@@ -85,10 +87,22 @@ public class Adult extends Coordinator {
 
     public AdultSnapshot toSnapshot() {
         AdultSnapshot snapshot = new AdultSnapshot();
-        snapshot.setCoordinatorId(coordinatorId);
         snapshot.setPersonalData(personalData);
+        snapshot.setChildrenIds(Constants.LONG_COLLECTION_NOT_RETRIEVED_PLACEHOLDER);
+        snapshot.setGuideeIds(Constants.LONG_COLLECTION_NOT_RETRIEVED_PLACEHOLDER);
+
+        snapshot.setCoordinatorId(coordinatorId);
+
         snapshot.setActive(active);
+        snapshot.setLastLogin(lastLogin);
         snapshot.setLastModified(lastModified);
+
+        snapshot.setRouteIds(Constants.LONG_COLLECTION_NOT_RETRIEVED_PLACEHOLDER);
+        snapshot.setPlaceIds(Constants.LONG_COLLECTION_NOT_RETRIEVED_PLACEHOLDER);
+        snapshot.setCurrentJourneyIds(Constants.STRING_COLLECTION_NOT_RETRIEVED_PLACEHOLDER);
+        snapshot.setPastJourneyIds(Constants.STRING_COLLECTION_NOT_RETRIEVED_PLACEHOLDER);
+        snapshot.setFriendIds(Constants.LONG_COLLECTION_NOT_RETRIEVED_PLACEHOLDER);
+
         return snapshot;
     }
 

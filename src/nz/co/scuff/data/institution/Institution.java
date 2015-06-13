@@ -6,6 +6,7 @@ import java.util.TreeSet;
 import nz.co.scuff.data.base.Coordinator;
 import nz.co.scuff.data.family.Adult;
 import nz.co.scuff.data.institution.snapshot.InstitutionSnapshot;
+import nz.co.scuff.data.util.Constants;
 import org.hibernate.annotations.Sort;
 import org.hibernate.annotations.SortType;
 
@@ -62,10 +63,20 @@ public class Institution extends Coordinator {
 
     public InstitutionSnapshot toSnapshot() {
         InstitutionSnapshot snapshot = new InstitutionSnapshot();
-        snapshot.setCoordinatorId(coordinatorId);
         snapshot.setInstitutionData(institutionData);
+        snapshot.setGuideIds(Constants.LONG_COLLECTION_NOT_RETRIEVED_PLACEHOLDER);
+
+        snapshot.setCoordinatorId(coordinatorId);
+
         snapshot.setActive(active);
+        snapshot.setLastLogin(lastLogin);
         snapshot.setLastModified(lastModified);
+
+        snapshot.setRouteIds(Constants.LONG_COLLECTION_NOT_RETRIEVED_PLACEHOLDER);
+        snapshot.setPlaceIds(Constants.LONG_COLLECTION_NOT_RETRIEVED_PLACEHOLDER);
+        snapshot.setCurrentJourneyIds(Constants.STRING_COLLECTION_NOT_RETRIEVED_PLACEHOLDER);
+        snapshot.setPastJourneyIds(Constants.STRING_COLLECTION_NOT_RETRIEVED_PLACEHOLDER);
+        snapshot.setFriendIds(Constants.LONG_COLLECTION_NOT_RETRIEVED_PLACEHOLDER);
         return snapshot;
     }
 

@@ -12,7 +12,7 @@ import java.util.List;
 /**
  * Created by Callum on 7/08/2014.
  */
-public abstract class AbstractFacade<T> {
+public abstract class AbstractFacade<T> implements AbstractFacadeInterface<T> {
 
     public static final Logger l = LoggerFactory.getLogger(AbstractFacade.class.getCanonicalName());
 

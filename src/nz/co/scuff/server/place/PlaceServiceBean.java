@@ -2,6 +2,7 @@ package nz.co.scuff.server.place;
 
 import nz.co.scuff.data.place.Place;
 import nz.co.scuff.server.util.AbstractFacade;
+import nz.co.scuff.server.util.AbstractModifiableEntityFacade;
 
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
@@ -13,7 +14,7 @@ import javax.persistence.PersistenceContext;
  */
 @LocalBean
 @Stateless(name = "PlaceServiceEJB")
-public class PlaceServiceBean extends AbstractFacade<Place> {
+public class PlaceServiceBean extends AbstractModifiableEntityFacade<Place> {
 
     @PersistenceContext
     private EntityManager em;

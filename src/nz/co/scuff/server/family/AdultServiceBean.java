@@ -2,6 +2,7 @@ package nz.co.scuff.server.family;
 
 import nz.co.scuff.data.family.Adult;
 import nz.co.scuff.server.util.AbstractFacade;
+import nz.co.scuff.server.util.AbstractModifiableEntityFacade;
 import org.hibernate.Hibernate;
 
 import javax.ejb.LocalBean;
@@ -22,7 +23,7 @@ import java.util.List;
  */
 @LocalBean
 @Stateless(name = "AdultServiceEJB")
-public class AdultServiceBean extends AbstractFacade<Adult> {
+public class AdultServiceBean extends AbstractModifiableEntityFacade<Adult> {
 
     public static final int PAST_JOURNEYS = 1;
 

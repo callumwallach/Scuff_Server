@@ -60,23 +60,33 @@ public class TestServiceBean {
             utx.begin();
             institutionService.create(institution);
 
+            if (D) l.debug("creating parents");
+            Adult adult1 = new Adult(new PersonalData("Christine", null, "Lin", PersonalData.Gender.FEMALE, null, "christine@gmail.com", "021666377"));
+            Adult adult2 = new Adult(new PersonalData("Callum", null, "Wallach", PersonalData.Gender.MALE, null, "callum@gmail.com", "021658093"));
+            adultService.create(adult1);
+            adultService.create(adult2);
+
             if (D) l.debug("creating places");
             Place destination = new Place("St Heliers School South Gate", -36.8582550, 174.8608230, 42.16);
             Place place2 = new Place("Long Drive Start", -36.850870, 174.851444, 0);
             Place place3 = new Place("St Heliers Bay Road Start", -36.851951, 174.858268, 0);
             Place place4 = new Place("Riddell Road Start", -36.860039, 174.868348, 0);
+            Place place5 = new Place("29 Tarawera Tce", -36.860039, 174.868348, 0);
             placeService.create(destination);
             placeService.create(place2);
             placeService.create(place3);
             placeService.create(place4);
+            placeService.create(place5);
 
             if (D) l.debug("creating routes");
             Route route1 = new Route("Long Drive", "longdrive.png", institution, place2, destination);
             Route route2 = new Route("St Heliers Bay Road", "stheliersbayroad.png", institution, place3, destination);
             Route route3 = new Route("Riddell Road", "riddellroadnorth.png", institution, place4, destination);
+            Route route4 = new Route("To School", "somemap.png", adult2, place5, destination);
             routeService.create(route1);
             routeService.create(route2);
             routeService.create(route3);
+            routeService.create(route4);
 
             if (D) l.debug("creating children");
             Child child1 = new Child(new ChildData("Cayden", null, "Lin-Vaile", ChildData.Gender.MALE, null));
@@ -86,16 +96,11 @@ public class TestServiceBean {
             childService.create(child2);
             childService.create(child3);
 
-            if (D) l.debug("creating parents");
-            Adult adult1 = new Adult(new PersonalData("Christine", null, "Lin", PersonalData.Gender.FEMALE, null, "christine@gmail.com", "021666377"));
-            Adult adult2 = new Adult(new PersonalData("Callum", null, "Wallach", PersonalData.Gender.MALE, null, "callum@gmail.com", "021658093"));
-            adultService.create(adult1);
-            adultService.create(adult2);
-
             // load them all
             route1 = routeService.find(route1.getRouteId());
             route2 = routeService.find(route2.getRouteId());
             route3 = routeService.find(route3.getRouteId());
+            route4 = routeService.find(route4.getRouteId());
 
             child1 = childService.find(child1.getChildId());
             child2 = childService.find(child2.getChildId());
@@ -134,6 +139,12 @@ public class TestServiceBean {
 
             if (D) l.debug("adding guidees to adults");
             adult2.getGuidees().add(institution);
+
+            if (D) l.debug("adding places to adults");
+            adult2.getPlaces().add(place5);
+
+            if (D) l.debug("adding routes to adults");
+            adult2.getRoutes().add(route4);
 
             // TODO parent journeys
 

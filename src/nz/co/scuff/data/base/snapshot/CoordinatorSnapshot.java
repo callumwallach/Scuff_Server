@@ -1,5 +1,6 @@
 package nz.co.scuff.data.base.snapshot;
 
+import java.sql.Timestamp;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -9,6 +10,7 @@ import java.util.Set;
 public abstract class CoordinatorSnapshot extends ModifiableSnapshot {
 
     private long coordinatorId;
+    private Timestamp lastLogin;
 
     private Set<Long> placeIds;
     private Set<Long> routeIds;
@@ -31,6 +33,14 @@ public abstract class CoordinatorSnapshot extends ModifiableSnapshot {
 
     public void setCoordinatorId(long coordinatorId) {
         this.coordinatorId = coordinatorId;
+    }
+
+    public Timestamp getLastLogin() {
+        return lastLogin;
+    }
+
+    public void setLastLogin(Timestamp lastLogin) {
+        this.lastLogin = lastLogin;
     }
 
     public Set<Long> getPlaceIds() {
@@ -93,6 +103,7 @@ public abstract class CoordinatorSnapshot extends ModifiableSnapshot {
     public String toString() {
         return "CoordinatorSnapshot{" +
                 "coordinatorId=" + coordinatorId +
+                ", lastLogin=" + lastLogin +
                 ", placeIds=" + placeIds +
                 ", routeIds=" + routeIds +
                 ", friendIds=" + friendIds +

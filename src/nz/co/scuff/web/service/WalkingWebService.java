@@ -39,8 +39,8 @@ public class WalkingWebService {
     @Path("/buses")
     @GET
     @Produces("application/json")
-    public DataPacket getActiveJourneys(@QueryParam("coordinatorId") long coordinatorId) {
-        return walkingService.getActiveJourneys(coordinatorId);
+    public DataPacket getActiveJourneys(@QueryParam("adultId") long adultId, @QueryParam("watchedIds[]") List<String> watchedIds) {
+        return walkingService.getActiveJourneys(adultId, watchedIds);
     }
 
     @Path("/buses/{id}/tickets")

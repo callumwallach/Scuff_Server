@@ -70,7 +70,7 @@ CREATE TABLE `child` (
   `MiddleName` varchar(255) DEFAULT NULL,
   `Picture` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`ChildId`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -104,16 +104,17 @@ CREATE TABLE `coordinator` (
   `CoordinatorId` bigint(20) NOT NULL AUTO_INCREMENT,
   `Active` tinyint(1) DEFAULT NULL,
   `LastModified` datetime NOT NULL,
+  `LastLogin` datetime DEFAULT NULL,
   `Email` varchar(255) DEFAULT NULL,
-  `Name` varchar(255) DEFAULT NULL,
-  `Phone` varchar(255) DEFAULT NULL,
   `FirstName` varchar(255) DEFAULT NULL,
   `Gender` varchar(255) DEFAULT NULL,
   `LastName` varchar(255) DEFAULT NULL,
   `MiddleName` varchar(255) DEFAULT NULL,
+  `Phone` varchar(255) DEFAULT NULL,
   `Picture` varchar(255) DEFAULT NULL,
+  `Name` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`CoordinatorId`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -300,7 +301,7 @@ CREATE TABLE `place` (
   `Longitude` double NOT NULL,
   `Name` varchar(255) NOT NULL,
   PRIMARY KEY (`PlaceId`)
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -326,7 +327,7 @@ CREATE TABLE `route` (
   CONSTRAINT `FK_dla590d7sdyrbcip6f6ikhjet` FOREIGN KEY (`Owner`) REFERENCES `coordinator` (`CoordinatorId`),
   CONSTRAINT `FK_ern9enuyi5abs57ti0co4lpg7` FOREIGN KEY (`Destination`) REFERENCES `place` (`PlaceId`),
   CONSTRAINT `FK_rt9dju8y6nj4i52e4cuvmhv77` FOREIGN KEY (`Origin`) REFERENCES `place` (`PlaceId`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -391,4 +392,4 @@ CREATE TABLE `waypoint` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2015-06-10 19:15:22
+-- Dump completed on 2015-06-13 12:45:20

@@ -2,6 +2,7 @@ package nz.co.scuff.server.base;
 
 import nz.co.scuff.data.base.Coordinator;
 import nz.co.scuff.server.util.AbstractFacade;
+import nz.co.scuff.server.util.AbstractModifiableEntityFacade;
 import org.hibernate.Hibernate;
 
 import javax.ejb.LocalBean;
@@ -14,7 +15,7 @@ import javax.persistence.PersistenceContext;
  */
 @LocalBean
 @Stateless(name = "CoordinatorServiceEJB")
-public class CoordinatorServiceBean extends AbstractFacade<Coordinator> {
+public class CoordinatorServiceBean extends AbstractModifiableEntityFacade<Coordinator> {
 
     public static final int PAST_JOURNEYS = 1;
 
