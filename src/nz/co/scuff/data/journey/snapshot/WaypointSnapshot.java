@@ -13,7 +13,7 @@ import java.sql.Timestamp;
 @XmlRootElement
 public class WaypointSnapshot implements Snapshot, Comparable, Serializable {
 
-    private String waypointId;
+    private long waypointId;
     private double latitude;
     private double longitude;
     private float speed;
@@ -28,11 +28,11 @@ public class WaypointSnapshot implements Snapshot, Comparable, Serializable {
 
     public WaypointSnapshot() {}
 
-    public String getWaypointId() {
+    public long getWaypointId() {
         return waypointId;
     }
 
-    public void setWaypointId(String waypointId) {
+    public void setWaypointId(long waypointId) {
         this.waypointId = waypointId;
     }
 
@@ -131,15 +131,13 @@ public class WaypointSnapshot implements Snapshot, Comparable, Serializable {
 
         WaypointSnapshot that = (WaypointSnapshot) o;
 
-        return waypointId.equals(that.waypointId);
+        return waypointId == that.waypointId;
 
     }
 
     @Override
     public int hashCode() {
-        int result = waypointId != null ? waypointId.hashCode() : 0;
-        result = 31 * result + (created != null ? created.hashCode() : 0);
-        return result;
+        return (int) (waypointId ^ (waypointId >>> 32));
     }
 
     @Override

@@ -69,13 +69,13 @@ public class Institution extends Coordinator {
         snapshot.setCoordinatorId(coordinatorId);
 
         snapshot.setActive(active);
-        snapshot.setLastLogin(lastLogin);
+        snapshot.setLastRefresh(lastRefresh);
         snapshot.setLastModified(lastModified);
 
         snapshot.setRouteIds(Constants.LONG_COLLECTION_NOT_RETRIEVED_PLACEHOLDER);
         snapshot.setPlaceIds(Constants.LONG_COLLECTION_NOT_RETRIEVED_PLACEHOLDER);
-        snapshot.setCurrentJourneyIds(Constants.STRING_COLLECTION_NOT_RETRIEVED_PLACEHOLDER);
-        snapshot.setPastJourneyIds(Constants.STRING_COLLECTION_NOT_RETRIEVED_PLACEHOLDER);
+        snapshot.setCurrentJourneyIds(Constants.LONG_COLLECTION_NOT_RETRIEVED_PLACEHOLDER);
+        snapshot.setPastJourneyIds(Constants.LONG_COLLECTION_NOT_RETRIEVED_PLACEHOLDER);
         snapshot.setFriendIds(Constants.LONG_COLLECTION_NOT_RETRIEVED_PLACEHOLDER);
         return snapshot;
     }
@@ -100,6 +100,7 @@ public class Institution extends Coordinator {
     @Override
     public int compareTo(Object another) {
         Institution that = (Institution)another;
+        if (this.equals(that)) return 0;
         return this.institutionData.compareTo(that.institutionData);
 
     }

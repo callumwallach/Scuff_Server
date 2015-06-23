@@ -15,7 +15,7 @@ public class TicketSnapshot extends ModifiableSnapshot implements Comparable {
     private Timestamp issueDate;
 
     private long stampId;
-    private String journeyId;
+    private long journeyId;
     private long childId;
 
     public TicketSnapshot() {
@@ -30,11 +30,11 @@ public class TicketSnapshot extends ModifiableSnapshot implements Comparable {
         this.ticketId = ticketId;
     }
 
-    public String getJourneyId() {
+    public long getJourneyId() {
         return journeyId;
     }
 
-    public void setJourneyId(String journeyId) {
+    public void setJourneyId(long journeyId) {
         this.journeyId = journeyId;
     }
 

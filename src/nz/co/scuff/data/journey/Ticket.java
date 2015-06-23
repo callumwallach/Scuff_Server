@@ -1,6 +1,5 @@
 package nz.co.scuff.data.journey;
 
-import java.io.Serializable;
 import java.sql.Timestamp;
 
 import nz.co.scuff.data.base.ModifiableEntity;
@@ -17,7 +16,7 @@ import javax.persistence.*;
  * Created by Callum on 10/05/2015.
  */
 @Entity
-public class Ticket extends ModifiableEntity implements Snapshotable, Serializable {
+public class Ticket extends ModifiableEntity implements Snapshotable, Comparable {
 
     public static final Logger l = LoggerFactory.getLogger(Ticket.class.getCanonicalName());
 
@@ -96,12 +95,15 @@ public class Ticket extends ModifiableEntity implements Snapshotable, Serializab
         snapshot.setStampId(this.stamp == null ? Constants.LONG_VALUE_SET_TO_NULL : this.stamp.getStampId());
         snapshot.setJourneyId(this.journey.getJourneyId());
         snapshot.setChildId(this.child.getChildId());
+
+        snapshot.setActive(active);
+        snapshot.setLastModified(lastModified);
+
         return snapshot;
     }
 
     @Override
     public boolean equals(Object o) {
-        if (l.isDebugEnabled()) l.debug(this+" equals:"+o);
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
@@ -116,24 +118,23 @@ public class Ticket extends ModifiableEntity implements Snapshotable, Serializab
         return (int) (ticketId ^ (ticketId >>> 32));
     }
 
-/*    @Override
+    @Override
     public int compareTo(Object another) {
-        if (l.isDebugEnabled()) l.debug(this+" compareTo:"+another);
+        if (another == null) throw new NullPointerException("Cannot compare a ticket with a null value");
         Ticket other = (Ticket) another;
-*//*        if (other.issueDate == null) return 1;
-        if (this.issueDate == null) return -1;*//*
-        //return this.issueDate.compareTo(other.issueDate);
-        // TODO why??
-        if (ticketId == other.ticketId) return 0;
-        return (ticketId < other.ticketId)? -1 : 1;
-    }*/
+        if (this.equals(other)) return 0;
+/*        if (other.issueDate == null) return 1;
+        if (this.issueDate == null) return -1;
+        return this.issueDate.compareTo(other.issueDate);*/
+        return (this.ticketId < other.ticketId) ? -1 : 1;
+    }
 
     @Override
     public String toString() {
         return "Ticket{" +
                 "ticketId='" + ticketId + '\'' +
                 ", issueDate=" + issueDate +
-                ", stamp=" + stamp.getStampId() +
+                ", stamp=" + stamp +
                 ", journey=" + journey.getJourneyId() +
                 ", child=" + child.getChildId() +
                 '}';

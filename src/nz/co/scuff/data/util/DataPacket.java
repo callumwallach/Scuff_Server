@@ -18,11 +18,13 @@ import nz.co.scuff.data.place.snapshot.PlaceSnapshot;
  */
 public class DataPacket {
 
+    long itemOfInterest = -1;
+
     Map<Long, PlaceSnapshot> placeSnapshots;
     Map<Long, InstitutionSnapshot> institutionSnapshots;
     Map<Long, RouteSnapshot> routeSnapshots;
-    Map<String, JourneySnapshot> journeySnapshots;
-    Map<String, WaypointSnapshot> waypointSnapshots;
+    Map<Long, JourneySnapshot> journeySnapshots;
+    Map<Long, WaypointSnapshot> waypointSnapshots;
     Map<Long, ChildSnapshot> childSnapshots;
     Map<Long, AdultSnapshot> adultSnapshots;
     Map<Long, TicketSnapshot> ticketSnapshots;
@@ -38,6 +40,14 @@ public class DataPacket {
         this.adultSnapshots = new HashMap<>();
         this.ticketSnapshots = new HashMap<>();
         this.stampSnapshots = new HashMap<>();
+    }
+
+    public long getItemOfInterest() {
+        return itemOfInterest;
+    }
+
+    public void setItemOfInterest(long itemOfInterest) {
+        this.itemOfInterest = itemOfInterest;
     }
 
     public Map<Long, PlaceSnapshot> getPlaceSnapshots() {
@@ -64,11 +74,11 @@ public class DataPacket {
         this.routeSnapshots = routeSnapshots;
     }
 
-    public Map<String, JourneySnapshot> getJourneySnapshots() {
+    public Map<Long, JourneySnapshot> getJourneySnapshots() {
         return journeySnapshots;
     }
 
-    public void setJourneySnapshots(Map<String, JourneySnapshot> journeySnapshots) {
+    public void setJourneySnapshots(Map<Long, JourneySnapshot> journeySnapshots) {
         this.journeySnapshots = journeySnapshots;
     }
 
@@ -88,11 +98,11 @@ public class DataPacket {
         this.adultSnapshots = adultSnapshots;
     }
 
-    public Map<String, WaypointSnapshot> getWaypointSnapshots() {
+    public Map<Long, WaypointSnapshot> getWaypointSnapshots() {
         return waypointSnapshots;
     }
 
-    public void setWaypointSnapshots(Map<String, WaypointSnapshot> waypointSnapshots) {
+    public void setWaypointSnapshots(Map<Long, WaypointSnapshot> waypointSnapshots) {
         this.waypointSnapshots = waypointSnapshots;
     }
 
@@ -107,7 +117,8 @@ public class DataPacket {
     @Override
     public String toString() {
         return "DataPacket{" +
-                "placeSnapshots=" + placeSnapshots +
+                "itemOfInterest=" + itemOfInterest +
+                ", placeSnapshots=" + placeSnapshots +
                 ", institutionSnapshots=" + institutionSnapshots +
                 ", routeSnapshots=" + routeSnapshots +
                 ", journeySnapshots=" + journeySnapshots +

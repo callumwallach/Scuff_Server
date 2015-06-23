@@ -14,7 +14,7 @@ import java.util.Set;
 @XmlRootElement
 public class JourneySnapshot extends ModifiableSnapshot {
 
-    private String journeyId;
+    private long journeyId;
     private String appId;
     private String source;
     private float totalDistance;
@@ -32,7 +32,7 @@ public class JourneySnapshot extends ModifiableSnapshot {
 
     private long routeId;
 
-    private Set<String> waypointIds;
+    private Set<Long> waypointIds;
     private Set<Long> ticketIds;
 
     public JourneySnapshot() {
@@ -41,11 +41,11 @@ public class JourneySnapshot extends ModifiableSnapshot {
         ticketIds = new HashSet<>();
     }
 
-    public String getJourneyId() {
+    public long getJourneyId() {
         return journeyId;
     }
 
-    public void setJourneyId(String journeyId) {
+    public void setJourneyId(long journeyId) {
         this.journeyId = journeyId;
     }
 
@@ -153,11 +153,11 @@ public class JourneySnapshot extends ModifiableSnapshot {
         this.routeId = routeId;
     }
 
-    public Set<String> getWaypointIds() {
+    public Set<Long> getWaypointIds() {
         return waypointIds;
     }
 
-    public void setWaypointIds(Set<String> waypointIds) {
+    public void setWaypointIds(Set<Long> waypointIds) {
         this.waypointIds = waypointIds;
     }
 
@@ -176,16 +176,13 @@ public class JourneySnapshot extends ModifiableSnapshot {
 
         JourneySnapshot that = (JourneySnapshot) o;
 
-        if (journeyId != null ? !journeyId.equals(that.journeyId) : that.journeyId != null) return false;
-        return !(created != null ? !created.equals(that.created) : that.created != null);
+        return journeyId == that.journeyId;
 
     }
 
     @Override
     public int hashCode() {
-        int result = journeyId != null ? journeyId.hashCode() : 0;
-        result = 31 * result + (created != null ? created.hashCode() : 0);
-        return result;
+        return (int) (journeyId ^ (journeyId >>> 32));
     }
 
     @Override

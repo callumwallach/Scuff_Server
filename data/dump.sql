@@ -41,7 +41,7 @@ CREATE TABLE `adult_children` (
 
 LOCK TABLES `adult_children` WRITE;
 /*!40000 ALTER TABLE `adult_children` DISABLE KEYS */;
-INSERT INTO `adult_children` VALUES (2,1),(3,1),(2,2),(3,2),(2,3),(3,3);
+INSERT INTO `adult_children` VALUES (4,1),(5,1),(4,2),(5,2),(4,3),(5,3),(6,4);
 /*!40000 ALTER TABLE `adult_children` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -69,7 +69,7 @@ CREATE TABLE `adult_guidees` (
 
 LOCK TABLES `adult_guidees` WRITE;
 /*!40000 ALTER TABLE `adult_guidees` DISABLE KEYS */;
-INSERT INTO `adult_guidees` VALUES (3,1);
+INSERT INTO `adult_guidees` VALUES (4,1),(5,1);
 /*!40000 ALTER TABLE `adult_guidees` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -90,7 +90,7 @@ CREATE TABLE `child` (
   `MiddleName` varchar(255) DEFAULT NULL,
   `Picture` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`ChildId`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -99,36 +99,8 @@ CREATE TABLE `child` (
 
 LOCK TABLES `child` WRITE;
 /*!40000 ALTER TABLE `child` DISABLE KEYS */;
-INSERT INTO `child` VALUES (1,1,'2015-06-13 12:45:43','Cayden',0,'Lin-Vaile',NULL,NULL),(2,1,'2015-06-13 12:45:43','Connor',0,'Lin',NULL,NULL),(3,1,'2015-06-13 12:45:43','Mia',1,'Lin',NULL,NULL);
+INSERT INTO `child` VALUES (1,1,'2015-06-21 16:30:28','Cayden',0,'Lin-Vaile',NULL,NULL),(2,1,'2015-06-21 16:30:28','Connor',0,'Lin',NULL,NULL),(3,1,'2015-06-21 16:30:28','Mia',1,'Lin',NULL,NULL),(4,1,'2015-06-21 16:30:28','Jack',0,'Secondsong',NULL,NULL);
 /*!40000 ALTER TABLE `child` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
--- Table structure for table `children_tickets`
---
-
-DROP TABLE IF EXISTS `children_tickets`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `children_tickets` (
-  `ChildId` bigint(20) NOT NULL,
-  `TicketId` bigint(20) NOT NULL,
-  PRIMARY KEY (`ChildId`,`TicketId`),
-  UNIQUE KEY `UK_bnc715i7xbphiadk9wvfff1pc` (`TicketId`),
-  KEY `FK_bnc715i7xbphiadk9wvfff1pc` (`TicketId`),
-  KEY `FK_233w6b393xrr4feve55d0u7uo` (`ChildId`),
-  CONSTRAINT `FK_233w6b393xrr4feve55d0u7uo` FOREIGN KEY (`ChildId`) REFERENCES `child` (`ChildId`),
-  CONSTRAINT `FK_bnc715i7xbphiadk9wvfff1pc` FOREIGN KEY (`TicketId`) REFERENCES `ticket` (`TicketId`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `children_tickets`
---
-
-LOCK TABLES `children_tickets` WRITE;
-/*!40000 ALTER TABLE `children_tickets` DISABLE KEYS */;
-/*!40000 ALTER TABLE `children_tickets` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -145,15 +117,15 @@ CREATE TABLE `coordinator` (
   `LastModified` datetime NOT NULL,
   `LastLogin` datetime DEFAULT NULL,
   `Email` varchar(255) DEFAULT NULL,
+  `Name` varchar(255) DEFAULT NULL,
+  `Phone` varchar(255) DEFAULT NULL,
   `FirstName` varchar(255) DEFAULT NULL,
   `Gender` varchar(255) DEFAULT NULL,
   `LastName` varchar(255) DEFAULT NULL,
   `MiddleName` varchar(255) DEFAULT NULL,
-  `Phone` varchar(255) DEFAULT NULL,
   `Picture` varchar(255) DEFAULT NULL,
-  `Name` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`CoordinatorId`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -162,7 +134,7 @@ CREATE TABLE `coordinator` (
 
 LOCK TABLES `coordinator` WRITE;
 /*!40000 ALTER TABLE `coordinator` DISABLE KEYS */;
-INSERT INTO `coordinator` VALUES ('Institution',1,1,'2015-06-13 12:45:43','2015-06-13 12:45:43','info@stheliersschool.govt.nz',NULL,NULL,NULL,NULL,'09 6578893',NULL,'St Heliers School'),('Adult',2,1,'2015-06-13 12:45:43','2015-06-13 12:45:43','christine@gmail.com','Christine','FEMALE','Lin',NULL,'021666377',NULL,NULL),('Adult',3,1,'2015-06-13 12:45:43','2015-06-13 12:45:43','callum@gmail.com','Callum','MALE','Wallach',NULL,'021658093',NULL,NULL);
+INSERT INTO `coordinator` VALUES ('Institution',1,1,'2015-06-21 16:30:28','2015-06-21 16:30:28','info@stheliersschool.govt.nz','St Heliers School','09 6578893',NULL,NULL,NULL,NULL,NULL),('Institution',2,1,'2015-06-21 16:30:28','2015-06-21 16:30:28','info@rugby.org.nz','Rugby Club','09 664773',NULL,NULL,NULL,NULL,NULL),('Institution',3,1,'2015-06-21 16:30:28','2015-06-21 16:30:28','info@soccer.org.nz','Soccer Club','09 7765534',NULL,NULL,NULL,NULL,NULL),('Adult',4,1,'2015-06-21 16:30:28','2015-06-21 16:30:28','callum@gmail.com',NULL,'021658093','Callum','MALE','Wallach',NULL,NULL),('Adult',5,1,'2015-06-21 16:30:28','2015-06-21 16:30:28','christine@gmail.com',NULL,'021666377','Christine','FEMALE','Lin',NULL,NULL),('Adult',6,1,'2015-06-21 16:30:28','2015-06-21 16:30:28','steve@gmail.com',NULL,'021667885','Steve','MALE','Secondsong',NULL,NULL);
 /*!40000 ALTER TABLE `coordinator` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -175,7 +147,7 @@ DROP TABLE IF EXISTS `coordinator_currentjourneys`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `coordinator_currentjourneys` (
   `CoordinatorId` bigint(20) NOT NULL,
-  `JourneyId` varchar(255) NOT NULL,
+  `JourneyId` bigint(20) NOT NULL,
   PRIMARY KEY (`CoordinatorId`,`JourneyId`),
   KEY `FK_k8tlv45l3w71n92c7b1bfi50u` (`JourneyId`),
   KEY `FK_5mr9s5403xglavb9h1w01clod` (`CoordinatorId`),
@@ -217,7 +189,7 @@ CREATE TABLE `coordinator_friends` (
 
 LOCK TABLES `coordinator_friends` WRITE;
 /*!40000 ALTER TABLE `coordinator_friends` DISABLE KEYS */;
-INSERT INTO `coordinator_friends` VALUES (2,1),(3,1);
+INSERT INTO `coordinator_friends` VALUES (4,1),(5,1),(6,1),(6,2),(5,3);
 /*!40000 ALTER TABLE `coordinator_friends` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -230,7 +202,7 @@ DROP TABLE IF EXISTS `coordinator_pastjourneys`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `coordinator_pastjourneys` (
   `CoordinatorId` bigint(20) NOT NULL,
-  `JourneyId` varchar(255) NOT NULL,
+  `JourneyId` bigint(20) NOT NULL,
   PRIMARY KEY (`CoordinatorId`,`JourneyId`),
   KEY `FK_mm8hfunh6pry8gcfg3l45x5k2` (`JourneyId`),
   KEY `FK_665f03ofqd6yaikyj1pmc4pf6` (`CoordinatorId`),
@@ -272,7 +244,7 @@ CREATE TABLE `coordinator_places` (
 
 LOCK TABLES `coordinator_places` WRITE;
 /*!40000 ALTER TABLE `coordinator_places` DISABLE KEYS */;
-INSERT INTO `coordinator_places` VALUES (1,1),(1,2),(1,3),(1,4),(3,5);
+INSERT INTO `coordinator_places` VALUES (1,1),(1,2),(1,3),(1,4),(4,5),(5,6),(6,7),(3,8),(2,9);
 /*!40000 ALTER TABLE `coordinator_places` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -301,7 +273,7 @@ CREATE TABLE `coordinator_routes` (
 
 LOCK TABLES `coordinator_routes` WRITE;
 /*!40000 ALTER TABLE `coordinator_routes` DISABLE KEYS */;
-INSERT INTO `coordinator_routes` VALUES (1,1),(1,2),(1,3),(3,4);
+INSERT INTO `coordinator_routes` VALUES (1,1),(1,2),(1,3),(4,4),(5,5),(6,6);
 /*!40000 ALTER TABLE `coordinator_routes` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -329,7 +301,7 @@ CREATE TABLE `institution_guides` (
 
 LOCK TABLES `institution_guides` WRITE;
 /*!40000 ALTER TABLE `institution_guides` DISABLE KEYS */;
-INSERT INTO `institution_guides` VALUES (1,3);
+INSERT INTO `institution_guides` VALUES (1,4);
 /*!40000 ALTER TABLE `institution_guides` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -341,7 +313,7 @@ DROP TABLE IF EXISTS `journey`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `journey` (
-  `JourneyId` varchar(255) NOT NULL,
+  `JourneyId` bigint(20) NOT NULL AUTO_INCREMENT,
   `Active` tinyint(1) DEFAULT NULL,
   `LastModified` datetime NOT NULL,
   `AppId` varchar(255) NOT NULL,
@@ -383,34 +355,6 @@ LOCK TABLES `journey` WRITE;
 UNLOCK TABLES;
 
 --
--- Table structure for table `journey_tickets`
---
-
-DROP TABLE IF EXISTS `journey_tickets`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `journey_tickets` (
-  `JourneyId` varchar(255) NOT NULL,
-  `TicketId` bigint(20) NOT NULL,
-  PRIMARY KEY (`JourneyId`,`TicketId`),
-  UNIQUE KEY `UK_otbf3mqgr6vsgv872ecxciawp` (`TicketId`),
-  KEY `FK_otbf3mqgr6vsgv872ecxciawp` (`TicketId`),
-  KEY `FK_plq6hrgcvig1561n934sqa06s` (`JourneyId`),
-  CONSTRAINT `FK_plq6hrgcvig1561n934sqa06s` FOREIGN KEY (`JourneyId`) REFERENCES `journey` (`JourneyId`),
-  CONSTRAINT `FK_otbf3mqgr6vsgv872ecxciawp` FOREIGN KEY (`TicketId`) REFERENCES `ticket` (`TicketId`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `journey_tickets`
---
-
-LOCK TABLES `journey_tickets` WRITE;
-/*!40000 ALTER TABLE `journey_tickets` DISABLE KEYS */;
-/*!40000 ALTER TABLE `journey_tickets` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
 -- Table structure for table `place`
 --
 
@@ -426,7 +370,7 @@ CREATE TABLE `place` (
   `Longitude` double NOT NULL,
   `Name` varchar(255) NOT NULL,
   PRIMARY KEY (`PlaceId`)
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -435,7 +379,7 @@ CREATE TABLE `place` (
 
 LOCK TABLES `place` WRITE;
 /*!40000 ALTER TABLE `place` DISABLE KEYS */;
-INSERT INTO `place` VALUES (1,1,'2015-06-13 12:45:43',42.16,-36.858255,174.860823,'St Heliers School South Gate'),(2,1,'2015-06-13 12:45:43',0,-36.85087,174.851444,'Long Drive Start'),(3,1,'2015-06-13 12:45:43',0,-36.851951,174.858268,'St Heliers Bay Road Start'),(4,1,'2015-06-13 12:45:43',0,-36.860039,174.868348,'Riddell Road Start'),(5,1,'2015-06-13 12:45:43',0,-36.860039,174.868348,'29 Tarawera Tce');
+INSERT INTO `place` VALUES (1,1,'2015-06-21 16:30:28',42.16,-36.858255,174.860823,'St Heliers School South Gate'),(2,1,'2015-06-21 16:30:28',0,-36.85087,174.851444,'Long Drive Start'),(3,1,'2015-06-21 16:30:28',0,-36.851951,174.858268,'St Heliers Bay Road Start'),(4,1,'2015-06-21 16:30:28',0,-36.860039,174.868348,'Riddell Road Start'),(5,1,'2015-06-21 16:30:28',0,-36.860039,174.868348,'29 Tarawera Tce'),(6,1,'2015-06-21 16:30:28',0,-36.860039,174.868348,'29 Tarawera Tce'),(7,1,'2015-06-21 16:30:28',0,-36.860239,174.868348,'5 Bonny Tce'),(8,1,'2015-06-21 16:30:28',0,-36.860139,174.868348,'33 Long Dr'),(9,1,'2015-06-21 16:30:28',0,-36.860239,174.868348,'1 Scenic Dr');
 /*!40000 ALTER TABLE `place` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -462,7 +406,7 @@ CREATE TABLE `route` (
   CONSTRAINT `FK_dla590d7sdyrbcip6f6ikhjet` FOREIGN KEY (`Owner`) REFERENCES `coordinator` (`CoordinatorId`),
   CONSTRAINT `FK_ern9enuyi5abs57ti0co4lpg7` FOREIGN KEY (`Destination`) REFERENCES `place` (`PlaceId`),
   CONSTRAINT `FK_rt9dju8y6nj4i52e4cuvmhv77` FOREIGN KEY (`Origin`) REFERENCES `place` (`PlaceId`)
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -471,7 +415,7 @@ CREATE TABLE `route` (
 
 LOCK TABLES `route` WRITE;
 /*!40000 ALTER TABLE `route` DISABLE KEYS */;
-INSERT INTO `route` VALUES (1,1,'2015-06-13 12:45:43','Long Drive','longdrive.png',1,2,1),(2,1,'2015-06-13 12:45:43','St Heliers Bay Road','stheliersbayroad.png',1,3,1),(3,1,'2015-06-13 12:45:43','Riddell Road','riddellroadnorth.png',1,4,1),(4,1,'2015-06-13 12:45:43','To School','somemap.png',1,5,3);
+INSERT INTO `route` VALUES (1,1,'2015-06-21 16:30:28','Long Drive','longdrive.png',1,2,1),(2,1,'2015-06-21 16:30:28','St Heliers Bay Road','stheliersbayroad.png',1,3,1),(3,1,'2015-06-21 16:30:28','Riddell Road','riddellroadnorth.png',1,4,1),(4,1,'2015-06-21 16:30:28','To School','somemap.png',1,5,4),(5,1,'2015-06-21 16:30:28','To Soccer','somemap.png',8,6,5),(6,1,'2015-06-21 16:30:28','To Rugby','somemap.png',9,7,6);
 /*!40000 ALTER TABLE `route` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -492,12 +436,18 @@ CREATE TABLE `ticket` (
   `StampDate` datetime DEFAULT NULL,
   `StampId` bigint(20) DEFAULT NULL,
   `Child` bigint(20) DEFAULT NULL,
-  `Journey` varchar(255) DEFAULT NULL,
+  `Journey` bigint(20) DEFAULT NULL,
+  `JourneyId` bigint(20) DEFAULT NULL,
+  `ChildId` bigint(20) DEFAULT NULL,
   PRIMARY KEY (`TicketId`),
   KEY `FK_3xrt2vi9snm6gmpofwhsae71s` (`Child`),
   KEY `FK_d4nubepam37xw5277wopr6q1w` (`Journey`),
+  KEY `FK_t9eiuc45wk4sggqr7jf6pys98` (`JourneyId`),
+  KEY `FK_ls6053hdctk06wqukdisnxope` (`ChildId`),
+  CONSTRAINT `FK_ls6053hdctk06wqukdisnxope` FOREIGN KEY (`ChildId`) REFERENCES `child` (`ChildId`),
+  CONSTRAINT `FK_3xrt2vi9snm6gmpofwhsae71s` FOREIGN KEY (`Child`) REFERENCES `child` (`ChildId`),
   CONSTRAINT `FK_d4nubepam37xw5277wopr6q1w` FOREIGN KEY (`Journey`) REFERENCES `journey` (`JourneyId`),
-  CONSTRAINT `FK_3xrt2vi9snm6gmpofwhsae71s` FOREIGN KEY (`Child`) REFERENCES `child` (`ChildId`)
+  CONSTRAINT `FK_t9eiuc45wk4sggqr7jf6pys98` FOREIGN KEY (`JourneyId`) REFERENCES `journey` (`JourneyId`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -518,7 +468,7 @@ DROP TABLE IF EXISTS `waypoint`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `waypoint` (
-  `WaypointId` varchar(255) NOT NULL,
+  `WaypointId` bigint(20) NOT NULL AUTO_INCREMENT,
   `Accuracy` float NOT NULL,
   `Altitude` double NOT NULL,
   `Bearing` float NOT NULL,
@@ -530,7 +480,7 @@ CREATE TABLE `waypoint` (
   `Provider` varchar(255) NOT NULL,
   `Speed` float NOT NULL,
   `State` varchar(255) NOT NULL,
-  `JourneyId` varchar(255) DEFAULT NULL,
+  `JourneyId` bigint(20) DEFAULT NULL,
   PRIMARY KEY (`WaypointId`),
   KEY `FK_mai6nwhqjicrrvetj5gabla38` (`JourneyId`),
   CONSTRAINT `FK_mai6nwhqjicrrvetj5gabla38` FOREIGN KEY (`JourneyId`) REFERENCES `journey` (`JourneyId`)
@@ -555,4 +505,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2015-06-13 12:45:50
+-- Dump completed on 2015-06-21 16:30:35

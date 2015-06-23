@@ -1,6 +1,5 @@
 package nz.co.scuff.web.service;
 
-import nz.co.scuff.data.journey.snapshot.TicketSnapshot;
 import nz.co.scuff.data.util.DataPacket;
 import nz.co.scuff.server.service.WalkingServiceBean;
 import org.slf4j.Logger;
@@ -32,23 +31,24 @@ public class WalkingWebService {
     /*@Path("/buses")
     @GET
     @Produces("application/json")
-    public DataPacket getActiveJourneys(@QueryParam("routeId") long routeId, @QueryParam("schoolId") long schoolId) {
-        return walkingService.getActiveJourneys(routeId, schoolId);
+    public DataPacket getJourneys(@QueryParam("routeId") long routeId, @QueryParam("schoolId") long schoolId) {
+        return walkingService.getJourneys(routeId, schoolId);
     }*/
 
-    @Path("/buses")
+    @Path("/journeys")
     @GET
     @Produces("application/json")
-    public DataPacket getActiveJourneys(@QueryParam("adultId") long adultId, @QueryParam("watchedIds[]") List<String> watchedIds) {
-        return walkingService.getActiveJourneys(adultId, watchedIds);
+    public DataPacket getJourneys(@QueryParam("adultId") long adultId, @QueryParam("watchedIds[]") List<Long> watchedIds,
+                                  @QueryParam("isActive") boolean active) {
+        return walkingService.getJourneys(adultId, watchedIds, active);
     }
 
-    @Path("/buses/{id}/tickets")
+    @Path("/journeys/{id}/tickets")
     @POST
     @Consumes("application/json")
     @Produces("application/json")
-    public DataPacket requestTickets(@PathParam("id") String journeyId, List<Long> passengerIds) throws Exception {
-        return walkingService.requestTickets(journeyId, passengerIds);
+    public DataPacket issueTickets(@PathParam("id") long journeyId, List<Long> passengerIds) throws Exception {
+        return walkingService.issueTickets(journeyId, passengerIds);
     }
 
     /*@Path("/{id}")

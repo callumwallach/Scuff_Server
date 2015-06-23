@@ -65,7 +65,12 @@ public class AdultServiceBean extends AbstractModifiableEntityFacade<Adult> {
         //substitute parameter.
         query.setParameter("email", email);
         //execute the query
-        Adult found = (Adult)query.getSingleResult();
+        Adult found = null;
+        try {
+            found = (Adult) query.getSingleResult();
+        } catch (NoResultException e) {
+            l.error("No result found for email=" + email);
+        }
         if (l.isDebugEnabled()) l.debug("found adult=" + found);
         return found;
 

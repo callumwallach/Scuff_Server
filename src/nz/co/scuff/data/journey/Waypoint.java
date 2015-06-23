@@ -25,8 +25,9 @@ public class Waypoint implements Snapshotable, Serializable, Comparable {
     private final Logger l = LoggerFactory.getLogger(Waypoint.class.getName());
 
     @Id
+    @GeneratedValue(strategy= GenerationType.IDENTITY)
     @Column(name="WaypointId")
-    private String waypointId;
+    private long waypointId;
     @NotNull
     @Column(name="Latitude")
     private double latitude;
@@ -66,7 +67,7 @@ public class Waypoint implements Snapshotable, Serializable, Comparable {
     }
 
     public Waypoint(WaypointSnapshot snapshot) {
-        this.waypointId = snapshot.getWaypointId();
+        //this.waypointId = snapshot.getWaypointId();
         this.latitude = snapshot.getLatitude();
         this.longitude = snapshot.getLongitude();
         this.speed = snapshot.getSpeed();
@@ -80,11 +81,11 @@ public class Waypoint implements Snapshotable, Serializable, Comparable {
         this.created = snapshot.getCreated();
     }
 
-    public String getWaypointId() {
+    public long getWaypointId() {
         return waypointId;
     }
 
-    public void setWaypointId(String id) {
+    public void setWaypointId(long id) {
         this.waypointId = id;
     }
 
@@ -198,6 +199,7 @@ public class Waypoint implements Snapshotable, Serializable, Comparable {
         Waypoint other = (Waypoint)another;
         if (other.created == null) return 1;
         if (this.created == null) return -1;
+        if (this.equals(other)) return 0;
         return other.created == null ? 1 : this.created.compareTo(other.created);
     }
 
@@ -208,13 +210,13 @@ public class Waypoint implements Snapshotable, Serializable, Comparable {
 
         Waypoint waypoint = (Waypoint) o;
 
-        return waypointId.equals(waypoint.waypointId);
+        return waypointId == waypoint.waypointId;
 
     }
 
     @Override
     public int hashCode() {
-        return waypointId.hashCode();
+        return (int) (waypointId ^ (waypointId >>> 32));
     }
 
     @Override

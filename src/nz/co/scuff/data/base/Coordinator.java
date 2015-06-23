@@ -4,7 +4,6 @@ import nz.co.scuff.data.base.snapshot.CoordinatorSnapshot;
 import nz.co.scuff.data.institution.Route;
 import nz.co.scuff.data.journey.Journey;
 import nz.co.scuff.data.place.Place;
-import nz.co.scuff.data.util.Constants;
 import org.hibernate.annotations.Sort;
 import org.hibernate.annotations.SortType;
 
@@ -31,7 +30,7 @@ public abstract class Coordinator extends ModifiableEntity implements Snapshotab
     protected long coordinatorId;
 
     @Column(name="LastLogin")
-    protected Timestamp lastLogin;
+    protected Timestamp lastRefresh;
 
     // one to many
     @OneToMany(fetch = FetchType.EAGER)
@@ -77,7 +76,7 @@ public abstract class Coordinator extends ModifiableEntity implements Snapshotab
 
     public Coordinator() {
         super();
-        this.lastLogin = new Timestamp(System.currentTimeMillis());
+        this.lastRefresh = new Timestamp(System.currentTimeMillis());
     }
 
     public long getCoordinatorId() {
@@ -88,12 +87,12 @@ public abstract class Coordinator extends ModifiableEntity implements Snapshotab
         this.coordinatorId = coordinatorId;
     }
 
-    public Timestamp getLastLogin() {
-        return lastLogin;
+    public Timestamp getLastRefresh() {
+        return lastRefresh;
     }
 
-    public void setLastLogin(Timestamp lastLogin) {
-        this.lastLogin = lastLogin;
+    public void setLastRefresh(Timestamp lastLogin) {
+        this.lastRefresh = lastLogin;
     }
 
     public void setPlaces(SortedSet<Place> places) {
@@ -173,7 +172,7 @@ public abstract class Coordinator extends ModifiableEntity implements Snapshotab
     public String toString() {
         String s = "Coordinator{" +
                 "coordinatorId=" + coordinatorId +
-                " lastLogin=" + lastLogin;
+                " lastLogin=" + lastRefresh;
         s += ", routes=";
         if ((routes == null) || routes.isEmpty()) {
             s += "[empty]";

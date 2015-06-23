@@ -25,8 +25,9 @@ import java.util.TreeSet;
 public class Journey extends ModifiableEntity implements Snapshotable, Comparable {
 
     @Id
+    @GeneratedValue(strategy= GenerationType.IDENTITY)
     @Column(name="JourneyId")
-    private String journeyId;
+    private long journeyId;
     @NotNull
     @Column(name="AppId")
     private String appId;
@@ -77,23 +78,25 @@ public class Journey extends ModifiableEntity implements Snapshotable, Comparabl
     @JoinColumn(name="Destination")
     private Place destination;
 
-    // TODO fix sort order to ensure most recent is first
-
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinColumn(name="JourneyId", referencedColumnName="JourneyId")
     @OrderBy("created DESC")
     @Sort(type = SortType.NATURAL)
     private SortedSet<Waypoint> waypoints;
 
-    @OneToMany(fetch = FetchType.EAGER)
+/*    @OneToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name="journey_tickets",
             joinColumns={@JoinColumn(name="JourneyId", referencedColumnName="journeyId")},
             inverseJoinColumns={@JoinColumn(name="TicketId", referencedColumnName="ticketId")})
     @Sort(type = SortType.NATURAL)
+    private SortedSet<Ticket> tickets;*/
+    @OneToMany(fetch = FetchType.EAGER)
+    @JoinColumn(name="JourneyId", referencedColumnName="JourneyId")
+    @OrderBy("issueDate DESC")
+    @Sort(type = SortType.NATURAL)
     private SortedSet<Ticket> tickets;
 
-    // TODO sync with sorted set to ensure first is the most recent
     public Waypoint getMostRecentWaypoint() {
         //return waypoints.first();
         return waypoints.last();
@@ -106,7 +109,8 @@ public class Journey extends ModifiableEntity implements Snapshotable, Comparabl
     }
 
     public Journey(JourneySnapshot snapshot) {
-        this.journeyId = snapshot.getJourneyId();
+        super();
+        //this.journeyId = snapshot.getJourneyId();
         this.appId = snapshot.getAppId();
         this.source = snapshot.getSource();
         this.totalDistance = snapshot.getTotalDistance();
@@ -122,11 +126,11 @@ public class Journey extends ModifiableEntity implements Snapshotable, Comparabl
         tickets = new TreeSet<>();
     }
 
-    public String getJourneyId() {
+    public long getJourneyId() {
         return journeyId;
     }
 
-    public void setJourneyId(String journeyId) {
+    public void setJourneyId(long journeyId) {
         this.journeyId = journeyId;
     }
 
@@ -278,7 +282,7 @@ public class Journey extends ModifiableEntity implements Snapshotable, Comparabl
         snapshot.setLastModified(lastModified);
 
         snapshot.setTicketIds(Constants.LONG_COLLECTION_NOT_RETRIEVED_PLACEHOLDER);
-        snapshot.setWaypointIds(Constants.STRING_COLLECTION_NOT_RETRIEVED_PLACEHOLDER);
+        snapshot.setWaypointIds(Constants.LONG_COLLECTION_NOT_RETRIEVED_PLACEHOLDER);
 
         return snapshot;
     }
@@ -288,6 +292,7 @@ public class Journey extends ModifiableEntity implements Snapshotable, Comparabl
         Journey other = (Journey)another;
         if (other.created == null) return 1;
         if (this.created == null) return -1;
+        if (this.equals(other)) return 0;
         return this.created.compareTo(other.created);
     }
 
@@ -296,16 +301,15 @@ public class Journey extends ModifiableEntity implements Snapshotable, Comparabl
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        Journey journey = (Journey) o;
+        Journey that = (Journey) o;
 
-        if (!journeyId.equals(journey.journeyId)) return false;
+        return journeyId == that.journeyId;
 
-        return true;
     }
 
     @Override
     public int hashCode() {
-        return journeyId.hashCode();
+        return (int) (journeyId ^ (journeyId >>> 32));
     }
 
     @Override

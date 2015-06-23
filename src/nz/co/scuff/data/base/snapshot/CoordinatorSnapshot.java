@@ -10,13 +10,13 @@ import java.util.Set;
 public abstract class CoordinatorSnapshot extends ModifiableSnapshot {
 
     private long coordinatorId;
-    private Timestamp lastLogin;
+    private Timestamp lastRefresh;
 
     private Set<Long> placeIds;
     private Set<Long> routeIds;
     private Set<Long> friendIds;
-    private Set<String> pastJourneyIds;
-    private Set<String> currentJourneyIds;
+    private Set<Long> pastJourneyIds;
+    private Set<Long> currentJourneyIds;
 
     public CoordinatorSnapshot() {
         super();
@@ -35,12 +35,12 @@ public abstract class CoordinatorSnapshot extends ModifiableSnapshot {
         this.coordinatorId = coordinatorId;
     }
 
-    public Timestamp getLastLogin() {
-        return lastLogin;
+    public Timestamp getLastRefresh() {
+        return lastRefresh;
     }
 
-    public void setLastLogin(Timestamp lastLogin) {
-        this.lastLogin = lastLogin;
+    public void setLastRefresh(Timestamp lastRefresh) {
+        this.lastRefresh = lastRefresh;
     }
 
     public Set<Long> getPlaceIds() {
@@ -59,19 +59,19 @@ public abstract class CoordinatorSnapshot extends ModifiableSnapshot {
         this.friendIds = friendIds;
     }
 
-    public Set<String> getPastJourneyIds() {
+    public Set<Long> getPastJourneyIds() {
         return pastJourneyIds;
     }
 
-    public void setPastJourneyIds(Set<String> pastJourneyIds) {
+    public void setPastJourneyIds(Set<Long> pastJourneyIds) {
         this.pastJourneyIds = pastJourneyIds;
     }
 
-    public Set<String> getCurrentJourneyIds() {
+    public Set<Long> getCurrentJourneyIds() {
         return currentJourneyIds;
     }
 
-    public void setCurrentJourneyIds(Set<String> currentJourneyIds) {
+    public void setCurrentJourneyIds(Set<Long> currentJourneyIds) {
         this.currentJourneyIds = currentJourneyIds;
     }
 
@@ -103,7 +103,7 @@ public abstract class CoordinatorSnapshot extends ModifiableSnapshot {
     public String toString() {
         return "CoordinatorSnapshot{" +
                 "coordinatorId=" + coordinatorId +
-                ", lastLogin=" + lastLogin +
+                ", lastRefresh=" + lastRefresh +
                 ", placeIds=" + placeIds +
                 ", routeIds=" + routeIds +
                 ", friendIds=" + friendIds +

@@ -95,6 +95,22 @@ public class Place extends ModifiableEntity implements Snapshotable, Comparable 
     }
 
     @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Place place = (Place) o;
+
+        return placeId == place.placeId;
+
+    }
+
+    @Override
+    public int hashCode() {
+        return (int) (placeId ^ (placeId >>> 32));
+    }
+
+    @Override
     public String toString() {
         return "Place{" +
                 "placeId=" + placeId +
@@ -108,6 +124,7 @@ public class Place extends ModifiableEntity implements Snapshotable, Comparable 
     @Override
     public int compareTo(Object another) {
         Place other = (Place)another;
+        if (this.equals(other)) return 0;
         return other.name == null ? 1 : this.name.compareTo(other.name);
 
     }

@@ -13,6 +13,7 @@ import nz.co.scuff.data.journey.Waypoint;
 import nz.co.scuff.data.journey.snapshot.JourneySnapshot;
 import nz.co.scuff.data.journey.snapshot.WaypointSnapshot;
 import nz.co.scuff.data.place.snapshot.PlaceSnapshot;
+import nz.co.scuff.data.util.Constants;
 import nz.co.scuff.data.util.DataPacket;
 import nz.co.scuff.server.base.CoordinatorServiceBean;
 import nz.co.scuff.server.error.ErrorContextCode;
@@ -112,13 +113,12 @@ public class WalkingServiceBean {
         return coordinatorIds;
     }*/
 
-    public DataPacket getActiveJourneys(long adultId, List<String> watchedIds) {
-        if (l.isDebugEnabled()) l.debug("getActiveJourneys for friends of adult="+adultId+" watchedIds="+watchedIds);
+    public DataPacket getJourneys(long adultId, List<Long> watchedJourneyIds, boolean active) {
+        if (l.isDebugEnabled()) l.debug("getJourneys for friends of adult="+adultId+" watchedIds="+watchedJourneyIds);
 
         Adult adult = adultService.find(adultId);
         DataPacket packet = new DataPacket();
 /*
-        // TODO adult(id) - friend(id) - journey - waypoints
 
         AdultSnapshot adultSnapshot = adult.toSnapshot();
         adultSnapshot.setFriendIds(doCoordinators(lastChecked, adult.getFriends(), packet));
@@ -130,46 +130,66 @@ public class WalkingServiceBean {
             adultSnapshot.setRouteIds(doRoutes(lastChecked, adult.getRoutes(), packet));
 */
 
-
+        // do watched first (reduces size of journey snapshot returned)
+        for (long watchedJourneyId : watchedJourneyIds) {
+            if (l.isDebugEnabled()) l.debug("processing watchedJourneyIds=" + watchedJourneyId);
+            // retrieve watched entity (is completed)
+            Journey completedJourney = journeyService.find(watchedJourneyId);
+            JourneySnapshot completedJourneySnapshot = completedJourney.toSnapshot();
+            WaypointSnapshot lastWaypointSnapshot = completedJourney.getMostRecentWaypoint().toSnapshot();
+            Set<Long> lastWaypointIds = new HashSet<>();
+            lastWaypointIds.add(lastWaypointSnapshot.getWaypointId());
+            completedJourneySnapshot.setWaypointIds(lastWaypointIds);
+            // no need to retrieve relationships as already stored by user
+            packet.getWaypointSnapshots().put(lastWaypointSnapshot.getWaypointId(), lastWaypointSnapshot);
+            packet.getJourneySnapshots().put(completedJourneySnapshot.getJourneyId(), completedJourneySnapshot);
+        }
+        // do remainder (new journeys)
         for (Coordinator friend : adult.getFriends()) {
             for (Journey journey : friend.getCurrentJourneys()) {
+                if (!watchedJourneyIds.stream().anyMatch(jId -> jId.equals(journey.getJourneyId()))) {
+                    if (l.isDebugEnabled()) l.debug("processing new journeyId="+journey.getJourneyId());
+                    // process new journey (not already being watched)
+                    JourneySnapshot js = journey.toSnapshot();
+                    WaypointSnapshot ws = journey.getMostRecentWaypoint().toSnapshot();
+                    CoordinatorSnapshot os = journey.getOwner().toSnapshot(); // guide/guidee
+                    CoordinatorSnapshot as = journey.getAgent().toSnapshot(); // guidee (guided) or friend (solo)
+                    AdultSnapshot gs = journey.getGuide().toSnapshot(); // guide/guidee
+                    PlaceSnapshot ors = journey.getOrigin().toSnapshot();
+                    PlaceSnapshot des = journey.getDestination().toSnapshot();
+                    RouteSnapshot rs = journey.getRoute().toSnapshot();
 
-                JourneySnapshot js = journey.toSnapshot();
-                WaypointSnapshot ws = journey.getMostRecentWaypoint().toSnapshot();
-                CoordinatorSnapshot os = journey.getOwner().toSnapshot(); // guide/guidee
-                CoordinatorSnapshot as = journey.getAgent().toSnapshot(); // friend +
-                AdultSnapshot gs = journey.getGuide().toSnapshot(); // guide/guidee
-                PlaceSnapshot ors = journey.getOrigin().toSnapshot();
-                PlaceSnapshot des = journey.getDestination().toSnapshot();
-                RouteSnapshot rs = journey.getRoute().toSnapshot();
+                    // waypoints
+                    Set<Long> waypointIds = new HashSet<>();
+                    waypointIds.add(ws.getWaypointId());
+                    js.setWaypointIds(waypointIds);
+                    // tickets
+                    js.setTicketIds(Constants.LONG_COLLECTION_NOT_RETRIEVED_PLACEHOLDER);
 
-                Set<String> waypointIds = new HashSet<>();
-                waypointIds.add(ws.getWaypointId());
-                js.setWaypointIds(waypointIds);
-
-                packet.getJourneySnapshots().put(js.getJourneyId(), js);
-                packet.getWaypointSnapshots().put(ws.getWaypointId(), ws);
-                if (os instanceof AdultSnapshot) {
-                    packet.getAdultSnapshots().put(os.getCoordinatorId(), (AdultSnapshot)os);
-                } else {
-                    packet.getInstitutionSnapshots().put(os.getCoordinatorId(), (InstitutionSnapshot)os);
+                    packet.getJourneySnapshots().put(js.getJourneyId(), js);
+                    packet.getWaypointSnapshots().put(ws.getWaypointId(), ws);
+                    if (os instanceof AdultSnapshot) {
+                        packet.getAdultSnapshots().put(os.getCoordinatorId(), (AdultSnapshot) os);
+                    } else {
+                        packet.getInstitutionSnapshots().put(os.getCoordinatorId(), (InstitutionSnapshot) os);
+                    }
+                    if (as instanceof AdultSnapshot) {
+                        packet.getAdultSnapshots().put(os.getCoordinatorId(), (AdultSnapshot) as);
+                    } else {
+                        packet.getInstitutionSnapshots().put(os.getCoordinatorId(), (InstitutionSnapshot) as);
+                    }
+                    packet.getAdultSnapshots().put(gs.getCoordinatorId(), gs);
+                    packet.getPlaceSnapshots().put(ors.getPlaceId(), ors);
+                    packet.getPlaceSnapshots().put(des.getPlaceId(), des);
+                    packet.getRouteSnapshots().put(rs.getRouteId(), rs);
                 }
-                if (as instanceof AdultSnapshot) {
-                    packet.getAdultSnapshots().put(os.getCoordinatorId(), (AdultSnapshot)as);
-                } else {
-                    packet.getInstitutionSnapshots().put(os.getCoordinatorId(), (InstitutionSnapshot)as);
-                }
-                packet.getAdultSnapshots().put(gs.getCoordinatorId(), gs);
-                packet.getPlaceSnapshots().put(ors.getPlaceId(), ors);
-                packet.getPlaceSnapshots().put(des.getPlaceId(), des);
-                packet.getRouteSnapshots().put(rs.getRouteId(), rs);
             }
         }
         if (l.isDebugEnabled()) l.debug("found journeys as datapacket="+packet);
         return packet;
     }
 
-    public DataPacket requestTickets(String journeyId, List<Long> childIds) throws Exception {
+    public DataPacket issueTickets(long journeyId, List<Long> childIds) throws Exception {
         if (l.isDebugEnabled()) l.debug("post tickets for journey="+journeyId+" and child ids="+childIds);
 
         Journey journey = journeyService.findActive(journeyId);

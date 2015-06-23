@@ -33,7 +33,7 @@ public class JourneyServiceBean extends AbstractModifiableEntityFacade<Journey> 
         super(Journey.class);
     }
 
-    public Journey findActive(String journeyId) {
+    public Journey findActive(long journeyId) {
         if (l.isDebugEnabled()) l.debug("find active journey by journeyId="+journeyId);
 
         //create an ejbql expression
@@ -44,7 +44,12 @@ public class JourneyServiceBean extends AbstractModifiableEntityFacade<Journey> 
         query.setParameter("journeyId", journeyId);
         query.setParameter("state", TrackingState.COMPLETED);
         //execute the query
-        Journey found = (Journey)query.getSingleResult();
+        Journey found = null;
+        try {
+            found = (Journey) query.getSingleResult();
+        } catch (NoResultException e) {
+            l.error("No result found for journey=" + journeyId);
+        }
         if (l.isDebugEnabled()) l.debug("found journey=" + found);
         return found;
     }

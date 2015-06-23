@@ -20,10 +20,12 @@ public class JacksonConfig implements ContextResolver<ObjectMapper> {
         if (l.isDebugEnabled()) l.debug("Jackson config");
 
         objectMapper = new ObjectMapper();
-        objectMapper.disable(SerializationConfig.Feature.WRITE_DATES_AS_TIMESTAMPS);
+        //objectMapper.disable(SerializationConfig.Feature.WRITE_DATES_AS_TIMESTAMPS);
+        objectMapper.configure(SerializationConfig.Feature.WRITE_DATES_AS_TIMESTAMPS, false);
         //objectMapper.getSerializationConfig().withDateFormat(new SimpleDateFormat(Constants.JSON_DATE_FORMAT));
+        objectMapper.setDateFormat(new SimpleDateFormat(Constants.JSON_DATE_FORMAT));
         // deprecated but alt doesnt appear to work properly
-        objectMapper.getSerializationConfig().setDateFormat(new SimpleDateFormat(Constants.JSON_DATE_FORMAT));
+        //objectMapper.getSerializationConfig().setDateFormat(new SimpleDateFormat(Constants.JSON_DATE_FORMAT));
     }
 
     @Override

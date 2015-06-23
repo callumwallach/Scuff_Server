@@ -33,11 +33,16 @@ public class Child extends ModifiableEntity implements Snapshotable, Comparable 
     private SortedSet<Adult> parents;
 
     // one to many
-    @OneToMany(fetch = FetchType.EAGER)
+/*    @OneToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name="children_tickets",
             joinColumns={@JoinColumn(name="ChildId", referencedColumnName="childId")},
             inverseJoinColumns={@JoinColumn(name="TicketId", referencedColumnName="ticketId")})
+    @Sort(type = SortType.NATURAL)
+    private SortedSet<Ticket> tickets;*/
+    @OneToMany(fetch = FetchType.EAGER)
+    @JoinColumn(name="ChildId", referencedColumnName="ChildId")
+    @OrderBy("issueDate DESC")
     @Sort(type = SortType.NATURAL)
     private SortedSet<Ticket> tickets;
 
@@ -121,6 +126,7 @@ public class Child extends ModifiableEntity implements Snapshotable, Comparable 
     @Override
     public int compareTo(Object another) {
         Child that = (Child)another;
+        if (this.equals(that)) return 0;
         return this.childData.compareTo(that.childData);
 
     }

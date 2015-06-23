@@ -33,7 +33,7 @@ public class TicketServiceBean extends AbstractModifiableEntityFacade<Ticket> {
         super(Ticket.class);
     }
 
-/*    public List<TicketSnapshot> requestTickets(String journeyId, List<Long> passengerIds) throws Exception {
+/*    public List<TicketSnapshot> issueTickets(String journeyId, List<Long> passengerIds) throws Exception {
         if (l.isDebugEnabled()) l.debug("post tickets for journey="+journeyId+" and passenger ids="+passengerIds);
 
         Journey journey = journeyService.findActive(journeyId);

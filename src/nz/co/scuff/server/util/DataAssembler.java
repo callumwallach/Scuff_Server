@@ -1,64 +1,42 @@
-package nz.co.scuff.server.service;
+package nz.co.scuff.server.util;
 
+import nz.co.scuff.data.base.Coordinator;
+import nz.co.scuff.data.base.snapshot.CoordinatorSnapshot;
 import nz.co.scuff.data.family.Adult;
+import nz.co.scuff.data.family.Child;
+import nz.co.scuff.data.family.snapshot.AdultSnapshot;
+import nz.co.scuff.data.family.snapshot.ChildSnapshot;
+import nz.co.scuff.data.institution.Institution;
+import nz.co.scuff.data.institution.Route;
+import nz.co.scuff.data.institution.snapshot.InstitutionSnapshot;
+import nz.co.scuff.data.institution.snapshot.RouteSnapshot;
+import nz.co.scuff.data.journey.Journey;
+import nz.co.scuff.data.journey.Ticket;
+import nz.co.scuff.data.journey.Waypoint;
+import nz.co.scuff.data.journey.snapshot.JourneySnapshot;
+import nz.co.scuff.data.journey.snapshot.TicketSnapshot;
+import nz.co.scuff.data.journey.snapshot.WaypointSnapshot;
+import nz.co.scuff.data.place.Place;
+import nz.co.scuff.data.place.snapshot.PlaceSnapshot;
 import nz.co.scuff.data.util.DataPacket;
-import nz.co.scuff.server.error.ErrorContextCode;
-import nz.co.scuff.server.error.ScuffServerException;
-import nz.co.scuff.server.family.AdultServiceBean;
-import nz.co.scuff.server.institution.InstitutionServiceBean;
-import nz.co.scuff.server.util.DataAssembler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.ejb.EJB;
-import javax.ejb.Stateless;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.ws.rs.core.Response;
 import java.sql.Timestamp;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
- * Created by Callum on 16/05/2015.
+ * Created by Callum on 15/06/2015.
  */
-@Stateless(name = "AccountServiceEJB")
-public class AccountServiceBean {
+public class DataAssembler {
 
-    public static final Logger l = LoggerFactory.getLogger(AccountServiceBean.class.getCanonicalName());
+    public static final Logger l = LoggerFactory.getLogger(DataAssembler.class.getCanonicalName());
 
-/*
     private static final boolean SHALLOW = false;
-*/
 
-    @PersistenceContext
-    private EntityManager em;
-
-    protected EntityManager getEntityManager() {
-        return em;
-    }
-
-    @EJB
-    private AdultServiceBean driverService;
-    @EJB
-    private InstitutionServiceBean schoolService;
-
-    public AccountServiceBean() {}
-
-    public DataPacket getDriver(String email, long lastChecked) throws Exception {
-        if (l.isDebugEnabled()) l.debug("get driver by email="+email+" lastChecked="+lastChecked);
-
-        Adult adult = driverService.findByEmail(email);
-        if (adult == null) {
-            throw new ScuffServerException("Resource not found", "The requested person does not exist",
-                    Response.Status.NOT_FOUND, ErrorContextCode.PERSON_NOT_FOUND);
-        }
-        adult.setLastRefresh(new Timestamp(System.currentTimeMillis()));
-        // save entity direct so lastModified is not changed (only lastLogin)
-        getEntityManager().merge(adult);
-        return DataAssembler.assemble(adult, lastChecked);
-
-    }
-
-/*    private Set<Long> doAdults(Timestamp lastChecked, Collection<Adult> adults, DataPacket packet, boolean isDeepCopy) {
+    private static Set<Long> doAdults(Timestamp lastChecked, Collection<Adult> adults, DataPacket packet, boolean isDeepCopy) {
 
         Set<Long> adultIds = new HashSet<>();
         for (Adult adult : adults) {
@@ -78,13 +56,13 @@ public class AccountServiceBean {
         return adultIds;
     }
 
-    private Set<Long> doAdults(Timestamp lastChecked, Collection<Adult> adults, DataPacket packet) {
+    private static Set<Long> doAdults(Timestamp lastChecked, Collection<Adult> adults, DataPacket packet) {
 
         return doAdults(lastChecked, adults, packet, true);
 
     }
 
-    private Set<Long> doChildren(Timestamp lastChecked, Collection<Child> children, DataPacket packet, boolean isDeepCopy) {
+    private static Set<Long> doChildren(Timestamp lastChecked, Collection<Child> children, DataPacket packet, boolean isDeepCopy) {
 
         Set<Long> childIds = new HashSet<>();
         for (Child child : children) {
@@ -104,13 +82,13 @@ public class AccountServiceBean {
         return childIds;
     }
 
-    private Set<Long> doChildren(Timestamp lastChecked, Collection<Child> children, DataPacket packet) {
+    private static Set<Long> doChildren(Timestamp lastChecked, Collection<Child> children, DataPacket packet) {
 
         return doChildren(lastChecked, children, packet, true);
 
     }
 
-    private Set<Long> doTickets(Timestamp lastChecked, Collection<Ticket> tickets, DataPacket packet) {
+    private static Set<Long> doTickets(Timestamp lastChecked, Collection<Ticket> tickets, DataPacket packet) {
 
         Set<Long> ticketIds = new HashSet<>();
         for (Ticket ticket : tickets) {
@@ -124,7 +102,7 @@ public class AccountServiceBean {
         return ticketIds;
     }
 
-    private Set<Long> doRoutes(Timestamp lastChecked, Collection<Route> routes, DataPacket packet) {
+    private static Set<Long> doRoutes(Timestamp lastChecked, Collection<Route> routes, DataPacket packet) {
 
         Set<Long> routeIds = new HashSet<>();
         for (Route route : routes) {
@@ -138,7 +116,7 @@ public class AccountServiceBean {
         return routeIds;
     }
 
-    private Set<Long> doPlaces(Timestamp lastChecked, Collection<Place> places, DataPacket packet) {
+    private static Set<Long> doPlaces(Timestamp lastChecked, Collection<Place> places, DataPacket packet) {
 
         Set<Long> placeIds = new HashSet<>();
         for (Place place : places) {
@@ -152,9 +130,9 @@ public class AccountServiceBean {
         return placeIds;
     }
 
-    private Set<String> doWaypoints(Timestamp lastChecked, Collection<Waypoint> waypoints, DataPacket packet) {
+    private static Set<Long> doWaypoints(Timestamp lastChecked, Collection<Waypoint> waypoints, DataPacket packet) {
 
-        Set<String> waypointIds = new HashSet<>();
+        Set<Long> waypointIds = new HashSet<>();
         for (Waypoint waypoint : waypoints) {
             if (l.isDebugEnabled()) l.debug("waypoint:"+waypoint);
             waypointIds.add(waypoint.getWaypointId());
@@ -164,9 +142,9 @@ public class AccountServiceBean {
         return waypointIds;
     }
 
-    private Set<String> doJourneys(Timestamp lastChecked, Collection<Journey> journeys, DataPacket packet) {
+    private static Set<Long> doJourneys(Timestamp lastChecked, Collection<Journey> journeys, DataPacket packet) {
 
-        Set<String> journeyIds = new HashSet<>();
+        Set<Long> journeyIds = new HashSet<>();
         for (Journey journey : journeys) {
             if (l.isDebugEnabled()) l.debug("journey:"+journey);
             journeyIds.add(journey.getJourneyId());
@@ -181,7 +159,7 @@ public class AccountServiceBean {
         return journeyIds;
     }
 
-    private Set<Long> doInstitutions(Timestamp lastChecked, Collection<Institution> institutions, DataPacket packet, boolean isDeepCopy) {
+    private static Set<Long> doInstitutions(Timestamp lastChecked, Collection<Institution> institutions, DataPacket packet, boolean isDeepCopy) {
 
         Set<Long> institutionIds = new HashSet<>();
         for (Institution institution : institutions) {
@@ -202,13 +180,13 @@ public class AccountServiceBean {
         return institutionIds;
     }
 
-    private Set<Long> doInstitutions(Timestamp lastChecked, Collection<Institution> institutions, DataPacket packet) {
+    private static Set<Long> doInstitutions(Timestamp lastChecked, Collection<Institution> institutions, DataPacket packet) {
 
         return doInstitutions(lastChecked, institutions, packet, true);
 
     }
 
-    private Set<Long> doCoordinators(Timestamp lastChecked, Collection<Coordinator> coordinators, DataPacket packet, boolean isDeepCopy) {
+    private static Set<Long> doCoordinators(Timestamp lastChecked, Collection<Coordinator> coordinators, DataPacket packet, boolean isDeepCopy) {
 
         Set<Long> coordinatorIds = new HashSet<>();
         for (Coordinator coordinator : coordinators) {
@@ -246,13 +224,13 @@ public class AccountServiceBean {
         return coordinatorIds;
     }
 
-    private Set<Long> doCoordinators(Timestamp lastChecked, Collection<Coordinator> coordinators, DataPacket packet) {
+    private static Set<Long> doCoordinators(Timestamp lastChecked, Collection<Coordinator> coordinators, DataPacket packet) {
 
         return doCoordinators(lastChecked, coordinators, packet, true);
 
     }
 
-    private DataPacket assemble(Adult adult, long lastCheckedMillis) {
+    public static DataPacket assemble(Adult adult, long lastCheckedMillis) {
         if (l.isDebugEnabled()) l.debug("assemble data for transit");
 
         // assemble for user
@@ -279,7 +257,7 @@ public class AccountServiceBean {
         if (l.isDebugEnabled()) l.debug("assembled packet="+packet);
         return packet;
 
-*//*
+/*
             for (Child c : adult.getChildren()) {
                 if (l.isDebugEnabled()) l.debug("child:"+c);
                 ChildSnapshot cs = c.toSnapshot();
@@ -330,7 +308,7 @@ public class AccountServiceBean {
                 // journey placeholder
                 is.getCurrentJourneyIds().add(Constants.STRING_COLLECTION_NOT_RETRIEVED);
                 is.getPastJourneyIds().add(Constants.STRING_COLLECTION_NOT_RETRIEVED);
-                *//**//*for (Journey j : i.getCurrentJourneys()) {
+                *//*for (Journey j : i.getCurrentJourneys()) {
                     if (l.isDebugEnabled()) l.debug("current journey:"+j);
                     if (j.getLastModified().after(lastChecked)) {
                         JourneySnapshot js = j.toSnapshot();
@@ -345,7 +323,7 @@ public class AccountServiceBean {
                         is.getCurrentJourneyIds().add(js.getJourneyId());
                         packet.getJourneySnapshots().put(js.getJourneyId(), js);
                     }
-                }*//**//*
+                }*//*
                 for (Adult g : i.getGuides()) {
                     if (l.isDebugEnabled()) l.debug("guide:"+g);
                     AdultSnapshot as = g.toSnapshot();
@@ -377,7 +355,7 @@ public class AccountServiceBean {
                 // journey placeholder
                 cs.getCurrentJourneyIds().add(Constants.STRING_COLLECTION_NOT_RETRIEVED);
                 cs.getPastJourneyIds().add(Constants.STRING_COLLECTION_NOT_RETRIEVED);
-*//**//*                    for (Journey j : c.getCurrentJourneys()) {
+*//*                    for (Journey j : c.getCurrentJourneys()) {
                     if (l.isDebugEnabled()) l.debug("journey:"+j);
                     if (j.getLastModified().after(lastChecked)) {
                         JourneySnapshot js = j.toSnapshot();
@@ -391,7 +369,7 @@ public class AccountServiceBean {
                         cs.getCurrentJourneyIds().add(js.getJourneyId());
                         packet.getJourneySnapshots().put(js.getJourneyId(), js);
                     }
-                }*//**//*
+                }*//*
                 for (Route r : c.getRoutes()) {
                     if (l.isDebugEnabled()) l.debug("route:"+r);
                     RouteSnapshot rs = r.toSnapshot();
@@ -418,7 +396,7 @@ public class AccountServiceBean {
                 packet.getPlaceSnapshots().put(ps.getPlaceId(), ps);
             }
             packet.getAdultSnapshots().put(adultSnapshot.getCoordinatorId(), adultSnapshot);
-        }*//*
+        }*/
 
-    }*/
+    }
 }

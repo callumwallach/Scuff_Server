@@ -70,26 +70,7 @@ CREATE TABLE `child` (
   `MiddleName` varchar(255) DEFAULT NULL,
   `Picture` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`ChildId`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Table structure for table `children_tickets`
---
-
-DROP TABLE IF EXISTS `children_tickets`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `children_tickets` (
-  `ChildId` bigint(20) NOT NULL,
-  `TicketId` bigint(20) NOT NULL,
-  PRIMARY KEY (`ChildId`,`TicketId`),
-  UNIQUE KEY `UK_bnc715i7xbphiadk9wvfff1pc` (`TicketId`),
-  KEY `FK_bnc715i7xbphiadk9wvfff1pc` (`TicketId`),
-  KEY `FK_233w6b393xrr4feve55d0u7uo` (`ChildId`),
-  CONSTRAINT `FK_233w6b393xrr4feve55d0u7uo` FOREIGN KEY (`ChildId`) REFERENCES `child` (`ChildId`),
-  CONSTRAINT `FK_bnc715i7xbphiadk9wvfff1pc` FOREIGN KEY (`TicketId`) REFERENCES `ticket` (`TicketId`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -106,15 +87,15 @@ CREATE TABLE `coordinator` (
   `LastModified` datetime NOT NULL,
   `LastLogin` datetime DEFAULT NULL,
   `Email` varchar(255) DEFAULT NULL,
+  `Name` varchar(255) DEFAULT NULL,
+  `Phone` varchar(255) DEFAULT NULL,
   `FirstName` varchar(255) DEFAULT NULL,
   `Gender` varchar(255) DEFAULT NULL,
   `LastName` varchar(255) DEFAULT NULL,
   `MiddleName` varchar(255) DEFAULT NULL,
-  `Phone` varchar(255) DEFAULT NULL,
   `Picture` varchar(255) DEFAULT NULL,
-  `Name` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`CoordinatorId`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -126,7 +107,7 @@ DROP TABLE IF EXISTS `coordinator_currentjourneys`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `coordinator_currentjourneys` (
   `CoordinatorId` bigint(20) NOT NULL,
-  `JourneyId` varchar(255) NOT NULL,
+  `JourneyId` bigint(20) NOT NULL,
   PRIMARY KEY (`CoordinatorId`,`JourneyId`),
   KEY `FK_k8tlv45l3w71n92c7b1bfi50u` (`JourneyId`),
   KEY `FK_5mr9s5403xglavb9h1w01clod` (`CoordinatorId`),
@@ -162,7 +143,7 @@ DROP TABLE IF EXISTS `coordinator_pastjourneys`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `coordinator_pastjourneys` (
   `CoordinatorId` bigint(20) NOT NULL,
-  `JourneyId` varchar(255) NOT NULL,
+  `JourneyId` bigint(20) NOT NULL,
   PRIMARY KEY (`CoordinatorId`,`JourneyId`),
   KEY `FK_mm8hfunh6pry8gcfg3l45x5k2` (`JourneyId`),
   KEY `FK_665f03ofqd6yaikyj1pmc4pf6` (`CoordinatorId`),
@@ -234,7 +215,7 @@ DROP TABLE IF EXISTS `journey`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `journey` (
-  `JourneyId` varchar(255) NOT NULL,
+  `JourneyId` bigint(20) NOT NULL AUTO_INCREMENT,
   `Active` tinyint(1) DEFAULT NULL,
   `LastModified` datetime NOT NULL,
   `AppId` varchar(255) NOT NULL,
@@ -267,25 +248,6 @@ CREATE TABLE `journey` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Table structure for table `journey_tickets`
---
-
-DROP TABLE IF EXISTS `journey_tickets`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `journey_tickets` (
-  `JourneyId` varchar(255) NOT NULL,
-  `TicketId` bigint(20) NOT NULL,
-  PRIMARY KEY (`JourneyId`,`TicketId`),
-  UNIQUE KEY `UK_otbf3mqgr6vsgv872ecxciawp` (`TicketId`),
-  KEY `FK_otbf3mqgr6vsgv872ecxciawp` (`TicketId`),
-  KEY `FK_plq6hrgcvig1561n934sqa06s` (`JourneyId`),
-  CONSTRAINT `FK_plq6hrgcvig1561n934sqa06s` FOREIGN KEY (`JourneyId`) REFERENCES `journey` (`JourneyId`),
-  CONSTRAINT `FK_otbf3mqgr6vsgv872ecxciawp` FOREIGN KEY (`TicketId`) REFERENCES `ticket` (`TicketId`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
 -- Table structure for table `place`
 --
 
@@ -301,7 +263,7 @@ CREATE TABLE `place` (
   `Longitude` double NOT NULL,
   `Name` varchar(255) NOT NULL,
   PRIMARY KEY (`PlaceId`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -327,7 +289,7 @@ CREATE TABLE `route` (
   CONSTRAINT `FK_dla590d7sdyrbcip6f6ikhjet` FOREIGN KEY (`Owner`) REFERENCES `coordinator` (`CoordinatorId`),
   CONSTRAINT `FK_ern9enuyi5abs57ti0co4lpg7` FOREIGN KEY (`Destination`) REFERENCES `place` (`PlaceId`),
   CONSTRAINT `FK_rt9dju8y6nj4i52e4cuvmhv77` FOREIGN KEY (`Origin`) REFERENCES `place` (`PlaceId`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -347,12 +309,18 @@ CREATE TABLE `ticket` (
   `StampDate` datetime DEFAULT NULL,
   `StampId` bigint(20) DEFAULT NULL,
   `Child` bigint(20) DEFAULT NULL,
-  `Journey` varchar(255) DEFAULT NULL,
+  `Journey` bigint(20) DEFAULT NULL,
+  `JourneyId` bigint(20) DEFAULT NULL,
+  `ChildId` bigint(20) DEFAULT NULL,
   PRIMARY KEY (`TicketId`),
   KEY `FK_3xrt2vi9snm6gmpofwhsae71s` (`Child`),
   KEY `FK_d4nubepam37xw5277wopr6q1w` (`Journey`),
+  KEY `FK_t9eiuc45wk4sggqr7jf6pys98` (`JourneyId`),
+  KEY `FK_ls6053hdctk06wqukdisnxope` (`ChildId`),
+  CONSTRAINT `FK_ls6053hdctk06wqukdisnxope` FOREIGN KEY (`ChildId`) REFERENCES `child` (`ChildId`),
+  CONSTRAINT `FK_3xrt2vi9snm6gmpofwhsae71s` FOREIGN KEY (`Child`) REFERENCES `child` (`ChildId`),
   CONSTRAINT `FK_d4nubepam37xw5277wopr6q1w` FOREIGN KEY (`Journey`) REFERENCES `journey` (`JourneyId`),
-  CONSTRAINT `FK_3xrt2vi9snm6gmpofwhsae71s` FOREIGN KEY (`Child`) REFERENCES `child` (`ChildId`)
+  CONSTRAINT `FK_t9eiuc45wk4sggqr7jf6pys98` FOREIGN KEY (`JourneyId`) REFERENCES `journey` (`JourneyId`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -364,7 +332,7 @@ DROP TABLE IF EXISTS `waypoint`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `waypoint` (
-  `WaypointId` varchar(255) NOT NULL,
+  `WaypointId` bigint(20) NOT NULL AUTO_INCREMENT,
   `Accuracy` float NOT NULL,
   `Altitude` double NOT NULL,
   `Bearing` float NOT NULL,
@@ -376,7 +344,7 @@ CREATE TABLE `waypoint` (
   `Provider` varchar(255) NOT NULL,
   `Speed` float NOT NULL,
   `State` varchar(255) NOT NULL,
-  `JourneyId` varchar(255) DEFAULT NULL,
+  `JourneyId` bigint(20) DEFAULT NULL,
   PRIMARY KEY (`WaypointId`),
   KEY `FK_mai6nwhqjicrrvetj5gabla38` (`JourneyId`),
   CONSTRAINT `FK_mai6nwhqjicrrvetj5gabla38` FOREIGN KEY (`JourneyId`) REFERENCES `journey` (`JourneyId`)
@@ -392,4 +360,4 @@ CREATE TABLE `waypoint` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2015-06-13 12:45:20
+-- Dump completed on 2015-06-21 16:30:54

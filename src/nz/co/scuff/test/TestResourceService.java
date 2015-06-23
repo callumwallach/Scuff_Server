@@ -41,7 +41,7 @@ public class TestResourceService {
     public Response putAndReturnTestData(@PathParam("id") String journeyId, String data) {
         if (D) l.debug("put and return data journeyId="+journeyId+" data received="+data);
         TicketSnapshot obj = new TicketSnapshot();
-        obj.setJourneyId("ticket no 3");
+        obj.setJourneyId(1973);
         return Response.ok().entity(obj).build();
     }
 
