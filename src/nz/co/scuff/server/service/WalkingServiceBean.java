@@ -9,13 +9,12 @@ import nz.co.scuff.data.institution.snapshot.InstitutionSnapshot;
 import nz.co.scuff.data.institution.snapshot.RouteSnapshot;
 import nz.co.scuff.data.journey.Journey;
 import nz.co.scuff.data.journey.Ticket;
-import nz.co.scuff.data.journey.Waypoint;
 import nz.co.scuff.data.journey.snapshot.JourneySnapshot;
 import nz.co.scuff.data.journey.snapshot.WaypointSnapshot;
 import nz.co.scuff.data.place.snapshot.PlaceSnapshot;
 import nz.co.scuff.data.util.Constants;
 import nz.co.scuff.data.util.DataPacket;
-import nz.co.scuff.server.base.CoordinatorServiceBean;
+import nz.co.scuff.data.util.TicketState;
 import nz.co.scuff.server.error.ErrorContextCode;
 import nz.co.scuff.server.error.ScuffServerException;
 import nz.co.scuff.server.family.AdultServiceBean;
@@ -164,7 +163,7 @@ public class WalkingServiceBean {
                     waypointIds.add(ws.getWaypointId());
                     js.setWaypointIds(waypointIds);
                     // tickets
-                    js.setTicketIds(Constants.LONG_COLLECTION_NOT_RETRIEVED_PLACEHOLDER);
+                    js.setIssuedTicketIds(Constants.LONG_COLLECTION_NOT_RETRIEVED_PLACEHOLDER);
 
                     packet.getJourneySnapshots().put(js.getJourneyId(), js);
                     packet.getWaypointSnapshots().put(ws.getWaypointId(), ws);
@@ -202,19 +201,20 @@ public class WalkingServiceBean {
         for (Long id : childIds) {
             if (l.isDebugEnabled()) l.debug("processing children=" + id);
             // ensure no duplicates
-            if (!journey.getTickets().stream().anyMatch(t -> t.getChild().getChildId() == id)) {
-                Ticket ticket = new Ticket();
-                ticket.setIssueDate(new Timestamp(DateTimeUtils.currentTimeMillis()));
-                ticket.setJourney(journey);
-                Child child = passengerService.find(id);
-                assert (child != null);
-                ticket.setChild(child);
-                ticketService.create(ticket);
-                child.getTickets().add(ticket);
-                passengerService.edit(child);
-                journey.getTickets().add(ticket);
-                if (l.isDebugEnabled()) l.debug("created ticket=" + ticket);
-                packet.getTicketSnapshots().put(ticket.getTicketId(), ticket.toSnapshot());
+            if (!journey.getIssuedTickets().stream().anyMatch(t -> t.getChild().getChildId() == id)) {
+                if (!journey.getStampedTickets().stream().anyMatch(t -> t.getChild().getChildId() == id)) {
+                    Ticket ticket = new Ticket();
+                    ticket.setJourney(journey);
+                    Child child = passengerService.find(id);
+                    assert (child != null);
+                    ticket.setChild(child);
+                    ticketService.create(ticket);
+                    child.getTickets().add(ticket);
+                    passengerService.edit(child);
+                    journey.getIssuedTickets().add(ticket);
+                    if (l.isDebugEnabled()) l.debug("created ticket=" + ticket);
+                    packet.getTicketSnapshots().put(ticket.getTicketId(), ticket.toSnapshot());
+                }
             }
         }
         journeyService.edit(journey);

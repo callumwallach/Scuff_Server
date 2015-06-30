@@ -1,6 +1,7 @@
 package nz.co.scuff.data.journey.snapshot;
 
 import nz.co.scuff.data.base.snapshot.ModifiableSnapshot;
+import nz.co.scuff.data.util.TicketState;
 
 import javax.xml.bind.annotation.XmlRootElement;
 import java.sql.Timestamp;
@@ -13,6 +14,7 @@ public class TicketSnapshot extends ModifiableSnapshot implements Comparable {
 
     private long ticketId;
     private Timestamp issueDate;
+    private TicketState state;
 
     private long stampId;
     private long journeyId;
@@ -30,6 +32,30 @@ public class TicketSnapshot extends ModifiableSnapshot implements Comparable {
         this.ticketId = ticketId;
     }
 
+    public Timestamp getIssueDate() {
+        return issueDate;
+    }
+
+    public void setIssueDate(Timestamp issueDate) {
+        this.issueDate = issueDate;
+    }
+
+    public TicketState getState() {
+        return state;
+    }
+
+    public void setState(TicketState state) {
+        this.state = state;
+    }
+
+    public long getStampId() {
+        return stampId;
+    }
+
+    public void setStampId(long stampId) {
+        this.stampId = stampId;
+    }
+
     public long getJourneyId() {
         return journeyId;
     }
@@ -44,22 +70,6 @@ public class TicketSnapshot extends ModifiableSnapshot implements Comparable {
 
     public void setChildId(long childId) {
         this.childId = childId;
-    }
-
-    public Timestamp getIssueDate() {
-        return issueDate;
-    }
-
-    public void setIssueDate(Timestamp issueDate) {
-        this.issueDate = issueDate;
-    }
-
-    public long getStampId() {
-        return stampId;
-    }
-
-    public void setStampId(long stampId) {
-        this.stampId = stampId;
     }
 
     @Override
@@ -90,6 +100,7 @@ public class TicketSnapshot extends ModifiableSnapshot implements Comparable {
                 "ticketId=" + ticketId +
                 ", issueDate=" + issueDate +
                 ", stampId=" + stampId +
+                ", state=" + state +
                 ", journeyId='" + journeyId + '\'' +
                 ", childId=" + childId +
                 "} " + super.toString();

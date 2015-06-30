@@ -46,7 +46,7 @@ public class TicketServiceBean extends AbstractModifiableEntityFacade<Ticket> {
         for (Long id : passengerIds) {
             if (l.isDebugEnabled()) l.debug("processing passenger=" + id);
             // ensure no duplicates
-            if (!journey.getTicketIds().stream().anyMatch(t -> t.getChild().getPersonId() == id)) {
+            if (!journey.getIssuedTicketIds().stream().anyMatch(t -> t.getChild().getPersonId() == id)) {
                 Ticket ticket = new Ticket();
                 ticket.setIssueDate(new Timestamp(DateTimeUtils.currentTimeMillis()));
                 ticket.setJourney(journey);
@@ -54,9 +54,9 @@ public class TicketServiceBean extends AbstractModifiableEntityFacade<Ticket> {
                 assert (passenger != null);
                 ticket.setChild(passenger);
                 create(ticket);
-                passenger.getTicketIds().add(ticket);
+                passenger.getIssuedTicketIds().add(ticket);
                 passengerService.edit(passenger);
-                journey.getTicketIds().add(ticket);
+                journey.getIssuedTicketIds().add(ticket);
                 if (l.isDebugEnabled()) l.debug("created ticket=" + ticket);
                 tickets.add(ticket.toSnapshot());
             }

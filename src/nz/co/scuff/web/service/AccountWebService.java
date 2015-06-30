@@ -22,7 +22,8 @@ public class AccountWebService {
     @Path("/drivers/{email}")
     @GET
     @Produces("application/json")
-    public DataPacket getDriver(@PathParam("email") String email, @QueryParam("lastChecked") long lastChecked) throws Exception {
+    public DataPacket getDriver(@PathParam("email") String email,
+                                @QueryParam("lastChecked") long lastChecked) throws Exception {
         return accountService.getDriver(email, lastChecked);
     }
 

@@ -96,7 +96,7 @@ public class AccountServiceBean {
                 if (isDeepCopy) {
                     if (l.isDebugEnabled()) l.debug("child="+child.getChildId()+" deep copy");
                     childSnapshot.setParentIds(doAdults(lastChecked, child.getParents(), packet, SHALLOW));
-                    childSnapshot.setTicketIds(doTickets(lastChecked, child.getTickets(), packet));
+                    childSnapshot.setIssuedTicketIds(doTickets(lastChecked, child.getTickets(), packet));
                 }
                 packet.getChildSnapshots().put(childSnapshot.getChildId(), childSnapshot);
             }
@@ -174,7 +174,7 @@ public class AccountServiceBean {
                 if (l.isDebugEnabled()) l.debug("journey="+journey.getJourneyId()+" is dirty");
                 JourneySnapshot journeySnapshot = journey.toSnapshot();
                 journeySnapshot.setWaypointIds(doWaypoints(lastChecked, journey.getWaypoints(), packet));
-                journeySnapshot.setTicketIds(doTickets(lastChecked, journey.getTickets(), packet));
+                journeySnapshot.setIssuedTicketIds(doTickets(lastChecked, journey.getTickets(), packet));
                 packet.getJourneySnapshots().put(journeySnapshot.getJourneyId(), journeySnapshot);
             }
         }
@@ -293,7 +293,7 @@ public class AccountServiceBean {
                 }
                 for (Ticket t : c.getTickets()) {
                     if (l.isDebugEnabled()) l.debug("ticket:"+t);
-                    cs.getTicketIds().add(t.getTicketId());
+                    cs.getIssuedTicketIds().add(t.getTicketId());
                     if (t.isDirty(lastChecked)) {
                         TicketSnapshot ts = t.toSnapshot();
                         packet.getTicketSnapshots().put(ts.getTicketId(), ts);
@@ -315,7 +315,7 @@ public class AccountServiceBean {
                 for (Ticket t : j.getTickets()) {
                     if (l.isDebugEnabled()) l.debug("ticket:"+t);
                     TicketSnapshot ts = t.toSnapshot();
-                    js.getTicketIds().add(ts.getTicketId());
+                    js.getIssuedTicketIds().add(ts.getTicketId());
                     packet.getTicketSnapshots().put(ts.getTicketId(), ts);
                 }
                 adultSnapshot.getCurrentJourneyIds().add(js.getJourneyId());
@@ -341,7 +341,7 @@ public class AccountServiceBean {
                             packet.getWaypointSnapshots().put(ws.getWaypointId(), ws);
                         }
                         // ignore tickets
-                        js.getTicketIds().add(Constants.LONG_COLLECTION_NOT_RETRIEVED);
+                        js.getIssuedTicketIds().add(Constants.LONG_COLLECTION_NOT_RETRIEVED);
                         is.getCurrentJourneyIds().add(js.getJourneyId());
                         packet.getJourneySnapshots().put(js.getJourneyId(), js);
                     }
@@ -387,7 +387,7 @@ public class AccountServiceBean {
                             packet.getWaypointSnapshots().put(ws.getWaypointId(), ws);
                         }
                         // ignore tickets
-                        js.getTicketIds().add(Constants.LONG_COLLECTION_NOT_RETRIEVED);
+                        js.getIssuedTicketIds().add(Constants.LONG_COLLECTION_NOT_RETRIEVED);
                         cs.getCurrentJourneyIds().add(js.getJourneyId());
                         packet.getJourneySnapshots().put(js.getJourneyId(), js);
                     }

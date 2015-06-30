@@ -84,32 +84,37 @@ public class Journey extends ModifiableEntity implements Snapshotable, Comparabl
     @Sort(type = SortType.NATURAL)
     private SortedSet<Waypoint> waypoints;
 
-/*    @OneToMany(fetch = FetchType.EAGER)
+    @OneToMany(fetch = FetchType.EAGER)
     @JoinTable(
-            name="journey_tickets",
+            name="journey_issuedtickets",
             joinColumns={@JoinColumn(name="JourneyId", referencedColumnName="journeyId")},
             inverseJoinColumns={@JoinColumn(name="TicketId", referencedColumnName="ticketId")})
-    @Sort(type = SortType.NATURAL)
-    private SortedSet<Ticket> tickets;*/
-    @OneToMany(fetch = FetchType.EAGER)
-    @JoinColumn(name="JourneyId", referencedColumnName="JourneyId")
     @OrderBy("issueDate DESC")
     @Sort(type = SortType.NATURAL)
-    private SortedSet<Ticket> tickets;
+    private SortedSet<Ticket> issuedTickets;
+
+    @OneToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+            name="journey_stampedtickets",
+            joinColumns={@JoinColumn(name="JourneyId", referencedColumnName="journeyId")},
+            inverseJoinColumns={@JoinColumn(name="TicketId", referencedColumnName="ticketId")})
+    @OrderBy("issueDate DESC")
+    @Sort(type = SortType.NATURAL)
+    private SortedSet<Ticket> stampedTickets;
 
     public Waypoint getMostRecentWaypoint() {
-        //return waypoints.first();
         return waypoints.last();
     }
 
     public Journey() {
         super();
         waypoints = new TreeSet<>();
-        tickets = new TreeSet<>();
+        issuedTickets = new TreeSet<>();
+        stampedTickets = new TreeSet<>();
     }
 
     public Journey(JourneySnapshot snapshot) {
-        super();
+        this();
         //this.journeyId = snapshot.getJourneyId();
         this.appId = snapshot.getAppId();
         this.source = snapshot.getSource();
@@ -121,9 +126,6 @@ public class Journey extends ModifiableEntity implements Snapshotable, Comparabl
 
         this.active = snapshot.isActive();
         this.lastModified = snapshot.getLastModified();
-
-        waypoints = new TreeSet<>();
-        tickets = new TreeSet<>();
     }
 
     public long getJourneyId() {
@@ -249,15 +251,26 @@ public class Journey extends ModifiableEntity implements Snapshotable, Comparabl
         this.waypoints = waypoints;
     }
 
-    public SortedSet<Ticket> getTickets() {
-        if (tickets == null) {
-            tickets = new TreeSet<>();
+    public SortedSet<Ticket> getIssuedTickets() {
+        if (issuedTickets == null) {
+            issuedTickets = new TreeSet<>();
         }
-        return tickets;
+        return issuedTickets;
     }
 
-    public void setTickets(SortedSet<Ticket> tickets) {
-        this.tickets = tickets;
+    public void setIssuedTickets(SortedSet<Ticket> tickets) {
+        this.issuedTickets = tickets;
+    }
+
+    public SortedSet<Ticket> getStampedTickets() {
+        if (stampedTickets == null) {
+            stampedTickets = new TreeSet<>();
+        }
+        return stampedTickets;
+    }
+
+    public void setStampedTickets(SortedSet<Ticket> tickets) {
+        this.stampedTickets = tickets;
     }
 
     public JourneySnapshot toSnapshot() {
@@ -281,7 +294,8 @@ public class Journey extends ModifiableEntity implements Snapshotable, Comparabl
         snapshot.setActive(active);
         snapshot.setLastModified(lastModified);
 
-        snapshot.setTicketIds(Constants.LONG_COLLECTION_NOT_RETRIEVED_PLACEHOLDER);
+        snapshot.setIssuedTicketIds(Constants.LONG_COLLECTION_NOT_RETRIEVED_PLACEHOLDER);
+        snapshot.setStampedTicketIds(Constants.LONG_COLLECTION_NOT_RETRIEVED_PLACEHOLDER);
         snapshot.setWaypointIds(Constants.LONG_COLLECTION_NOT_RETRIEVED_PLACEHOLDER);
 
         return snapshot;
@@ -330,11 +344,21 @@ public class Journey extends ModifiableEntity implements Snapshotable, Comparabl
                 ", origin=" + origin.getPlaceId() +
                 ", destination=" + destination.getPlaceId() +
                 ", waypoints=" + waypoints;
-        s += ", tickets=";
-        if ((tickets == null) || tickets.isEmpty()) {
+        s += ", issuedTickets=";
+        if ((issuedTickets == null) || issuedTickets.isEmpty()) {
             s += "[empty]";
         } else {
-            for (Ticket o : tickets) {
+            for (Ticket o : issuedTickets) {
+                s += " ";
+                s += o.getTicketId();
+            }
+        }
+        s += "} ";
+        s += ", stampedTickets=";
+        if ((stampedTickets == null) || stampedTickets.isEmpty()) {
+            s += "[empty]";
+        } else {
+            for (Ticket o : stampedTickets) {
                 s += " ";
                 s += o.getTicketId();
             }

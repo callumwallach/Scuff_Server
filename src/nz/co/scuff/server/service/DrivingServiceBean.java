@@ -2,15 +2,18 @@ package nz.co.scuff.server.service;
 
 import nz.co.scuff.data.base.Coordinator;
 import nz.co.scuff.data.family.Adult;
-import nz.co.scuff.data.family.Child;
 import nz.co.scuff.data.journey.Journey;
+import nz.co.scuff.data.journey.Stamp;
 import nz.co.scuff.data.journey.Ticket;
 import nz.co.scuff.data.journey.Waypoint;
 import nz.co.scuff.data.journey.snapshot.JourneySnapshot;
+import nz.co.scuff.data.journey.snapshot.StampSnapshot;
+import nz.co.scuff.data.journey.snapshot.TicketSnapshot;
 import nz.co.scuff.data.journey.snapshot.WaypointSnapshot;
 import nz.co.scuff.data.util.*;
 import nz.co.scuff.server.base.CoordinatorServiceBean;
 import nz.co.scuff.server.family.AdultServiceBean;
+import nz.co.scuff.server.institution.TicketServiceBean;
 import nz.co.scuff.server.journey.JourneyServiceBean;
 import nz.co.scuff.server.institution.RouteServiceBean;
 import nz.co.scuff.server.institution.InstitutionServiceBean;
@@ -23,8 +26,6 @@ import org.slf4j.LoggerFactory;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import java.sql.Timestamp;
-import java.util.HashSet;
-import java.util.Set;
 
 /**
  * Created by Callum on 16/05/2015.
@@ -38,6 +39,8 @@ public class DrivingServiceBean {
     private JourneyServiceBean journeyService;
     @EJB
     private WaypointServiceBean waypointService;
+    @EJB
+    private TicketServiceBean ticketService;
     @EJB
     private CoordinatorServiceBean coordinatorService;
     @EJB
@@ -122,8 +125,8 @@ public class DrivingServiceBean {
         */
     }
 
-    public DataPacket updateJourney(long journeyId, DataPacket incomingData) {
-        if (l.isDebugEnabled()) l.debug("update journey packet=" + incomingData);
+    public DataPacket updateJourney(long journeyId, long lastTicket, DataPacket incomingData) {
+        if (l.isDebugEnabled()) l.debug("update journey packet="+incomingData+" lastTicket="+lastTicket);
 
         JourneySnapshot journeySnapshot = incomingData.getJourneySnapshots().get(journeyId);
         Journey journey = journeyService.find(journeySnapshot.getJourneyId());
@@ -170,16 +173,30 @@ public class DrivingServiceBean {
             outgoingData = DataAssembler.assemble(guide, guidesLastRefresh.getTime());
             outgoingData.setItemOfInterest(journey.getJourneyId());
         } else {
-            // get tickets
-            Timestamp lastChecked = journey.getLastModified();
-            if (l.isDebugEnabled()) l.debug("processing journey="+journey.getJourneyId()+" tickets");
-            for (Ticket ticket : journey.getTickets()) {
-                if (l.isDebugEnabled()) l.debug("ticket issue="+ticket.getIssueDate()+" lastChecked="+lastChecked);
-                //if (ticket.getIssueDate().after(lastChecked)) {
-                if (l.isDebugEnabled()) l.debug("processing ticket="+ticket);
-                outgoingData.getChildSnapshots().put(ticket.getChild().getChildId(), ticket.getChild().toSnapshot());
-                outgoingData.getTicketSnapshots().put(ticket.getTicketId(), ticket.toSnapshot());
-                //}
+            // process incoming stamped tickets
+            if (l.isDebugEnabled()) l.debug("processing incoming stamps");
+            for (long ticketId : journeySnapshot.getStampedTicketIds()) {
+                //TicketSnapshot ticketSnapshot = incomingData.getTicketSnapshots().get(ticketId);
+                StampSnapshot stampSnapshot = incomingData.getStampSnapshots().get(ticketId);
+                Ticket stampedTicket = ticketService.find(ticketId);
+                stampedTicket.setState(TicketState.STAMPED);
+                Stamp stamp = new Stamp(stampSnapshot);
+                stampedTicket.setStamp(stamp);
+                ticketService.edit(stampedTicket);
+                journey.getIssuedTickets().remove(stampedTicket);
+                journey.getStampedTickets().add(stampedTicket);
+                journeyService.edit(journey);
+            }
+            // send issued outgoing tickets
+            if (l.isDebugEnabled()) l.debug("processing outgoing tickets");
+            Timestamp lastTicketTime = new Timestamp(lastTicket);
+            for (Ticket ticket : journey.getIssuedTickets()) {
+                if (l.isDebugEnabled()) l.debug("ticket issue="+ticket.getIssueDate()+" lastChecked="+lastTicketTime);
+                if (ticket.getIssueDate().after(lastTicketTime)) {
+                    if (l.isDebugEnabled()) l.debug("processing ticket="+ticket);
+                    outgoingData.getChildSnapshots().put(ticket.getChild().getChildId(), ticket.getChild().toSnapshot());
+                    outgoingData.getTicketSnapshots().put(ticket.getTicketId(), ticket.toSnapshot());
+                }
             }
         }
 

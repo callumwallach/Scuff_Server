@@ -7,6 +7,7 @@ import nz.co.scuff.data.base.Snapshotable;
 import nz.co.scuff.data.family.Child;
 import nz.co.scuff.data.journey.snapshot.TicketSnapshot;
 import nz.co.scuff.data.util.Constants;
+import nz.co.scuff.data.util.TicketState;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -26,6 +27,8 @@ public class Ticket extends ModifiableEntity implements Snapshotable, Comparable
     private long ticketId;
     @Column(name="IssueDate")
     private Timestamp issueDate;
+    @Column(name="State")
+    private TicketState state;
 
     @Column(name="Stamp")
     private Stamp stamp;
@@ -40,12 +43,15 @@ public class Ticket extends ModifiableEntity implements Snapshotable, Comparable
 
     public Ticket() {
         super();
+        this.issueDate = new Timestamp(System.currentTimeMillis());
+        this.state= TicketState.ISSUED;
     }
 
     public Ticket(TicketSnapshot snapshot) {
         super();
         this.ticketId = snapshot.getTicketId();
         this.issueDate = snapshot.getIssueDate();
+        this.state = snapshot.getState();
     }
 
     public long getTicketId() {
@@ -54,6 +60,14 @@ public class Ticket extends ModifiableEntity implements Snapshotable, Comparable
 
     public void setTicketId(long ticketId) {
         this.ticketId = ticketId;
+    }
+
+    public TicketState getState() {
+        return state;
+    }
+
+    public void setState(TicketState state) {
+        this.state = state;
     }
 
     public Journey getJourney() {
@@ -92,6 +106,7 @@ public class Ticket extends ModifiableEntity implements Snapshotable, Comparable
         TicketSnapshot snapshot = new TicketSnapshot();
         snapshot.setTicketId(this.ticketId);
         snapshot.setIssueDate(this.issueDate);
+        snapshot.setState(this.state);
         snapshot.setStampId(this.stamp == null ? Constants.LONG_VALUE_SET_TO_NULL : this.stamp.getStampId());
         snapshot.setJourneyId(this.journey.getJourneyId());
         snapshot.setChildId(this.child.getChildId());
@@ -134,6 +149,7 @@ public class Ticket extends ModifiableEntity implements Snapshotable, Comparable
         return "Ticket{" +
                 "ticketId='" + ticketId + '\'' +
                 ", issueDate=" + issueDate +
+                ", state=" + state +
                 ", stamp=" + stamp +
                 ", journey=" + journey.getJourneyId() +
                 ", child=" + child.getChildId() +

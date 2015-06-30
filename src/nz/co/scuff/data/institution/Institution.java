@@ -100,6 +100,8 @@ public class Institution extends Coordinator {
     @Override
     public int compareTo(Object another) {
         Institution that = (Institution)another;
+        if (that.institutionData == null) return 1;
+        if (this.institutionData == null) return -1;
         if (this.equals(that)) return 0;
         return this.institutionData.compareTo(that.institutionData);
 

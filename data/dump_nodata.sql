@@ -248,6 +248,44 @@ CREATE TABLE `journey` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
+-- Table structure for table `journey_issuedtickets`
+--
+
+DROP TABLE IF EXISTS `journey_issuedtickets`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `journey_issuedtickets` (
+  `JourneyId` bigint(20) NOT NULL,
+  `TicketId` bigint(20) NOT NULL,
+  PRIMARY KEY (`JourneyId`,`TicketId`),
+  UNIQUE KEY `UK_qve0dxtlvma5ljk770ru7bdqn` (`TicketId`),
+  KEY `FK_qve0dxtlvma5ljk770ru7bdqn` (`TicketId`),
+  KEY `FK_91iowqv413bmghrjo1b619ic2` (`JourneyId`),
+  CONSTRAINT `FK_91iowqv413bmghrjo1b619ic2` FOREIGN KEY (`JourneyId`) REFERENCES `journey` (`JourneyId`),
+  CONSTRAINT `FK_qve0dxtlvma5ljk770ru7bdqn` FOREIGN KEY (`TicketId`) REFERENCES `ticket` (`TicketId`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `journey_stampedtickets`
+--
+
+DROP TABLE IF EXISTS `journey_stampedtickets`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `journey_stampedtickets` (
+  `JourneyId` bigint(20) NOT NULL,
+  `TicketId` bigint(20) NOT NULL,
+  PRIMARY KEY (`JourneyId`,`TicketId`),
+  UNIQUE KEY `UK_508rhoba0lyu5h8wehb10ask1` (`TicketId`),
+  KEY `FK_508rhoba0lyu5h8wehb10ask1` (`TicketId`),
+  KEY `FK_79orqhcijdts7xrw17p97k56t` (`JourneyId`),
+  CONSTRAINT `FK_79orqhcijdts7xrw17p97k56t` FOREIGN KEY (`JourneyId`) REFERENCES `journey` (`JourneyId`),
+  CONSTRAINT `FK_508rhoba0lyu5h8wehb10ask1` FOREIGN KEY (`TicketId`) REFERENCES `ticket` (`TicketId`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
 -- Table structure for table `place`
 --
 
@@ -308,19 +346,17 @@ CREATE TABLE `ticket` (
   `Longitude` double DEFAULT NULL,
   `StampDate` datetime DEFAULT NULL,
   `StampId` bigint(20) DEFAULT NULL,
+  `State` int(11) DEFAULT NULL,
   `Child` bigint(20) DEFAULT NULL,
   `Journey` bigint(20) DEFAULT NULL,
-  `JourneyId` bigint(20) DEFAULT NULL,
   `ChildId` bigint(20) DEFAULT NULL,
   PRIMARY KEY (`TicketId`),
   KEY `FK_3xrt2vi9snm6gmpofwhsae71s` (`Child`),
   KEY `FK_d4nubepam37xw5277wopr6q1w` (`Journey`),
-  KEY `FK_t9eiuc45wk4sggqr7jf6pys98` (`JourneyId`),
   KEY `FK_ls6053hdctk06wqukdisnxope` (`ChildId`),
   CONSTRAINT `FK_ls6053hdctk06wqukdisnxope` FOREIGN KEY (`ChildId`) REFERENCES `child` (`ChildId`),
   CONSTRAINT `FK_3xrt2vi9snm6gmpofwhsae71s` FOREIGN KEY (`Child`) REFERENCES `child` (`ChildId`),
-  CONSTRAINT `FK_d4nubepam37xw5277wopr6q1w` FOREIGN KEY (`Journey`) REFERENCES `journey` (`JourneyId`),
-  CONSTRAINT `FK_t9eiuc45wk4sggqr7jf6pys98` FOREIGN KEY (`JourneyId`) REFERENCES `journey` (`JourneyId`)
+  CONSTRAINT `FK_d4nubepam37xw5277wopr6q1w` FOREIGN KEY (`Journey`) REFERENCES `journey` (`JourneyId`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -360,4 +396,4 @@ CREATE TABLE `waypoint` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2015-06-21 16:30:54
+-- Dump completed on 2015-06-29 16:31:37

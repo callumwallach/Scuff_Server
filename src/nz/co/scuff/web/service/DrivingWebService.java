@@ -31,8 +31,10 @@ public class DrivingWebService {
     @PUT
     @Consumes("application/json")
     @Produces("application/json")
-    public DataPacket updateJourney(@PathParam("id") long journeyId, DataPacket packet) {
-        return drivingService.updateJourney(journeyId, packet);
+    public DataPacket updateJourney(@PathParam("id") long journeyId,
+                                    @QueryParam("lastTicket") long lastTicket,
+                                    DataPacket packet) {
+        return drivingService.updateJourney(journeyId, lastTicket, packet);
     }
 
 }

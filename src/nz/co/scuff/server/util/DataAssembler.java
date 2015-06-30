@@ -152,7 +152,7 @@ public class DataAssembler {
                 if (l.isDebugEnabled()) l.debug("journey="+journey.getJourneyId()+" is dirty");
                 JourneySnapshot journeySnapshot = journey.toSnapshot();
                 journeySnapshot.setWaypointIds(doWaypoints(lastChecked, journey.getWaypoints(), packet));
-                journeySnapshot.setTicketIds(doTickets(lastChecked, journey.getTickets(), packet));
+                journeySnapshot.setIssuedTicketIds(doTickets(lastChecked, journey.getIssuedTickets(), packet));
                 packet.getJourneySnapshots().put(journeySnapshot.getJourneyId(), journeySnapshot);
             }
         }
@@ -271,7 +271,7 @@ public class DataAssembler {
                 }
                 for (Ticket t : c.getTickets()) {
                     if (l.isDebugEnabled()) l.debug("ticket:"+t);
-                    cs.getTicketIds().add(t.getTicketId());
+                    cs.getIssuedTicketIds().add(t.getTicketId());
                     if (t.isDirty(lastChecked)) {
                         TicketSnapshot ts = t.toSnapshot();
                         packet.getTicketSnapshots().put(ts.getTicketId(), ts);
@@ -293,7 +293,7 @@ public class DataAssembler {
                 for (Ticket t : j.getTickets()) {
                     if (l.isDebugEnabled()) l.debug("ticket:"+t);
                     TicketSnapshot ts = t.toSnapshot();
-                    js.getTicketIds().add(ts.getTicketId());
+                    js.getIssuedTicketIds().add(ts.getTicketId());
                     packet.getTicketSnapshots().put(ts.getTicketId(), ts);
                 }
                 adultSnapshot.getCurrentJourneyIds().add(js.getJourneyId());
@@ -319,7 +319,7 @@ public class DataAssembler {
                             packet.getWaypointSnapshots().put(ws.getWaypointId(), ws);
                         }
                         // ignore tickets
-                        js.getTicketIds().add(Constants.LONG_COLLECTION_NOT_RETRIEVED);
+                        js.getIssuedTicketIds().add(Constants.LONG_COLLECTION_NOT_RETRIEVED);
                         is.getCurrentJourneyIds().add(js.getJourneyId());
                         packet.getJourneySnapshots().put(js.getJourneyId(), js);
                     }
@@ -365,7 +365,7 @@ public class DataAssembler {
                             packet.getWaypointSnapshots().put(ws.getWaypointId(), ws);
                         }
                         // ignore tickets
-                        js.getTicketIds().add(Constants.LONG_COLLECTION_NOT_RETRIEVED);
+                        js.getIssuedTicketIds().add(Constants.LONG_COLLECTION_NOT_RETRIEVED);
                         cs.getCurrentJourneyIds().add(js.getJourneyId());
                         packet.getJourneySnapshots().put(js.getJourneyId(), js);
                     }
